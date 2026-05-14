@@ -1,0 +1,19 @@
+{
+  "id": "q-060",
+  "subject": 2,
+  "category": "그룹함수",
+  "type": "mc",
+  "question": "다음 GROUPING SETS 쿼리의 결과 그룹 수는?",
+  "codeBlock": "SELECT deptno, job, SUM(sal)\nFROM emp\nGROUP BY GROUPING SETS((deptno, job), (deptno), (job), ());",
+  "choices": [
+    "1",
+    "2",
+    "3",
+    "4"
+  ],
+  "answer": 3,
+  "explanation": "**GROUPING SETS**는 명시한 조합 각각에 대해 그룹을 만듭니다.\n\n명시된 조합:\n1. `(deptno, job)` — 부서·직무별\n2. `(deptno)` — 부서별 소계\n3. `(job)` — 직무별 소계\n4. `()` — 총계\n\n→ 결과: **4개 그룹** (조합)\n\n참고:\n- `ROLLUP(deptno, job)` = `GROUPING SETS((deptno, job), (deptno), ())` → 3개\n- `CUBE(deptno, job)` = `GROUPING SETS((deptno, job), (deptno), (job), ())` → 4개 (위 쿼리와 동일)",
+  "concepts": ["group-by"],
+  "tags": ["GROUPING SETS", "CUBE"],
+  "source": "self"
+}

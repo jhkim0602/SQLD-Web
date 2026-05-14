@@ -1,0 +1,24 @@
+{
+  "id": "q-003",
+  "subject": 1,
+  "category": "관계",
+  "type": "mc",
+  "question": "관계(Relationship)의 차수(Cardinality)에 대한 설명으로 옳은 것은?",
+  "choices": [
+    "관계 차수는 관계에 참여하는 엔터티의 개수를 의미한다.",
+    "관계 차수는 한 엔터티의 인스턴스가 다른 엔터티의 인스턴스와 몇 개의 관계를 맺을 수 있는지를 나타낸다.",
+    "관계 차수는 항상 1:1로만 존재한다.",
+    "관계 차수는 관계의 선택성을 의미한다."
+  ],
+  "answer": 1,
+  "explanation": "관계 **차수(Cardinality)**는 한 엔터티의 인스턴스가 관계에 참여하는 다른 엔터티 인스턴스의 수를 의미합니다. 표현은 1:1, 1:M, M:N으로 구분됩니다.\n\n참고: 관계의 다른 구성 요소들과 헷갈리지 마세요.\n- **선택성(Optionality)**: 관계 참여가 필수인지 선택인지 (필수/선택)\n- **관계명(Relationship Name)**: 관계의 이름\n- **관계차수(Cardinality)**: 1:1, 1:M, M:N",
+  "concepts": [
+    "relationship"
+  ],
+  "tags": [
+    "관계",
+    "차수",
+    "Cardinality"
+  ],
+  "source": "self"
+}

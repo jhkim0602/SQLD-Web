@@ -1,0 +1,19 @@
+{
+  "id": "q-075",
+  "subject": 2,
+  "category": "윈도우함수",
+  "type": "mc",
+  "question": "다음 쿼리의 의미로 옳은 것은?",
+  "codeBlock": "SELECT ename, sal,\n  SUM(sal) OVER (\n    ORDER BY hiredate\n    ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW\n  ) AS cum_sal\nFROM emp;",
+  "choices": [
+    "전체 sal 합계를 모든 행에 동일하게 표시",
+    "hiredate 순으로 누적합 계산",
+    "현재 행과 이전 행의 sal 평균",
+    "현재 행과 다음 행의 sal 합"
+  ],
+  "answer": 1,
+  "explanation": "**ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW**: 첫 행부터 현재 행까지 → **누적합**\n\n결과 예:\n| ename | hiredate | sal | cum_sal |\n|---|---|---|---|\n| A | 2024-01 | 1000 | 1000 |\n| B | 2024-03 | 2000 | 3000 |\n| C | 2024-05 | 1500 | 4500 |\n\n윈도우 프레임 키워드:\n- `UNBOUNDED PRECEDING`: 첫 행\n- `UNBOUNDED FOLLOWING`: 마지막 행\n- `CURRENT ROW`: 현재 행\n- `N PRECEDING/FOLLOWING`: 앞/뒤 N개\n\nROWS vs RANGE:\n- **ROWS**: 행 단위\n- **RANGE**: 값(논리적) 단위",
+  "concepts": ["window-functions"],
+  "tags": ["누적합", "윈도우 프레임"],
+  "source": "self"
+}

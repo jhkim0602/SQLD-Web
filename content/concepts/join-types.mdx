@@ -1,0 +1,75 @@
+---
+slug: join-types
+title: JOIN의 종류
+subject: 2
+category: JOIN
+order: 3
+description: INNER, OUTER, CROSS, SELF JOIN의 동작 차이
+relatedQuestions: [q-013, q-014]
+---
+
+## 한 줄 요약
+
+| JOIN | 결과 |
+|---|---|
+| **INNER JOIN** | 양쪽 모두 매칭된 행만 |
+| **LEFT OUTER** | 왼쪽 전체 + 매칭된 오른쪽 (없으면 NULL) |
+| **RIGHT OUTER** | 오른쪽 전체 + 매칭된 왼쪽 (없으면 NULL) |
+| **FULL OUTER** | 양쪽 전체 (없는 쪽은 NULL) |
+| **CROSS JOIN** | 카티전 곱 (m × n) |
+| **SELF JOIN** | 자기 자신과 JOIN (계층 관계 등) |
+
+## INNER JOIN
+
+```sql
+SELECT *
+FROM emp e INNER JOIN dept d
+  ON e.deptno = d.deptno;
+```
+양쪽에 모두 존재하는 행만 반환. `INNER` 키워드 생략 가능.
+
+## OUTER JOIN
+
+```sql
+-- 부서 미배정 사원까지 포함
+SELECT *
+FROM emp e LEFT OUTER JOIN dept d
+  ON e.deptno = d.deptno;
+```
+왼쪽 테이블의 모든 행을 보존. 오른쪽에 매칭이 없으면 NULL.
+
+### Oracle 구문 (구식)
+```sql
+SELECT *
+FROM emp e, dept d
+WHERE e.deptno = d.deptno(+);   -- LEFT OUTER 의미
+```
+`(+)`는 NULL을 채울 **반대편**에 붙인다. 가독성 떨어져 표준 구문 권장.
+
+## CROSS JOIN (카티전 곱)
+
+```sql
+SELECT * FROM emp CROSS JOIN dept;
+-- emp 14건 × dept 4건 = 56건
+```
+JOIN 조건이 없거나 잘못된 조건이면 자동으로 카티전 곱이 나옴 → 성능 함정.
+
+## SELF JOIN
+
+```sql
+SELECT e.ename AS 사원, m.ename AS 매니저
+FROM emp e JOIN emp m ON e.mgr = m.empno;
+```
+같은 테이블을 두 번 참조하려면 alias 필수. 계층 데이터에 자주 쓰임 (대안: 계층형 질의 `CONNECT BY`).
+
+## USING vs NATURAL JOIN
+
+```sql
+-- USING: 컬럼명 명시
+SELECT * FROM emp JOIN dept USING (deptno);
+
+-- NATURAL JOIN: 동일 이름 컬럼 자동 매칭
+SELECT * FROM emp NATURAL JOIN dept;
+```
+- `USING`/`NATURAL JOIN`은 결과에서 조인 컬럼이 **한 번만** 나옴.
+- `NATURAL JOIN`은 의도치 않은 컬럼 매칭 위험이 있어 신중히.

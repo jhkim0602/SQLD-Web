@@ -1,0 +1,18 @@
+{
+  "id": "q-037",
+  "subject": 1,
+  "category": "정규화",
+  "type": "mc",
+  "question": "다음 중 정규화로 해결하는 이상현상(Anomaly)이 아닌 것은?",
+  "choices": [
+    "삽입 이상 (Insertion Anomaly)",
+    "갱신 이상 (Update Anomaly)",
+    "삭제 이상 (Deletion Anomaly)",
+    "조회 이상 (Selection Anomaly)"
+  ],
+  "answer": 3,
+  "explanation": "정규화로 해결하는 **3대 이상현상**:\n\n| 이상 | 설명 | 예 |\n|---|---|---|\n| **삽입 이상** | 원치 않는 정보까지 함께 삽입해야 함 | 학생 없이 과목만 추가 불가 |\n| **갱신 이상** | 일부만 갱신되어 데이터 불일치 | 부서명 변경 시 사원 100명 분 갱신 누락 위험 |\n| **삭제 이상** | 삭제 시 필요 정보까지 함께 사라짐 | 마지막 사원 삭제 시 부서 정보 소실 |\n\n\"조회 이상\"이라는 용어는 존재하지 않습니다.",
+  "concepts": ["normalization"],
+  "tags": ["이상현상", "Anomaly"],
+  "source": "self"
+}

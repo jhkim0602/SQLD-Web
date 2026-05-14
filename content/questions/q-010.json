@@ -1,0 +1,18 @@
+{
+  "id": "q-010",
+  "subject": 1,
+  "category": "관계",
+  "type": "ox",
+  "question": "외래키(FK)는 NULL 값을 허용할 수 없다.",
+  "answer": false,
+  "explanation": "거짓(X). **외래키(FK)는 NULL을 허용할 수 있습니다.** 이는 관계의 선택성(Optionality)이 \"선택\"일 때를 표현합니다. 예를 들어 \"사원\" 테이블에서 부서는 미정일 수 있으므로 부서ID(FK)는 NULL일 수 있습니다.\n\n반면 **주식별자(PK)는 NULL을 허용하지 않습니다** (존재성 원칙).\n\n관계의 선택성:\n- **필수(Mandatory)**: FK NOT NULL\n- **선택(Optional)**: FK NULL 허용",
+  "concepts": [
+    "relationship",
+    "identifier"
+  ],
+  "tags": [
+    "FK",
+    "NULL"
+  ],
+  "source": "self"
+}

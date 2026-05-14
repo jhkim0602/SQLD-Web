@@ -1,0 +1,24 @@
+{
+  "id": "q-020",
+  "subject": 2,
+  "category": "트랜잭션/PL-SQL",
+  "type": "mc",
+  "question": "트랜잭션의 ACID 특성 중 다음에 해당하는 것은?\n\n\"트랜잭션이 성공적으로 완료되면 그 결과는 시스템 장애가 발생해도 영구적으로 보존되어야 한다.\"",
+  "choices": [
+    "원자성 (Atomicity)",
+    "일관성 (Consistency)",
+    "고립성 (Isolation)",
+    "지속성 (Durability)"
+  ],
+  "answer": 3,
+  "explanation": "**ACID 특성:**\n\n- **A**tomicity (원자성): \"All or Nothing\" — 트랜잭션 내 모든 작업이 다 성공하거나 다 실패\n- **C**onsistency (일관성): 트랜잭션 전후 데이터 무결성 제약조건 유지\n- **I**solation (고립성/격리성): 동시 실행 트랜잭션이 서로 영향을 주지 않음\n- **D**urability (지속성/영속성): **커밋된 결과는 시스템 장애 후에도 보존**\n\n구현 방법:\n- 원자성/지속성: 트랜잭션 로그(REDO/UNDO)\n- 일관성: 제약조건, 트리거\n- 고립성: Lock, MVCC",
+  "concepts": [
+    "transaction"
+  ],
+  "tags": [
+    "ACID",
+    "트랜잭션",
+    "지속성"
+  ],
+  "source": "self"
+}

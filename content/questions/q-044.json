@@ -1,0 +1,18 @@
+{
+  "id": "q-044",
+  "subject": 2,
+  "category": "SELECT/WHERE",
+  "type": "mc",
+  "question": "다음 LIKE 연산자 사용 중 옳은 결과를 가져오는 쿼리는? (ENAME 컬럼에서 \"SMITH\", \"SMITHE\", \"ASMITH\"가 있을 때 정확히 'SMITH'로 시작하는 행)",
+  "choices": [
+    "WHERE ENAME LIKE 'SMITH'",
+    "WHERE ENAME LIKE 'SMITH_'",
+    "WHERE ENAME LIKE 'SMITH%'",
+    "WHERE ENAME LIKE '%SMITH%'"
+  ],
+  "answer": 2,
+  "explanation": "**LIKE 와일드카드**:\n- `%`: 0개 이상의 임의 문자\n- `_`: 정확히 1개의 임의 문자\n\n| 패턴 | 매치 |\n|---|---|\n| `'SMITH'` | 정확히 SMITH만 |\n| `'SMITH_'` | SMITH + 1글자 (SMITHE 매치) |\n| `'SMITH%'` | **SMITH로 시작 (SMITH, SMITHE)** |\n| `'%SMITH%'` | SMITH 포함 (ASMITH, SMITH, SMITHE) |\n\n**ESCAPE**: `%`, `_` 자체를 검색하려면 `LIKE '50\\%' ESCAPE '\\\\'`",
+  "concepts": ["select-order"],
+  "tags": ["LIKE", "와일드카드"],
+  "source": "self"
+}

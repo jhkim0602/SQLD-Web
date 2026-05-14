@@ -1,0 +1,19 @@
+{
+  "id": "q-047",
+  "subject": 2,
+  "category": "JOIN",
+  "type": "mc",
+  "question": "다음 SELF JOIN 쿼리의 의미로 옳은 것은?",
+  "codeBlock": "SELECT e.ename AS 사원, m.ename AS 매니저\nFROM emp e LEFT OUTER JOIN emp m ON e.mgr = m.empno;",
+  "choices": [
+    "모든 매니저와 그들이 관리하는 사원의 목록",
+    "모든 사원과 그들의 매니저 이름. 매니저가 없는 사원도 포함",
+    "매니저인 사원만 출력",
+    "매니저가 없는 사원만 출력"
+  ],
+  "answer": 1,
+  "explanation": "이 쿼리는 **모든 사원과 그 매니저 이름**을 LEFT OUTER JOIN으로 출력합니다.\n\n- 왼쪽 테이블 `e`: 모든 사원\n- 오른쪽 테이블 `m`: 같은 emp 테이블이지만 매니저 정보용\n- 조인 조건: 사원의 `mgr` = 매니저의 `empno`\n- **LEFT OUTER** 이므로 매니저가 없는 사원(최상위 임원)도 매니저 컬럼이 NULL로 포함됨\n\n**SELF JOIN 핵심**: 같은 테이블을 두 번 참조하므로 **alias 필수**.",
+  "concepts": ["join-types"],
+  "tags": ["SELF JOIN", "OUTER JOIN", "계층"],
+  "source": "self"
+}

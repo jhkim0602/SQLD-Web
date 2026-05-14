@@ -1,0 +1,77 @@
+---
+slug: window-functions
+title: 윈도우 함수
+subject: 2
+category: 윈도우함수
+order: 5
+description: 행 그룹에 대한 분석 함수 (RANK, LAG, NTILE 등)
+relatedQuestions: [q-017]
+---
+
+## 기본 구조
+
+```sql
+함수() OVER (
+  PARTITION BY 컬럼
+  ORDER BY 컬럼
+  ROWS BETWEEN ... AND ...
+)
+```
+
+- **PARTITION BY**: 그룹 분할
+- **ORDER BY**: 그룹 내 순서
+- **ROWS/RANGE**: 윈도우 프레임 범위
+
+## 순위 함수
+
+| 함수 | 동순위 처리 |
+|---|---|
+| **RANK** | 동순위 후 순위 **건너뜀** (1,1,3,4) |
+| **DENSE_RANK** | 동순위 후 순위 **연속** (1,1,2,3) |
+| **ROW_NUMBER** | 동순위 없음, 무조건 +1 (1,2,3,4) |
+| **NTILE(n)** | n개 그룹으로 나눔 |
+
+```sql
+SELECT ename, sal,
+  RANK()       OVER (ORDER BY sal DESC) AS r,
+  DENSE_RANK() OVER (ORDER BY sal DESC) AS dr,
+  ROW_NUMBER() OVER (ORDER BY sal DESC) AS rn
+FROM emp;
+```
+
+## 행 순서 함수
+
+| 함수 | 동작 |
+|---|---|
+| `LAG(컬럼, n, default)` | 이전 n번째 행의 값 |
+| `LEAD(컬럼, n, default)` | 다음 n번째 행의 값 |
+| `FIRST_VALUE(컬럼)` | 윈도우의 첫 행 |
+| `LAST_VALUE(컬럼)` | 윈도우의 마지막 행 |
+
+```sql
+SELECT ename, sal,
+  LAG(sal, 1, 0) OVER (ORDER BY hiredate) AS prev_sal
+FROM emp;
+```
+
+## 비율 함수
+
+| 함수 | 동작 |
+|---|---|
+| `PERCENT_RANK()` | 순위 백분율 (0 ~ 1) |
+| `CUME_DIST()` | 누적 분포 |
+| `RATIO_TO_REPORT(컬럼)` | 전체 합 대비 비율 |
+
+## 윈도우 프레임
+
+```sql
+SUM(sal) OVER (
+  ORDER BY hiredate
+  ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+)  -- 누적 합
+```
+
+- `UNBOUNDED PRECEDING`: 처음부터
+- `CURRENT ROW`: 현재 행
+- `n PRECEDING / FOLLOWING`: 앞/뒤 n행
+- `ROWS` vs `RANGE`: 행 단위 vs 값 단위

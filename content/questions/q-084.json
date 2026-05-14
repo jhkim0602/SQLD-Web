@@ -1,0 +1,18 @@
+{
+  "id": "q-084",
+  "subject": 2,
+  "category": "DDL/DML/DCL",
+  "type": "mc",
+  "question": "VIEW에 대한 설명으로 옳지 않은 것은?",
+  "choices": [
+    "물리적으로 데이터를 저장하지 않고, 정의된 쿼리만 저장한다.",
+    "복잡한 쿼리를 단순화하여 재사용성을 높인다.",
+    "보안 목적으로 일부 컬럼만 노출할 수 있다.",
+    "모든 VIEW는 항상 INSERT/UPDATE/DELETE가 가능하다."
+  ],
+  "answer": 3,
+  "explanation": "**VIEW는 항상 갱신 가능한 것이 아닙니다.**\n\n갱신 불가 케이스 (예시):\n- 집계함수(SUM, COUNT) 포함\n- GROUP BY 포함\n- DISTINCT 포함\n- 윈도우 함수 포함\n- 표현식이나 함수로 만들어진 컬럼 (예: `sal * 12`)\n- 다중 테이블 조인 (제한적 갱신만)\n\n```sql\nCREATE OR REPLACE VIEW dept_avg AS\nSELECT deptno, AVG(sal) avg_sal\nFROM emp GROUP BY deptno;\n-- 이 뷰는 갱신 불가\n```\n\n갱신 가능 뷰의 조건을 만족해야 INSERT/UPDATE/DELETE 가능합니다.\n\nVIEW 장점:\n- 복잡 쿼리 단순화\n- 보안(컬럼·행 노출 제어)\n- 독립성(스키마 변경 흡수)",
+  "concepts": ["ddl-dml-dcl"],
+  "tags": ["VIEW", "갱신 가능 뷰"],
+  "source": "self"
+}

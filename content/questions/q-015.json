@@ -1,0 +1,24 @@
+{
+  "id": "q-015",
+  "subject": 2,
+  "category": "그룹함수",
+  "type": "mc",
+  "question": "다음 중 ROLLUP에 대한 설명으로 옳은 것은?",
+  "choices": [
+    "GROUP BY 절에 명시한 컬럼들의 모든 조합으로 소계를 생성한다.",
+    "GROUP BY 절에 명시한 컬럼들의 계층적(좌→우) 소계를 생성한다.",
+    "ROLLUP은 표준 SQL이 아니다.",
+    "ROLLUP의 결과는 항상 GROUPING SETS와 동일하다."
+  ],
+  "answer": 1,
+  "explanation": "**ROLLUP(A, B, C)**은 다음 조합으로 소계를 생성합니다 (좌→우 계층적):\n- (A, B, C)\n- (A, B)\n- (A)\n- () ← 총계\n\n**CUBE(A, B, C)**는 **모든 조합**으로 소계를 생성합니다 (2^n개):\n- (A, B, C), (A, B), (A, C), (B, C), (A), (B), (C), ()\n\n**GROUPING SETS(...)**는 명시한 조합만 정확히 만듭니다.\n\n선택지 1번은 CUBE 설명입니다. ROLLUP/CUBE 모두 표준 SQL(ISO/ANSI)에 포함됩니다.",
+  "concepts": [
+    "group-by"
+  ],
+  "tags": [
+    "ROLLUP",
+    "CUBE",
+    "GROUPING SETS"
+  ],
+  "source": "self"
+}

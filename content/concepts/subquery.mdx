@@ -1,0 +1,71 @@
+---
+slug: subquery
+title: 서브쿼리 (Subquery)
+subject: 2
+category: 서브쿼리
+order: 6
+description: 위치·반환·상관 여부로 분류되는 중첩 질의
+relatedQuestions: [q-016]
+---
+
+## 위치별 분류
+
+| 위치 | 이름 | 반환 제약 |
+|---|---|---|
+| **SELECT 절** | 스칼라 서브쿼리 | **단일 행, 단일 컬럼** |
+| **FROM 절** | 인라인 뷰 | 제약 없음 |
+| **WHERE 절** | 중첩 서브쿼리 | 연산자에 따라 다름 |
+
+```sql
+-- 스칼라 서브쿼리
+SELECT ename, (SELECT dname FROM dept WHERE deptno = e.deptno) AS dname
+FROM emp e;
+
+-- 인라인 뷰
+SELECT * FROM (SELECT ename, sal FROM emp WHERE sal > 1000) WHERE sal < 2000;
+
+-- 중첩 서브쿼리
+SELECT * FROM emp WHERE deptno IN (SELECT deptno FROM dept WHERE loc = 'SEOUL');
+```
+
+## 반환 행 수에 따른 연산자
+
+| 단일 행 | 다중 행 |
+|---|---|
+| =, <>, <, >, <=, >= | IN, NOT IN, ANY, ALL, EXISTS |
+
+```sql
+-- 단일 행: 최대 급여 사원
+SELECT * FROM emp WHERE sal = (SELECT MAX(sal) FROM emp);
+
+-- 다중 행
+SELECT * FROM emp WHERE sal > ALL (SELECT sal FROM emp WHERE deptno = 10);
+-- 10번 부서 모든 사원보다 급여가 높은 사원
+
+SELECT * FROM emp WHERE sal > ANY (SELECT sal FROM emp WHERE deptno = 10);
+-- 10번 부서 누구 한 명보다라도 높은 사원
+```
+
+## 상관 vs 비상관
+
+| | 상관 (Correlated) | 비상관 (Non-correlated) |
+|---|---|---|
+| 메인 컬럼 참조 | O | X |
+| 실행 횟수 | 메인 행마다 | 한 번 |
+| 예시 연산자 | EXISTS | IN |
+
+```sql
+-- 상관: 부서별 최대 급여 사원
+SELECT * FROM emp e
+WHERE sal = (SELECT MAX(sal) FROM emp WHERE deptno = e.deptno);
+
+-- 비상관: 한 번만 실행
+SELECT * FROM emp
+WHERE deptno IN (SELECT deptno FROM dept WHERE loc = 'SEOUL');
+```
+
+## EXISTS vs IN
+
+- **IN**: 결과 집합을 만들고 비교
+- **EXISTS**: 한 건이라도 있으면 TRUE, 보통 성능 좋음
+- **NOT IN**: NULL이 한 건이라도 있으면 결과 없음 → **NOT EXISTS** 권장

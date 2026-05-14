@@ -1,0 +1,24 @@
+{
+  "id": "q-013",
+  "subject": 2,
+  "category": "JOIN",
+  "type": "mc",
+  "question": "다음 중 OUTER JOIN에 대한 설명으로 옳지 않은 것은?",
+  "choices": [
+    "LEFT OUTER JOIN은 왼쪽 테이블의 모든 행과 매칭되는 오른쪽 행을 반환한다.",
+    "RIGHT OUTER JOIN은 오른쪽 테이블의 모든 행과 매칭되는 왼쪽 행을 반환한다.",
+    "FULL OUTER JOIN은 양쪽 테이블 모두에서 매칭되는 행만 반환한다.",
+    "OUTER JOIN에서 매칭되지 않는 쪽은 NULL로 채워진다."
+  ],
+  "answer": 2,
+  "explanation": "**FULL OUTER JOIN**은 양쪽 테이블의 **모든 행**을 반환합니다. 매칭되지 않는 쪽은 NULL로 채워집니다. 매칭되는 행만 반환하는 것은 **INNER JOIN**입니다.\n\n| JOIN 종류 | 결과 |\n|---|---|\n| INNER JOIN | 양쪽 모두 매칭된 행만 |\n| LEFT OUTER | 왼쪽 전체 + 매칭된 오른쪽 (없으면 NULL) |\n| RIGHT OUTER | 오른쪽 전체 + 매칭된 왼쪽 (없으면 NULL) |\n| FULL OUTER | 양쪽 전체 (없는 쪽은 NULL) |\n| CROSS JOIN | 카티전 곱 (m × n) |",
+  "concepts": [
+    "join-types"
+  ],
+  "tags": [
+    "JOIN",
+    "OUTER JOIN",
+    "FULL OUTER"
+  ],
+  "source": "self"
+}

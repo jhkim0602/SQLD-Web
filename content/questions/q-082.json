@@ -1,0 +1,18 @@
+{
+  "id": "q-082",
+  "subject": 2,
+  "category": "DDL/DML/DCL",
+  "type": "mc",
+  "question": "제약조건(Constraints) 중 NULL을 허용하면서도 중복은 허용하지 않는 것은?",
+  "choices": [
+    "PRIMARY KEY",
+    "UNIQUE",
+    "NOT NULL",
+    "CHECK"
+  ],
+  "answer": 1,
+  "explanation": "**제약조건 비교**:\n\n| 제약 | NULL 허용 | 중복 허용 |\n|---|---|---|\n| **PRIMARY KEY** | X | X |\n| **UNIQUE** | **O (대부분 DBMS에서 여러 NULL 허용)** | X |\n| **NOT NULL** | X | O |\n| **CHECK** | 조건 의존 | 조건 의존 |\n| **FOREIGN KEY** | O (선택 참여) | O |\n| **DEFAULT** | — | — |\n\nUNIQUE는 \"값이 있을 때 중복 불가\"를 의미하며, NULL은 \"값이 없는 상태\"이므로 여러 NULL이 공존 가능합니다(표준).",
+  "concepts": ["ddl-dml-dcl"],
+  "tags": ["제약조건", "UNIQUE", "NULL"],
+  "source": "self"
+}

@@ -1,0 +1,18 @@
+{
+  "id": "q-062",
+  "subject": 2,
+  "category": "그룹함수",
+  "type": "mc",
+  "question": "다음 중 HAVING 절 사용으로 옳은 것은?",
+  "choices": [
+    "SELECT deptno FROM emp WHERE COUNT(*) >= 3 GROUP BY deptno",
+    "SELECT deptno FROM emp GROUP BY deptno HAVING COUNT(*) >= 3",
+    "SELECT deptno FROM emp HAVING COUNT(*) >= 3",
+    "SELECT deptno FROM emp WHERE deptno GROUP BY HAVING COUNT(*) >= 3"
+  ],
+  "answer": 1,
+  "explanation": "**HAVING**은 그룹화된 결과에 대한 필터로, **반드시 GROUP BY 뒤에** 위치합니다.\n\n```sql\nSELECT deptno, COUNT(*)\nFROM emp\nGROUP BY deptno\nHAVING COUNT(*) >= 3;\n```\n\n구분:\n- **WHERE**: 그룹화 **이전** 행 필터 (집계함수 불가)\n- **HAVING**: 그룹화 **이후** 그룹 필터 (집계함수 가능)\n\nGROUP BY 없이 HAVING만 쓰는 경우도 가능하지만, 그땐 전체 행을 하나의 그룹으로 취급합니다.",
+  "concepts": ["group-by"],
+  "tags": ["HAVING", "GROUP BY"],
+  "source": "self"
+}

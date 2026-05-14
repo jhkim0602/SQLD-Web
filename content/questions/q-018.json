@@ -1,0 +1,24 @@
+{
+  "id": "q-018",
+  "subject": 2,
+  "category": "집합연산",
+  "type": "mc",
+  "question": "다음 집합 연산자 중 중복을 제거하지 않는 것은?",
+  "choices": [
+    "UNION",
+    "INTERSECT",
+    "MINUS (EXCEPT)",
+    "UNION ALL"
+  ],
+  "answer": 3,
+  "explanation": "**집합 연산자와 중복:**\n- **UNION**: 합집합, **중복 제거** (정렬 부하 발생)\n- **UNION ALL**: 합집합, **중복 유지** (성능 더 좋음)\n- **INTERSECT**: 교집합, 중복 제거\n- **MINUS / EXCEPT**: 차집합, 중복 제거\n\n실무 팁: 중복이 없거나 중복을 유지해야 한다면 **UNION ALL**을 사용하는 것이 성능상 유리합니다.\n\n주의: 모든 집합 연산자는 **컬럼 수와 데이터 타입이 일치**해야 합니다.",
+  "concepts": [
+    "set-operators"
+  ],
+  "tags": [
+    "집합 연산",
+    "UNION",
+    "UNION ALL"
+  ],
+  "source": "self"
+}

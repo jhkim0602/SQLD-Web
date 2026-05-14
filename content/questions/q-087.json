@@ -1,0 +1,18 @@
+{
+  "id": "q-087",
+  "subject": 2,
+  "category": "트랜잭션/PL-SQL",
+  "type": "mc",
+  "question": "DDL 명령어 실행 시 트랜잭션 처리에 대한 설명으로 옳은 것은?",
+  "choices": [
+    "DDL은 ROLLBACK으로 취소할 수 있다.",
+    "DDL 직전의 DML은 ROLLBACK 가능하다.",
+    "DDL은 실행과 동시에 자동 COMMIT되며, 직전 DML 변경사항도 함께 커밋된다.",
+    "DDL은 트랜잭션과 무관하다."
+  ],
+  "answer": 2,
+  "explanation": "**DDL의 자동 커밋(Auto Commit)**:\n\n- DDL은 실행과 동시에 자동 COMMIT됩니다.\n- **직전의 DML 변경사항까지 함께 커밋**되므로 ROLLBACK 불가.\n\n```sql\nUPDATE emp SET sal = 0;  -- 미커밋 DML\nCREATE TABLE backup AS SELECT * FROM emp;  -- DDL → 자동 COMMIT\nROLLBACK;  -- UPDATE가 이미 커밋됐으므로 효과 없음\n```\n\n이런 동작 때문에 DDL은 신중하게 실행해야 하며, DML 작업이 끝난 후 명시적 COMMIT 또는 ROLLBACK 후에 DDL을 실행하는 습관이 필요합니다.\n\n참고: **PostgreSQL은 DDL도 트랜잭션 안에서 ROLLBACK 가능**합니다 (구현 차이).",
+  "concepts": ["ddl-dml-dcl", "transaction"],
+  "tags": ["DDL", "자동 커밋", "Auto Commit"],
+  "source": "self"
+}

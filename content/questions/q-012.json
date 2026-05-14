@@ -1,0 +1,26 @@
+{
+  "id": "q-012",
+  "subject": 2,
+  "category": "SELECT/WHERE",
+  "type": "mc",
+  "question": "다음 쿼리의 결과로 옳은 것은?\n\nemp 테이블에 sal(급여)이 (1000, 2000, NULL, 3000)인 4건의 데이터가 있다.",
+  "codeBlock": "SELECT COUNT(*), COUNT(sal), SUM(sal), AVG(sal) FROM emp;",
+  "choices": [
+    "4, 4, 6000, 1500",
+    "4, 3, 6000, 2000",
+    "3, 3, 6000, 2000",
+    "4, 4, 6000, 2000"
+  ],
+  "answer": 1,
+  "explanation": "**NULL과 집계함수의 핵심 규칙:**\n- `COUNT(*)`: NULL 포함 **전체 행 수** → 4\n- `COUNT(컬럼)`: 해당 컬럼의 **NULL이 아닌 행 수** → 3 (NULL 1건 제외)\n- `SUM(컬럼)`: NULL 무시하고 합산 → 1000 + 2000 + 3000 = **6000**\n- `AVG(컬럼)`: NULL 무시 (분자, 분모 모두) → 6000 / **3** = **2000**\n\n**자주 틀리는 함정**: AVG의 분모는 전체 행수(4)가 아닌 NULL이 아닌 행수(3)입니다.",
+  "concepts": [
+    "null-handling",
+    "group-by"
+  ],
+  "tags": [
+    "NULL",
+    "집계함수",
+    "AVG"
+  ],
+  "source": "self"
+}

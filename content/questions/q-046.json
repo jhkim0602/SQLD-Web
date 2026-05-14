@@ -1,0 +1,19 @@
+{
+  "id": "q-046",
+  "subject": 2,
+  "category": "JOIN",
+  "type": "mc",
+  "question": "다음 두 쿼리의 차이점을 옳게 설명한 것은?",
+  "codeBlock": "-- 쿼리 A\nSELECT * FROM emp e JOIN dept d ON e.deptno = d.deptno;\n\n-- 쿼리 B\nSELECT * FROM emp e JOIN dept d USING (deptno);",
+  "choices": [
+    "결과 행 수는 같으나, B는 deptno가 한 번만 출력된다.",
+    "A는 INNER, B는 OUTER JOIN이다.",
+    "B는 deptno 컬럼이 양쪽에서 출력된다.",
+    "두 쿼리는 완전히 동일하다."
+  ],
+  "answer": 0,
+  "explanation": "`ON`과 `USING`의 차이:\n\n| | ON | USING |\n|---|---|---|\n| 조인 컬럼 명시 | 명시적 (`e.deptno = d.deptno`) | 컬럼명만 (`USING (deptno)`) |\n| **결과 컬럼** | **양쪽 deptno 모두 출력** | **하나의 deptno만 출력** |\n| 컬럼명 다른 경우 | 가능 | 불가능 (이름이 같아야 함) |\n| 한정자 | `e.deptno`, `d.deptno` 가능 | `deptno`만 사용 (한정자 불가) |\n\n결과 **행 수는 동일**합니다.",
+  "concepts": ["join-types"],
+  "tags": ["JOIN", "ON", "USING"],
+  "source": "self"
+}

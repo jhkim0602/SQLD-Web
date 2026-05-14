@@ -1,0 +1,18 @@
+{
+  "id": "q-041",
+  "subject": 2,
+  "category": "SELECT/WHERE",
+  "type": "mc",
+  "question": "다음 중 SQL 연산자 우선순위가 올바른 것은?",
+  "choices": [
+    "산술 → 비교 → 연결 → IS NULL/BETWEEN → NOT → AND → OR",
+    "산술 → 연결 → 비교 → IS NULL/BETWEEN → NOT → AND → OR",
+    "연결 → 산술 → 비교 → AND → OR → NOT",
+    "비교 → 산술 → 연결 → AND → OR → NOT"
+  ],
+  "answer": 1,
+  "explanation": "**SQL 연산자 우선순위** (높음 → 낮음):\n\n1. **산술 연산자** (`*`, `/`, `+`, `-`)\n2. **연결 연산자** (`||`)\n3. **비교 연산자** (`=`, `<>`, `<`, `>`, `<=`, `>=`)\n4. **IS NULL, LIKE, IN, BETWEEN**\n5. **NOT**\n6. **AND**\n7. **OR**\n\n실무 팁: 우선순위에 의존하기보다 **괄호()로 명시**하는 것이 안전합니다.",
+  "concepts": ["select-order"],
+  "tags": ["SQL", "연산자", "우선순위"],
+  "source": "self"
+}

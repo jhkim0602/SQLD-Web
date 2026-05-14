@@ -1,0 +1,26 @@
+{
+  "id": "q-014",
+  "subject": 2,
+  "category": "JOIN",
+  "type": "mc",
+  "question": "다음 쿼리에서 출력되는 행의 수는?\n\nemp(empno, deptno) = (1,10), (2,10), (3,20), (4,NULL)\ndept(deptno, dname) = (10, 'A'), (20, 'B'), (30, 'C')",
+  "codeBlock": "SELECT *\nFROM emp e LEFT OUTER JOIN dept d\n  ON e.deptno = d.deptno;",
+  "choices": [
+    "3",
+    "4",
+    "5",
+    "6"
+  ],
+  "answer": 1,
+  "explanation": "**LEFT OUTER JOIN**은 왼쪽(emp) 모든 행을 반환합니다. emp는 4건이므로 결과도 4행입니다.\n\n| empno | e.deptno | d.deptno | dname |\n|---|---|---|---|\n| 1 | 10 | 10 | A |\n| 2 | 10 | 10 | A |\n| 3 | 20 | 20 | B |\n| 4 | NULL | NULL | NULL |\n\n**핵심 포인트**: emp의 4번 사원은 deptno가 NULL이므로 매칭이 안 되지만, LEFT OUTER이기 때문에 결과에 포함되며 dept 쪽 컬럼은 NULL로 채워집니다.\n\n주의: dept의 deptno=30(C)은 emp에 매칭이 없고 LEFT OUTER이므로 포함되지 않습니다.",
+  "concepts": [
+    "join-types",
+    "null-handling"
+  ],
+  "tags": [
+    "JOIN",
+    "LEFT OUTER",
+    "NULL"
+  ],
+  "source": "self"
+}

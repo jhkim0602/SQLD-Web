@@ -1,0 +1,18 @@
+{
+  "id": "q-083",
+  "subject": 2,
+  "category": "DDL/DML/DCL",
+  "type": "mc",
+  "question": "MERGE 문에 대한 설명으로 옳지 않은 것은?",
+  "choices": [
+    "INSERT, UPDATE, DELETE를 하나의 문장으로 처리할 수 있다.",
+    "WHEN MATCHED THEN과 WHEN NOT MATCHED THEN 절을 사용한다.",
+    "WHEN MATCHED THEN UPDATE는 매칭된 행을 갱신한다.",
+    "MERGE는 항상 양쪽 절(MATCHED/NOT MATCHED)을 모두 작성해야 한다."
+  ],
+  "answer": 3,
+  "explanation": "**MERGE** 문은 두 절 중 **하나만 작성해도 됩니다** (Oracle 10g 이상).\n\n```sql\nMERGE INTO target t\nUSING source s ON (t.id = s.id)\nWHEN MATCHED THEN\n  UPDATE SET t.name = s.name\n  DELETE WHERE t.flag = 'X'  -- 선택적\nWHEN NOT MATCHED THEN\n  INSERT (id, name) VALUES (s.id, s.name);\n```\n\n특징:\n- 한 번의 스캔으로 UPSERT(Update + Insert)\n- WHEN MATCHED 안에 DELETE 가능\n- 대용량 ETL/배치에서 자주 사용",
+  "concepts": ["ddl-dml-dcl"],
+  "tags": ["MERGE", "UPSERT"],
+  "source": "self"
+}

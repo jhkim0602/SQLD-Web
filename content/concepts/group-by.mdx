@@ -1,0 +1,76 @@
+---
+slug: group-by
+title: GROUP BY, HAVING, ROLLUP, CUBE
+subject: 2
+category: 그룹함수
+order: 4
+description: 그룹핑과 집계 확장 함수
+relatedQuestions: [q-012, q-015]
+---
+
+## GROUP BY와 HAVING
+
+```sql
+SELECT deptno, COUNT(*), AVG(sal)
+FROM emp
+WHERE sal > 1000        -- 행 필터 (그룹핑 전)
+GROUP BY deptno
+HAVING COUNT(*) >= 3    -- 그룹 필터 (그룹핑 후)
+ORDER BY deptno;
+```
+
+| 구분 | 시점 | 집계함수 |
+|---|---|---|
+| WHERE | 그룹핑 **전** | 사용 불가 |
+| HAVING | 그룹핑 **후** | 사용 가능 |
+
+## ROLLUP
+
+> **계층적(좌→우) 소계** + 총계
+
+```sql
+SELECT deptno, job, SUM(sal)
+FROM emp
+GROUP BY ROLLUP(deptno, job);
+```
+
+`ROLLUP(A, B, C)` 결과 조합:
+1. `(A, B, C)` — 가장 세분
+2. `(A, B)`
+3. `(A)`
+4. `()` — 총계
+
+## CUBE
+
+> **모든 가능한 조합** (2^n개)
+
+```sql
+SELECT deptno, job, SUM(sal)
+FROM emp
+GROUP BY CUBE(deptno, job);
+```
+
+`CUBE(A, B)` 결과 조합:
+1. `(A, B)`
+2. `(A)`
+3. `(B)`
+4. `()`
+
+## GROUPING SETS
+
+> 원하는 조합만 명시
+
+```sql
+SELECT deptno, job, SUM(sal)
+FROM emp
+GROUP BY GROUPING SETS((deptno, job), (deptno), (job));
+```
+
+## GROUPING 함수
+
+ROLLUP/CUBE/GROUPING SETS 결과에서 소계/총계 행을 식별.
+
+| `GROUPING(컬럼)` | 의미 |
+|---|---|
+| `0` | 일반 행 (해당 컬럼이 그룹핑에 참여) |
+| `1` | 소계/총계 행 (해당 컬럼이 그룹핑에 미참여, 즉 NULL) |

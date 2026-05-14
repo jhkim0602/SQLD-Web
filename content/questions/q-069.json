@@ -1,0 +1,12 @@
+{
+  "id": "q-069",
+  "subject": 2,
+  "category": "서브쿼리",
+  "type": "ox",
+  "question": "스칼라 서브쿼리가 결과로 2건 이상을 반환하면 에러가 발생한다.",
+  "answer": true,
+  "explanation": "참(O). **스칼라 서브쿼리**는 단일 행, 단일 컬럼만 반환해야 하며, **2건 이상 반환 시 런타임 에러**가 발생합니다.\n\nOracle 에러: `ORA-01427: single-row subquery returns more than one row`\n\n```sql\nSELECT ename,\n       (SELECT loc FROM dept WHERE deptno = e.deptno) AS 위치\nFROM emp e;\n-- dept.deptno가 UNIQUE라면 안전\n-- 중복이 있다면 에러\n```\n\n해결: **단일 결과를 보장하는 조건** 추가 또는 MAX/MIN으로 단일 값으로 압축.",
+  "concepts": ["subquery"],
+  "tags": ["스칼라 서브쿼리", "ORA-01427"],
+  "source": "self"
+}

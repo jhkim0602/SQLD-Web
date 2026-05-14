@@ -1,0 +1,19 @@
+{
+  "id": "q-051",
+  "subject": 2,
+  "category": "JOIN",
+  "type": "mc",
+  "question": "다음 OUTER JOIN의 결과 행 수는?\n\nA 테이블: (1, 2, 3)\nB 테이블: (2, 3, 4)\n조인 조건: A.x = B.x",
+  "codeBlock": "SELECT * FROM A FULL OUTER JOIN B ON A.x = B.x;",
+  "choices": [
+    "2",
+    "3",
+    "4",
+    "5"
+  ],
+  "answer": 2,
+  "explanation": "**FULL OUTER JOIN**: 양쪽 모든 행 + 매칭, 없는 쪽은 NULL\n\n| A.x | B.x |\n|---|---|\n| 1 | NULL |  ← A에만 있음\n| 2 | 2 |     ← 양쪽 매치\n| 3 | 3 |     ← 양쪽 매치\n| NULL | 4 |  ← B에만 있음\n\n결과: **4행**\n\nFULL OUTER 공식: `len(A) + len(B) - 매칭` = 3 + 3 - 2 = 4",
+  "concepts": ["join-types"],
+  "tags": ["FULL OUTER JOIN"],
+  "source": "self"
+}

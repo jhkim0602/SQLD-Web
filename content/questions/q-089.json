@@ -1,0 +1,18 @@
+{
+  "id": "q-089",
+  "subject": 2,
+  "category": "트랜잭션/PL-SQL",
+  "type": "mc",
+  "question": "PL/SQL 블록의 기본 구조로 올바른 순서는?",
+  "choices": [
+    "DECLARE → BEGIN → EXCEPTION → END",
+    "BEGIN → DECLARE → END → EXCEPTION",
+    "DECLARE → EXCEPTION → BEGIN → END",
+    "BEGIN → EXCEPTION → END → DECLARE"
+  ],
+  "answer": 0,
+  "explanation": "**PL/SQL 블록 구조**:\n\n```\nDECLARE          -- (선택) 변수, 커서, 예외 선언\n   v_sal NUMBER;\nBEGIN            -- (필수) 실행부\n   SELECT sal INTO v_sal FROM emp WHERE empno = 100;\n   DBMS_OUTPUT.PUT_LINE(v_sal);\nEXCEPTION        -- (선택) 예외 처리부\n   WHEN NO_DATA_FOUND THEN\n      DBMS_OUTPUT.PUT_LINE('사원 없음');\n   WHEN OTHERS THEN\n      DBMS_OUTPUT.PUT_LINE(SQLERRM);\nEND;             -- (필수) 블록 종료\n/\n```\n\n블록 종류:\n- **익명 블록**: 일회성 실행\n- **저장 프로시저**: `CREATE PROCEDURE`로 저장\n- **함수**: `CREATE FUNCTION`으로 저장, 값 반환\n- **트리거**: 이벤트 기반 자동 실행\n- **패키지**: 관련 프로시저·함수 묶음",
+  "concepts": [],
+  "tags": ["PL/SQL", "블록 구조"],
+  "source": "self"
+}

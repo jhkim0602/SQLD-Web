@@ -1,0 +1,12 @@
+{
+  "id": "q-045",
+  "subject": 2,
+  "category": "SELECT/WHERE",
+  "type": "ox",
+  "question": "WHERE sal IN (1000, 2000, NULL) 조건에서 sal이 NULL인 행도 결과에 포함된다.",
+  "answer": false,
+  "explanation": "거짓(X). `IN` 연산자는 내부적으로 `=` 비교를 수행하는데, **NULL과의 `=` 비교는 항상 UNKNOWN**이므로 NULL 값은 매칭되지 않습니다.\n\n```sql\nWHERE sal IN (1000, 2000, NULL)\n-- 동치: sal = 1000 OR sal = 2000 OR sal = NULL\n-- sal이 NULL인 행: NULL = NULL → UNKNOWN → 제외\n```\n\n**더 주의해야 할 함정**: `NOT IN (..., NULL)`은 결과가 **항상 비어있게** 됩니다. NULL과 NOT 결합은 항상 UNKNOWN.\n\n→ NULL 처리는 **IS NULL** 사용.",
+  "concepts": ["null-handling"],
+  "tags": ["IN", "NULL", "함정"],
+  "source": "self"
+}

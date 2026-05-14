@@ -1,0 +1,18 @@
+{
+  "id": "q-055",
+  "subject": 2,
+  "category": "함수",
+  "type": "mc",
+  "question": "다음 문자 함수 결과 중 옳지 않은 것은?",
+  "choices": [
+    "SUBSTR('SQLDEVELOPER', 4, 3) → 'DEV'",
+    "LENGTH('SQL') → 3",
+    "REPLACE('AAABBBCCC', 'B', '_') → 'AAA___CCC'",
+    "LPAD('123', 5, '0') → '000123'"
+  ],
+  "answer": 3,
+  "explanation": "`LPAD(string, length, pad_char)`는 **결과 전체 길이가 `length`**가 되도록 왼쪽을 패딩합니다.\n\n`LPAD('123', 5, '0')` → `'00123'` (전체 길이 5)\n\n선택지 4번은 **'000123' (길이 6)**으로 잘못되었습니다.\n\n주요 문자 함수:\n- `SUBSTR(str, start, len)`: 부분 문자열 (Oracle 1-based)\n- `LENGTH(str)`: 길이\n- `INSTR(str, sub)`: 위치 검색\n- `REPLACE(str, old, new)`: 치환\n- `LPAD/RPAD(str, len, pad)`: 좌/우 패딩\n- `TRIM(str)`: 양쪽 공백 제거\n- `UPPER/LOWER(str)`: 대소문자",
+  "concepts": ["select-order"],
+  "tags": ["문자 함수", "LPAD", "SUBSTR"],
+  "source": "self"
+}

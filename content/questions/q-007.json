@@ -1,0 +1,23 @@
+{
+  "id": "q-007",
+  "subject": 1,
+  "category": "모델링 종합",
+  "type": "mc",
+  "question": "데이터 모델링의 3가지 관점 중 하나가 아닌 것은?",
+  "choices": [
+    "데이터 관점 (What)",
+    "프로세스 관점 (How)",
+    "데이터와 프로세스의 상관 관점 (Interaction)",
+    "사용자 관점 (Who)"
+  ],
+  "answer": 3,
+  "explanation": "데이터 모델링의 3가지 관점은 다음과 같습니다.\n\n1. **데이터 관점 (What)**: 어떤 데이터가 있는지\n2. **프로세스 관점 (How)**: 데이터가 어떻게 처리되는지\n3. **상관 관점 (Interaction)**: 데이터와 프로세스가 어떤 영향을 미치는지\n\n사용자 관점(Who)은 포함되지 않습니다.",
+  "concepts": [
+    "modeling-basics"
+  ],
+  "tags": [
+    "모델링",
+    "관점"
+  ],
+  "source": "self"
+}

@@ -1,0 +1,18 @@
+{
+  "id": "q-043",
+  "subject": 2,
+  "category": "SELECT/WHERE",
+  "type": "mc",
+  "question": "WHERE 절의 사용에 대한 설명으로 옳지 않은 것은?",
+  "choices": [
+    "집계함수(SUM, COUNT 등)는 WHERE 절에서 사용할 수 없다.",
+    "SELECT 절에서 부여한 alias는 WHERE 절에서 사용할 수 없다.",
+    "WHERE 절의 조건은 그룹핑 이전에 적용된다.",
+    "WHERE 절의 조건은 ORDER BY 절 이후에 적용된다."
+  ],
+  "answer": 3,
+  "explanation": "SQL 실행 순서: **FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY**\n\nWHERE는 ORDER BY보다 **먼저** 실행됩니다.\n\n선택지 4번이 틀렸습니다 (\"이후\"가 아닌 \"이전\").\n\n실행 순서로 인한 제약:\n- **WHERE**: 그룹핑 전 → 집계함수 사용 불가\n- **WHERE**: SELECT보다 먼저 → alias 사용 불가\n- **HAVING**: 그룹핑 후 → 집계함수 사용 가능\n- **ORDER BY**: 가장 마지막 → alias 사용 가능",
+  "concepts": ["select-order"],
+  "tags": ["WHERE", "실행 순서"],
+  "source": "self"
+}

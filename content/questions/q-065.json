@@ -1,0 +1,19 @@
+{
+  "id": "q-065",
+  "subject": 2,
+  "category": "서브쿼리",
+  "type": "mc",
+  "question": "다음 쿼리의 의미로 옳은 것은?",
+  "codeBlock": "SELECT *\nFROM emp e\nWHERE EXISTS (\n  SELECT 1 FROM dept d\n  WHERE d.deptno = e.deptno\n    AND d.loc = 'SEOUL'\n);",
+  "choices": [
+    "서울에 위치한 부서의 부서번호 목록",
+    "서울에 위치한 부서에 소속된 사원 목록",
+    "서울에 위치한 부서가 아닌 사원 목록",
+    "사원이 없는 서울 부서 목록"
+  ],
+  "answer": 1,
+  "explanation": "**상관 서브쿼리(Correlated Subquery)** + **EXISTS**: 메인 쿼리의 각 행마다 서브쿼리를 평가해, **한 건이라도 매칭되면** TRUE.\n\n해석: \"각 사원에 대해, 그 사원의 deptno와 일치하면서 loc='SEOUL'인 부서가 존재하는가?\"\n→ **서울에 위치한 부서 소속 사원**\n\nEXISTS 특징:\n- 서브쿼리 SELECT 절은 의미 없음 (`1`, `*` 등 무엇이든 동일)\n- IN보다 성능이 좋은 경우가 많음 (첫 매치 시 중단)\n- **NOT EXISTS**는 NULL 안전 (NOT IN과 다름)",
+  "concepts": ["subquery"],
+  "tags": ["EXISTS", "상관 서브쿼리"],
+  "source": "self"
+}

@@ -1,0 +1,70 @@
+---
+slug: transaction
+title: 트랜잭션과 ACID
+subject: 2
+category: 트랜잭션/PL-SQL
+order: 9
+description: 트랜잭션의 4가지 특성과 동시성 제어 개념
+relatedQuestions: [q-020]
+---
+
+## 트랜잭션이란?
+
+**하나의 논리적 작업 단위**. 더 이상 쪼갤 수 없으며, 전부 성공하거나 전부 실패해야 한다.
+
+> 예: 계좌 이체 = "A 출금" + "B 입금" → 둘 중 하나만 성공하면 안 됨
+
+## ACID 특성
+
+| 글자 | 영문 | 한글 | 의미 |
+|---|---|---|---|
+| **A** | Atomicity | 원자성 | All or Nothing |
+| **C** | Consistency | 일관성 | 무결성 제약 유지 |
+| **I** | Isolation | 고립성 | 동시 트랜잭션 분리 |
+| **D** | Durability | 지속성 | 커밋 결과 영구 보존 |
+
+### 구현 방법
+
+| 특성 | 구현 |
+|---|---|
+| 원자성·지속성 | 트랜잭션 로그 (REDO/UNDO) |
+| 일관성 | 제약조건, 트리거 |
+| 고립성 | 락(Lock), MVCC |
+
+## TCL 명령어
+
+```sql
+BEGIN;            -- 트랜잭션 시작 (DBMS에 따라 자동)
+
+UPDATE account SET balance = balance - 100 WHERE id = 1;
+SAVEPOINT s1;      -- 저장점
+
+UPDATE account SET balance = balance + 100 WHERE id = 2;
+
+-- 문제 발생 시
+ROLLBACK TO s1;    -- 저장점까지 되돌리기
+-- 또는
+ROLLBACK;          -- 트랜잭션 전체 되돌리기
+
+COMMIT;            -- 변경사항 확정
+```
+
+## 고립성 수준 (Isolation Level)
+
+| Level | Dirty Read | Non-repeatable Read | Phantom Read |
+|---|---|---|---|
+| READ UNCOMMITTED | 발생 | 발생 | 발생 |
+| READ COMMITTED (기본 다수) | 차단 | 발생 | 발생 |
+| REPEATABLE READ | 차단 | 차단 | 발생 |
+| SERIALIZABLE | 차단 | 차단 | 차단 |
+
+높을수록 안전하지만 성능 ↓.
+
+## 락(Lock) 종류
+
+| 종류 | 동작 |
+|---|---|
+| 공유락 (Shared, S) | 읽기 허용, 쓰기 차단 |
+| 배타락 (Exclusive, X) | 읽기·쓰기 모두 차단 |
+
+**데드락**: 두 트랜잭션이 서로의 락을 기다리는 상태. DBMS가 감지 후 한쪽을 강제 종료.

@@ -1,0 +1,19 @@
+{
+  "id": "q-049",
+  "subject": 2,
+  "category": "JOIN",
+  "type": "mc",
+  "question": "다음 Oracle 구문을 ANSI 표준 OUTER JOIN으로 옳게 변환한 것은?",
+  "codeBlock": "-- Oracle 구문\nSELECT *\nFROM emp e, dept d\nWHERE e.deptno = d.deptno(+);",
+  "choices": [
+    "SELECT * FROM emp e LEFT OUTER JOIN dept d ON e.deptno = d.deptno",
+    "SELECT * FROM emp e RIGHT OUTER JOIN dept d ON e.deptno = d.deptno",
+    "SELECT * FROM emp e FULL OUTER JOIN dept d ON e.deptno = d.deptno",
+    "SELECT * FROM emp e INNER JOIN dept d ON e.deptno = d.deptno"
+  ],
+  "answer": 0,
+  "explanation": "Oracle의 `(+)` 표기는 **NULL을 채울 반대편**에 붙입니다. 따라서 `d.deptno(+)`는 `d` 쪽이 NULL이 될 수 있다는 의미 → **emp가 기준(왼쪽)**.\n\n```\nemp + dept(NULL 가능) → emp LEFT OUTER JOIN dept\n```\n\n변환 규칙:\n- `WHERE A.x = B.y(+)` ⇒ `A LEFT OUTER JOIN B ON A.x = B.y`\n- `WHERE A.x(+) = B.y` ⇒ `A RIGHT OUTER JOIN B ON A.x = B.y`\n- 양쪽에 `(+)`는 불가 (FULL OUTER 안 됨, ANSI만 가능)",
+  "concepts": ["join-types"],
+  "tags": ["Oracle", "(+)", "LEFT OUTER", "ANSI"],
+  "source": "self"
+}

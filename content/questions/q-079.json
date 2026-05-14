@@ -1,0 +1,19 @@
+{
+  "id": "q-079",
+  "subject": 2,
+  "category": "계층/순환",
+  "type": "mc",
+  "question": "다음 계층형 질의에서 LEVEL의 의미는?",
+  "codeBlock": "SELECT LEVEL, empno, ename, mgr\nFROM emp\nSTART WITH mgr IS NULL\nCONNECT BY PRIOR empno = mgr;",
+  "choices": [
+    "행 번호",
+    "계층의 깊이(루트가 1, 자식으로 갈수록 증가)",
+    "정렬 순서",
+    "부서의 레벨"
+  ],
+  "answer": 1,
+  "explanation": "**LEVEL** 의사컬럼은 계층형 질의에서 **현재 행의 깊이**를 나타냅니다.\n\n- `START WITH mgr IS NULL`: 최상위(매니저 없음)부터 시작 → **LEVEL = 1**\n- `CONNECT BY PRIOR empno = mgr`: 부모의 empno = 자식의 mgr (Top-Down)\n- 자식 한 단계 내려갈 때마다 LEVEL += 1\n\n계층형 질의 키워드:\n| 키워드 | 의미 |\n|---|---|\n| `START WITH` | 루트 조건 |\n| `CONNECT BY` | 부모-자식 관계 |\n| `PRIOR` | 부모 행 참조 |\n| `LEVEL` | 깊이 (1부터) |\n| `CONNECT_BY_ROOT` | 루트 컬럼 |\n| `SYS_CONNECT_BY_PATH` | 루트부터 경로 문자열 |",
+  "concepts": [],
+  "tags": ["계층형", "CONNECT BY", "LEVEL"],
+  "source": "self"
+}

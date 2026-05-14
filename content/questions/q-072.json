@@ -1,0 +1,12 @@
+{
+  "id": "q-072",
+  "subject": 2,
+  "category": "집합연산",
+  "type": "ox",
+  "question": "Oracle의 MINUS와 SQL Server의 EXCEPT는 동일한 역할을 한다.",
+  "answer": true,
+  "explanation": "참(O). 두 연산자는 **차집합(A에서 B 제외)**을 의미하며 결과는 동일합니다.\n\n| DBMS | 키워드 |\n|---|---|\n| Oracle | `MINUS` |\n| SQL Server, PostgreSQL, 표준 SQL | `EXCEPT` |\n| MySQL | 지원 안 함 (LEFT JOIN + IS NULL로 대체) |\n\n```sql\n-- 동일한 의미\nSELECT a FROM A MINUS SELECT b FROM B;     -- Oracle\nSELECT a FROM A EXCEPT SELECT b FROM B;    -- 표준/SQL Server\n```\n\n둘 다 **중복은 자동 제거**됩니다.",
+  "concepts": ["set-operators"],
+  "tags": ["MINUS", "EXCEPT", "차집합"],
+  "source": "self"
+}

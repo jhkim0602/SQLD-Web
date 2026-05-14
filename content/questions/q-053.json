@@ -1,0 +1,12 @@
+{
+  "id": "q-053",
+  "subject": 2,
+  "category": "JOIN",
+  "type": "ox",
+  "question": "INNER JOIN과 JOIN은 동일하다.",
+  "answer": true,
+  "explanation": "참(O). **JOIN 키워드 단독은 기본적으로 INNER JOIN을 의미**합니다.\n\n```sql\n-- 두 쿼리는 동일\nSELECT * FROM A JOIN B ON A.x = B.x;\nSELECT * FROM A INNER JOIN B ON A.x = B.x;\n```\n\nJOIN 종류 명시 권장 (가독성):\n- INNER JOIN — 매칭 행만\n- LEFT OUTER JOIN — 왼쪽 전체\n- RIGHT OUTER JOIN — 오른쪽 전체\n- FULL OUTER JOIN — 양쪽 전체\n- CROSS JOIN — 카티전 곱",
+  "concepts": ["join-types"],
+  "tags": ["INNER JOIN"],
+  "source": "self"
+}

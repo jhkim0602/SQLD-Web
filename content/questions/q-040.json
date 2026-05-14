@@ -1,0 +1,18 @@
+{
+  "id": "q-040",
+  "subject": 1,
+  "category": "트랜잭션",
+  "type": "mc",
+  "question": "트랜잭션의 ACID 특성 중 \"동시에 실행되는 다른 트랜잭션의 영향을 받지 않는 성질\"은?",
+  "choices": [
+    "원자성 (Atomicity)",
+    "일관성 (Consistency)",
+    "고립성 (Isolation)",
+    "지속성 (Durability)"
+  ],
+  "answer": 2,
+  "explanation": "**고립성(Isolation)**은 동시 실행 트랜잭션 간의 간섭을 차단하는 특성입니다.\n\n구현: **Lock**(공유락/배타락), **MVCC**(Multi-Version Concurrency Control)\n\n낮은 고립성 수준에서 발생하는 현상:\n- **Dirty Read**: 미확정 데이터 읽음\n- **Non-repeatable Read**: 같은 행이 다른 값으로 보임\n- **Phantom Read**: 같은 조건 조회에서 다른 행 수\n\n고립성 수준: READ UNCOMMITTED < READ COMMITTED < REPEATABLE READ < SERIALIZABLE",
+  "concepts": ["transaction"],
+  "tags": ["트랜잭션", "ACID", "고립성", "Isolation"],
+  "source": "self"
+}

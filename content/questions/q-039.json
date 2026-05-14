@@ -1,0 +1,18 @@
+{
+  "id": "q-039",
+  "subject": 1,
+  "category": "모델링 종합",
+  "type": "mc",
+  "question": "데이터베이스 스키마 3계층 중 \"각 사용자나 응용프로그램이 접근하는 데이터베이스의 부분\"에 해당하는 것은?",
+  "choices": [
+    "외부 스키마 (External Schema)",
+    "개념 스키마 (Conceptual Schema)",
+    "내부 스키마 (Internal Schema)",
+    "물리 스키마 (Physical Schema)"
+  ],
+  "answer": 0,
+  "explanation": "**ANSI/SPARC 3계층 스키마**:\n\n| 계층 | 내용 |\n|---|---|\n| **외부 스키마** | **사용자 관점, 뷰(View) 단위** |\n| **개념 스키마** | 전체 통합 데이터베이스 구조 (DBA 관점) |\n| **내부 스키마** | 물리적 저장 구조, 인덱스, 파일 구조 |\n\n3계층의 목적: **데이터 독립성** 보장\n- 논리적 독립성: 개념 스키마 변경이 외부 스키마에 영향 X\n- 물리적 독립성: 내부 스키마 변경이 개념 스키마에 영향 X",
+  "concepts": ["modeling-basics"],
+  "tags": ["스키마", "3계층", "ANSI"],
+  "source": "self"
+}

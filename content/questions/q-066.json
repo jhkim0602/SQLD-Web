@@ -1,0 +1,19 @@
+{
+  "id": "q-066",
+  "subject": 2,
+  "category": "서브쿼리",
+  "type": "mc",
+  "question": "다음 쿼리에서 위험한 동작이 발생하는 이유는?",
+  "codeBlock": "-- dept 테이블에 deptno = NULL인 행이 있다고 가정\nSELECT * FROM emp\nWHERE deptno NOT IN (SELECT deptno FROM dept);",
+  "choices": [
+    "성능이 매우 느리다.",
+    "서브쿼리에 NULL이 포함되면 결과가 항상 비어있게 된다.",
+    "서브쿼리에서 deptno가 중복되면 에러가 발생한다.",
+    "권한이 없으면 실패한다."
+  ],
+  "answer": 1,
+  "explanation": "**NOT IN + NULL = 항상 빈 결과** (가장 유명한 SQL 함정)\n\n`NOT IN (10, 20, NULL)`은 다음과 동치:\n```\ndeptno <> 10 AND deptno <> 20 AND deptno <> NULL\n```\n- `deptno <> NULL` → 항상 **UNKNOWN**\n- AND 결합 → 전체 결과 UNKNOWN\n- → 어떤 행도 통과하지 못함\n\n**해결**: **NOT EXISTS** 사용 (NULL 안전)\n```sql\nWHERE NOT EXISTS (\n  SELECT 1 FROM dept d WHERE d.deptno = e.deptno\n)\n```\n\n또는 서브쿼리에서 `WHERE deptno IS NOT NULL` 추가.",
+  "concepts": ["subquery", "null-handling"],
+  "tags": ["NOT IN", "NULL", "NOT EXISTS", "함정"],
+  "source": "self"
+}

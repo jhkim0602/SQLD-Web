@@ -1,0 +1,65 @@
+---
+slug: set-operators
+title: 집합 연산자
+subject: 2
+category: 집합연산
+order: 7
+description: UNION, INTERSECT, MINUS의 차이와 사용 시 주의사항
+relatedQuestions: [q-018]
+---
+
+## 종류
+
+| 연산자 | 의미 | 중복 |
+|---|---|---|
+| **UNION** | 합집합 | **제거** |
+| **UNION ALL** | 합집합 | **유지** |
+| **INTERSECT** | 교집합 | 제거 |
+| **MINUS / EXCEPT** | 차집합 | 제거 |
+
+> MINUS는 Oracle, EXCEPT는 표준/SQL Server에서 사용.
+
+## 공통 규칙
+
+1. **컬럼 수가 같아야** 한다.
+2. **각 컬럼의 데이터 타입이 호환**되어야 한다.
+3. 결과 컬럼명은 **첫 번째 쿼리의 컬럼명**을 따른다.
+4. `ORDER BY`는 **마지막 쿼리에만** 한 번.
+
+```sql
+SELECT empno, ename FROM emp WHERE deptno = 10
+UNION
+SELECT empno, ename FROM emp WHERE sal > 2000
+ORDER BY empno;
+```
+
+## UNION vs UNION ALL
+
+```
+A = {1, 2, 3}
+B = {3, 4, 5}
+
+UNION     → {1, 2, 3, 4, 5}        (정렬 필요, 성능 ↓)
+UNION ALL → {1, 2, 3, 3, 4, 5}     (정렬 없음, 성능 ↑)
+```
+
+**실무 팁**: 중복이 없거나 중복을 유지해야 한다면 무조건 `UNION ALL` 사용.
+
+## INTERSECT, MINUS
+
+```
+A = {1, 2, 3, 3}
+B = {2, 3, 4}
+
+INTERSECT → {2, 3}     (양쪽 모두 등장한 것, 중복 제거)
+MINUS     → {1}        (A에만 있는 것, 중복 제거)
+```
+
+## 우선순위
+
+```sql
+A UNION B INTERSECT C
+-- = A UNION (B INTERSECT C) ?
+-- 아니다. 일반적으로 왼쪽부터 평가하므로 (A UNION B) INTERSECT C
+-- 명확한 의도가 있으면 괄호로 묶을 것
+```

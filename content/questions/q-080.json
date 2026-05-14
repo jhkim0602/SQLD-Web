@@ -1,0 +1,18 @@
+{
+  "id": "q-080",
+  "subject": 2,
+  "category": "계층/순환",
+  "type": "mc",
+  "question": "PRIOR 키워드의 위치 차이로 인한 결과는?",
+  "choices": [
+    "PRIOR empno = mgr → Top-Down (부모에서 자식으로)",
+    "PRIOR empno = mgr → Bottom-Up (자식에서 부모로)",
+    "PRIOR의 위치는 결과에 영향이 없다.",
+    "PRIOR를 양쪽에 모두 써야 한다."
+  ],
+  "answer": 0,
+  "explanation": "**PRIOR**는 \"부모 행의 컬럼\"을 의미합니다. 위치에 따라 트리 탐색 방향이 결정됩니다.\n\n| CONNECT BY | 방향 | 의미 |\n|---|---|---|\n| `PRIOR empno = mgr` | **Top-Down** | 부모.empno = 자식.mgr |\n| `empno = PRIOR mgr` | **Bottom-Up** | 자식.empno = 부모.mgr (역방향) |\n\n핵심 규칙: **PRIOR가 붙은 쪽이 부모, 안 붙은 쪽이 자식**.\n\nTop-Down 예: 루트(CEO)에서 시작해 부하 직원으로 내려감.\nBottom-Up 예: 특정 직원에서 시작해 상위 매니저로 올라감.",
+  "concepts": [],
+  "tags": ["계층형", "PRIOR", "CONNECT BY"],
+  "source": "self"
+}

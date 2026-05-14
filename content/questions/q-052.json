@@ -1,0 +1,18 @@
+{
+  "id": "q-052",
+  "subject": 2,
+  "category": "JOIN",
+  "type": "mc",
+  "question": "다음 옵티마이저의 JOIN 처리 방식 중 \"선행 테이블의 각 행마다 후행 테이블을 조회하여 조인\"하는 방식은?",
+  "choices": [
+    "Nested Loop Join (NL Join)",
+    "Hash Join",
+    "Sort Merge Join",
+    "Cartesian Join"
+  ],
+  "answer": 0,
+  "explanation": "**3가지 주요 JOIN 처리 방식**:\n\n| 방식 | 동작 | 적합 상황 |\n|---|---|---|\n| **Nested Loop (NL)** | 외부 행 each × 내부 행 each | 선행 결과가 적고, 내부에 인덱스 있을 때 |\n| **Hash Join** | 작은 테이블로 Hash 빌드 → 큰 테이블 Probe | 등호(=) 조인, 대용량 |\n| **Sort Merge** | 양쪽 정렬 후 병합 | 이미 정렬, 큰 데이터, 등호/범위 조인 |\n\n실무 옵티마이저는 통계 기반으로 자동 선택.",
+  "concepts": ["join-types"],
+  "tags": ["NL Join", "Hash Join", "옵티마이저"],
+  "source": "self"
+}

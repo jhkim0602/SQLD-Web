@@ -1,0 +1,75 @@
+---
+slug: ddl-dml-dcl
+title: DDL · DML · DCL · TCL
+subject: 2
+category: DDL/DML/DCL
+order: 8
+description: SQL 명령어 4분류와 DELETE vs TRUNCATE
+relatedQuestions: [q-019]
+---
+
+## 4가지 분류
+
+| 분류 | 풀네임 | 명령어 |
+|---|---|---|
+| **DDL** | Data Definition | CREATE, ALTER, DROP, **TRUNCATE**, RENAME |
+| **DML** | Data Manipulation | SELECT, INSERT, UPDATE, **DELETE**, MERGE |
+| **DCL** | Data Control | GRANT, REVOKE |
+| **TCL** | Transaction Control | COMMIT, ROLLBACK, SAVEPOINT |
+
+## DDL의 자동 커밋
+
+> DDL은 실행과 동시에 자동 COMMIT된다.
+
+DDL 직전의 DML 변경사항도 함께 커밋된다는 점을 주의.
+
+## DELETE vs TRUNCATE vs DROP
+
+| | DELETE | TRUNCATE | DROP |
+|---|---|---|---|
+| **분류** | DML | DDL | DDL |
+| **대상** | 행 | 행 (전체) | 객체 자체 |
+| **WHERE** | O | X | X |
+| **ROLLBACK** | 가능 | 불가 | 불가 |
+| **속도** | 느림 | 빠름 | 빠름 |
+| **저장공간** | 유지 | 해제 (HWM 리셋) | 해제 |
+| **트리거** | 발동 | 미발동 | 미발동 |
+
+## INSERT
+
+```sql
+-- 단일 행
+INSERT INTO emp (empno, ename) VALUES (100, '홍길동');
+
+-- 다른 테이블에서
+INSERT INTO emp_archive
+SELECT * FROM emp WHERE hiredate < DATE '2020-01-01';
+```
+
+## UPDATE
+
+```sql
+UPDATE emp
+SET sal = sal * 1.1, comm = NULL
+WHERE deptno = 10;
+```
+
+## MERGE
+
+```sql
+MERGE INTO target t
+USING source s ON (t.id = s.id)
+WHEN MATCHED THEN UPDATE SET t.name = s.name
+WHEN NOT MATCHED THEN INSERT (id, name) VALUES (s.id, s.name);
+```
+
+## 제약조건 (Constraints)
+
+| 제약 | 의미 |
+|---|---|
+| PRIMARY KEY | 유일 + NOT NULL |
+| UNIQUE | 유일 (NULL 허용) |
+| NOT NULL | NULL 불허 |
+| CHECK | 값 범위 제한 |
+| FOREIGN KEY | 참조 무결성 |
+| DEFAULT | 기본값 |

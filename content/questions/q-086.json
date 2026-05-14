@@ -1,0 +1,19 @@
+{
+  "id": "q-086",
+  "subject": 2,
+  "category": "트랜잭션/PL-SQL",
+  "type": "mc",
+  "question": "다음 트랜잭션 시퀀스 후 emp 테이블의 상태로 옳은 것은?",
+  "codeBlock": "BEGIN;\nINSERT INTO emp VALUES (1, 'A');\nSAVEPOINT s1;\nINSERT INTO emp VALUES (2, 'B');\nROLLBACK TO s1;\nINSERT INTO emp VALUES (3, 'C');\nCOMMIT;",
+  "choices": [
+    "행 없음",
+    "(1, 'A')만 존재",
+    "(1, 'A'), (3, 'C')",
+    "(1, 'A'), (2, 'B'), (3, 'C') 모두 존재"
+  ],
+  "answer": 2,
+  "explanation": "단계별 추적:\n\n1. `INSERT (1, 'A')` → 임시: [A]\n2. `SAVEPOINT s1` → 체크포인트 저장 (현재 [A])\n3. `INSERT (2, 'B')` → 임시: [A, B]\n4. `ROLLBACK TO s1` → s1 시점으로 복귀: [A]\n5. `INSERT (3, 'C')` → 임시: [A, C]\n6. `COMMIT` → 영구 저장: **[(1, 'A'), (3, 'C')]**\n\nTCL 명령:\n- `COMMIT`: 변경 확정\n- `ROLLBACK`: 전체 트랜잭션 취소\n- `ROLLBACK TO savepoint`: 해당 저장점까지만 되돌리기\n- `SAVEPOINT name`: 저장점 표시\n\n주의: SAVEPOINT 이후의 변경만 취소되며, 그 이전 변경(A)은 유지됩니다.",
+  "concepts": ["transaction"],
+  "tags": ["TCL", "SAVEPOINT", "ROLLBACK"],
+  "source": "self"
+}

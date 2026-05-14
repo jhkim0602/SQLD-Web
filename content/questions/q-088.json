@@ -1,0 +1,18 @@
+{
+  "id": "q-088",
+  "subject": 2,
+  "category": "트랜잭션/PL-SQL",
+  "type": "mc",
+  "question": "고립성 수준 중 \"같은 쿼리를 두 번 실행했을 때 같은 결과가 보장되지만, 새로운 행이 끼어들 수 있는\" 수준은?",
+  "choices": [
+    "READ UNCOMMITTED",
+    "READ COMMITTED",
+    "REPEATABLE READ",
+    "SERIALIZABLE"
+  ],
+  "answer": 2,
+  "explanation": "**REPEATABLE READ**: 같은 행을 다시 읽어도 같은 값 (Non-repeatable Read 차단), 하지만 **새 행이 추가될 수 있음** (Phantom Read 발생 가능).\n\n| Level | Dirty Read | Non-repeatable Read | Phantom Read |\n|---|---|---|---|\n| READ UNCOMMITTED | 발생 | 발생 | 발생 |\n| READ COMMITTED (Oracle 기본) | 차단 | 발생 | 발생 |\n| **REPEATABLE READ (MySQL 기본)** | 차단 | **차단** | **발생** |\n| SERIALIZABLE | 차단 | 차단 | 차단 |\n\n각 현상 정의:\n- **Dirty Read**: 미커밋 데이터를 읽음\n- **Non-repeatable Read**: 같은 행을 다시 읽었는데 값이 다름\n- **Phantom Read**: 같은 조건 쿼리에서 새 행이 등장",
+  "concepts": ["transaction"],
+  "tags": ["고립성", "REPEATABLE READ", "Phantom"],
+  "source": "self"
+}
