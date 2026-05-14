@@ -28,38 +28,51 @@ export default function ConceptsPage() {
         const sortedCategories = Object.keys(categories).sort();
         if (sortedCategories.length === 0) return null;
         return (
-          <section key={subject} className="mb-10">
-            <h2 className="mb-4 text-xl font-bold text-zinc-900">
-              {subject}과목 · {SUBJECT_LABELS[subject]}
-            </h2>
-            <div className="space-y-5">
-              {sortedCategories.map((category) => (
-                <div key={category}>
-                  <h3 className="mb-2 text-sm font-semibold uppercase tracking-wider text-zinc-500">
-                    {category}
-                  </h3>
-                  <ul className="grid gap-2 md:grid-cols-2">
-                    {categories[category].map((c) => (
-                      <li key={c.slug}>
-                        <Link
-                          href={`/concepts/${c.slug}`}
-                          className="block rounded-md border border-zinc-200 bg-white p-3 transition hover:border-zinc-400 hover:bg-zinc-50"
-                        >
-                          <div className="font-medium text-zinc-900">
-                            {c.title}
-                          </div>
-                          {c.description && (
-                            <p className="mt-0.5 line-clamp-2 text-xs text-zinc-600">
-                              {c.description}
-                            </p>
-                          )}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
+          <section key={subject} className="mb-12">
+            <div className="mb-3 flex items-baseline gap-3 border-b border-zinc-200 pb-2">
+              <span className="font-mono text-xs text-zinc-400">
+                {subject.toString().padStart(2, "0")}
+              </span>
+              <h2 className="text-base font-semibold text-zinc-900">
+                {subject}과목 · {SUBJECT_LABELS[subject]}
+              </h2>
             </div>
+
+            <ol className="divide-y divide-zinc-100">
+              {sortedCategories.flatMap((category) =>
+                categories[category].map((c, idxInCat, arr) => ({
+                  c,
+                  category,
+                  isFirstInCategory: idxInCat === 0,
+                  catCount: arr.length,
+                }))
+              ).map(({ c, category, isFirstInCategory }, idx) => (
+                <li key={c.slug} className="group">
+                  <Link
+                    href={`/concepts/${c.slug}`}
+                    className="flex items-baseline gap-4 py-2.5 transition hover:bg-zinc-50"
+                  >
+                    <span className="w-10 shrink-0 text-right font-mono text-xs text-zinc-400">
+                      {String(idx + 1).padStart(2, "0")}
+                    </span>
+                    <span className="w-24 shrink-0 text-xs text-zinc-500">
+                      {isFirstInCategory ? category : ""}
+                    </span>
+                    <span className="flex-1 truncate text-[15px] text-zinc-900 group-hover:underline">
+                      {c.title}
+                    </span>
+                    {c.description && (
+                      <span className="hidden truncate text-xs text-zinc-500 md:block md:max-w-[40%]">
+                        {c.description}
+                      </span>
+                    )}
+                    <span className="text-xs text-zinc-300 group-hover:text-zinc-500">
+                      →
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ol>
           </section>
         );
       })}

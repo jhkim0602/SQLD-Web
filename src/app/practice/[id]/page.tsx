@@ -41,6 +41,8 @@ export default async function QuestionPage({
       question={question}
       prevId={prevId}
       nextId={nextId}
+      index={idx + 1}
+      total={all.length}
     />
   );
 }

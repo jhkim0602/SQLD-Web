@@ -1,6 +1,5 @@
 import fs from "node:fs";
 import path from "node:path";
-import matter from "gray-matter";
 import type {
   Concept,
   ConceptMeta,
@@ -9,28 +8,32 @@ import type {
   Subject,
 } from "./types";
 
-const CONTENT_ROOT = path.join(process.cwd(), "content");
-const QUESTIONS_DIR = path.join(CONTENT_ROOT, "questions");
-const CONCEPTS_DIR = path.join(CONTENT_ROOT, "concepts");
+const DATA_FILE = path.join(process.cwd(), "public/content-data.json");
 
-function readDir(dir: string): string[] {
-  if (!fs.existsSync(dir)) return [];
-  return fs.readdirSync(dir);
+type ContentData = {
+  builtAt: string;
+  questions: Question[];
+  concepts: Concept[];
+};
+
+let _data: ContentData | null = null;
+
+function loadData(): ContentData {
+  if (_data) return _data;
+  if (!fs.existsSync(DATA_FILE)) {
+    console.error(
+      "[content] public/content-data.json not found. Run `npm run content` first."
+    );
+    _data = { builtAt: "", questions: [], concepts: [] };
+    return _data;
+  }
+  const raw = fs.readFileSync(DATA_FILE, "utf-8");
+  _data = JSON.parse(raw) as ContentData;
+  return _data;
 }
 
-let _questionCache: Question[] | null = null;
-let _conceptCache: Concept[] | null = null;
-
 export function getAllQuestions(): Question[] {
-  if (_questionCache) return _questionCache;
-  const files = readDir(QUESTIONS_DIR).filter((f) => f.endsWith(".json"));
-  const questions = files.map((f) => {
-    const raw = fs.readFileSync(path.join(QUESTIONS_DIR, f), "utf-8");
-    return JSON.parse(raw) as Question;
-  });
-  questions.sort((a, b) => a.id.localeCompare(b.id));
-  _questionCache = questions;
-  return questions;
+  return loadData().questions;
 }
 
 export function getQuestion(id: string): Question | null {
@@ -49,27 +52,7 @@ export function getQuestionMeta(): QuestionMeta[] {
 }
 
 export function getAllConcepts(): Concept[] {
-  if (_conceptCache) return _conceptCache;
-  const files = readDir(CONCEPTS_DIR).filter((f) => f.endsWith(".mdx"));
-  const concepts = files.map((f) => {
-    const raw = fs.readFileSync(path.join(CONCEPTS_DIR, f), "utf-8");
-    const { data, content } = matter(raw);
-    return {
-      slug: data.slug as string,
-      title: data.title as string,
-      subject: data.subject as Subject,
-      category: data.category as string,
-      order: (data.order as number) ?? 999,
-      description: data.description as string | undefined,
-      relatedQuestions: (data.relatedQuestions as string[]) ?? [],
-      body: content,
-    } satisfies Concept;
-  });
-  concepts.sort(
-    (a, b) => a.subject - b.subject || a.order - b.order
-  );
-  _conceptCache = concepts;
-  return concepts;
+  return loadData().concepts;
 }
 
 export function getConcept(slug: string): Concept | null {
@@ -78,8 +61,9 @@ export function getConcept(slug: string): Concept | null {
 
 export function getConceptMeta(): ConceptMeta[] {
   return getAllConcepts().map((c) => {
-    const { body: _body, ...meta } = c;
+    const { body: _body, bodyHtml: _bodyHtml, ...meta } = c;
     void _body;
+    void _bodyHtml;
     return meta;
   });
 }

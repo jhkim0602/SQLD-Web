@@ -1,0 +1,172 @@
+---
+slug: hierarchical
+title: 계층형 질의 (Hierarchical Query)
+subject: 2
+category: 계층/순환
+order: 1
+description: 트리 구조 데이터(조직도, 카테고리, 사원-매니저)를 다루는 SQL.
+relatedQuestions: [q-079, q-080, q-081]
+---
+
+## 계층형 데이터란?
+
+부모-자식 관계로 트리 구조를 이루는 데이터. 예시:
+
+- 사원 - 매니저 (자기참조)
+- 카테고리 - 하위 카테고리
+- 게시판 - 답글
+- 조직 - 부서 - 팀
+
+```
+        KING (CEO)
+       /    \
+   JONES    BLAKE
+   /  \      /  \
+SCOTT FORD ALLEN WARD
+```
+
+## CONNECT BY 구문 (Oracle)
+
+```sql
+SELECT LEVEL, empno, ename, mgr
+FROM emp
+START WITH mgr IS NULL          -- 시작점 (루트)
+CONNECT BY PRIOR empno = mgr    -- 부모-자식 관계
+ORDER SIBLINGS BY ename;        -- 같은 레벨에서 정렬
+```
+
+### 핵심 키워드
+
+| 키워드 | 의미 |
+|---|---|
+| `START WITH` | 루트(시작) 조건 |
+| `CONNECT BY` | 계층 관계 정의 |
+| `PRIOR` | 부모 행의 컬럼 참조 |
+| `LEVEL` | 계층 깊이 (루트 = 1) |
+| `CONNECT_BY_ROOT` | 루트 행의 컬럼 값 |
+| `CONNECT_BY_ISLEAF` | 리프 노드 여부 (1 또는 0) |
+| `SYS_CONNECT_BY_PATH` | 루트부터 현재까지 경로 |
+| `ORDER SIBLINGS BY` | 형제 노드 정렬 |
+
+## 방향: Top-Down vs Bottom-Up
+
+> ⚠️ **시험 빈출**: PRIOR의 위치가 방향을 결정
+
+### Top-Down (위에서 아래로)
+
+\"부모.empno = 자식.mgr\" — 매니저에서 부하로
+
+```sql
+SELECT LEVEL, ename
+FROM emp
+START WITH mgr IS NULL
+CONNECT BY PRIOR empno = mgr;   -- ← Top-Down
+```
+
+### Bottom-Up (아래에서 위로)
+
+\"자식.empno = 부모.mgr\" — 부하에서 매니저로 (역방향)
+
+```sql
+SELECT LEVEL, ename
+FROM emp
+START WITH ename = 'SCOTT'
+CONNECT BY empno = PRIOR mgr;   -- ← Bottom-Up
+```
+
+**규칙**: PRIOR가 붙은 쪽이 **부모**, 안 붙은 쪽이 **자식**.
+
+## LEVEL과 들여쓰기
+
+```sql
+SELECT LPAD(' ', (LEVEL-1)*2) || ename AS hierarchy
+FROM emp
+START WITH mgr IS NULL
+CONNECT BY PRIOR empno = mgr;
+```
+
+결과:
+```
+KING
+  JONES
+    SCOTT
+    FORD
+  BLAKE
+    ALLEN
+    WARD
+```
+
+## 경로 생성: SYS_CONNECT_BY_PATH
+
+```sql
+SELECT ename,
+       SYS_CONNECT_BY_PATH(ename, '/') AS path
+FROM emp
+START WITH mgr IS NULL
+CONNECT BY PRIOR empno = mgr;
+```
+
+결과:
+```
+KING       /KING
+JONES      /KING/JONES
+SCOTT      /KING/JONES/SCOTT
+...
+```
+
+## 리프 노드만
+
+```sql
+SELECT ename
+FROM emp
+START WITH mgr IS NULL
+CONNECT BY PRIOR empno = mgr
+HAVING CONNECT_BY_ISLEAF = 1;
+-- 또는 WHERE 절에서 사용 가능
+```
+
+## 순환(Loop) 방지
+
+데이터 오류로 순환이 발생하면 무한 루프 위험.
+
+```sql
+SELECT ename, LEVEL
+FROM emp
+START WITH mgr IS NULL
+CONNECT BY NOCYCLE PRIOR empno = mgr;   -- ← NOCYCLE 추가
+
+-- 순환 감지
+SELECT ename, CONNECT_BY_ISCYCLE
+FROM emp
+START WITH mgr IS NULL
+CONNECT BY NOCYCLE PRIOR empno = mgr;
+```
+
+## 재귀 CTE (표준 SQL, Oracle 11gR2+)
+
+ANSI SQL 표준의 대체 방법:
+
+```sql
+WITH RECURSIVE emp_tree (empno, ename, mgr, lvl) AS (
+   SELECT empno, ename, mgr, 1
+   FROM emp
+   WHERE mgr IS NULL                   -- 앵커 (시작점)
+   UNION ALL
+   SELECT e.empno, e.ename, e.mgr, t.lvl + 1
+   FROM emp e
+   JOIN emp_tree t ON e.mgr = t.empno  -- 재귀
+)
+SELECT * FROM emp_tree;
+```
+
+다른 DBMS(PostgreSQL, SQL Server, MySQL 8+)는 재귀 CTE를 사용한다.
+
+## 시험 빈출 포인트
+
+> 📌 **자주 출제**
+> - `LEVEL`은 루트가 1
+> - PRIOR 위치로 Top-Down(부모.x=자식.y) vs Bottom-Up
+> - `START WITH`는 루트 조건
+> - `SYS_CONNECT_BY_PATH(col, sep)`는 경로 문자열
+> - `CONNECT_BY_ISLEAF = 1`은 리프 노드
+> - `ORDER SIBLINGS BY`로 형제 정렬

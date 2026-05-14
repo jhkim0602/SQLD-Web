@@ -1,0 +1,112 @@
+---
+slug: index
+title: 인덱스 (Index)
+subject: 2
+category: SELECT/WHERE
+order: 10
+description: 검색 성능을 높이기 위한 별도 자료구조. B-Tree, Bitmap, 함수 기반 인덱스의 차이와 사용 시점.
+relatedQuestions: []
+---
+
+## 인덱스란?
+
+**인덱스(Index)**는 테이블의 검색 성능을 높이기 위해 만드는 별도의 정렬된 자료구조이다. 책의 \"색인\"과 같은 역할을 한다.
+
+> 💡 **핵심**: 인덱스는 검색을 빠르게 하지만, **INSERT/UPDATE/DELETE 비용은 증가**한다. 트레이드오프.
+
+## 인덱스의 종류
+
+### 1. B-Tree 인덱스 (가장 일반적)
+
+```
+        [50]
+       /    \
+   [20]      [80]
+   /  \      /  \
+ [10] [30] [70] [90]
+```
+
+- **균형 트리(Balanced Tree)** — 모든 리프 노드의 깊이가 같음
+- 정렬되어 있어 **범위 검색** 빠름 (`BETWEEN`, `<`, `>`)
+- 등치(`=`) 검색도 빠름
+- **NULL은 인덱스에 저장하지 않음** (Oracle 기본)
+
+### 2. Bitmap 인덱스
+
+- 카디널리티가 **낮은** 컬럼에 적합 (예: 성별, 상태값 — 값 종류가 적음)
+- 비트맵으로 표현해 AND/OR/NOT 매우 빠름
+- DW(데이터 웨어하우스)에서 자주 사용
+- DML 시 락이 광범위해 OLTP에는 부적합
+
+### 3. 함수 기반 인덱스 (Function-Based Index)
+
+```sql
+-- UPPER(name)으로 자주 검색하는 경우
+CREATE INDEX idx_emp_upper_name ON emp (UPPER(name));
+
+-- 사용
+SELECT * FROM emp WHERE UPPER(name) = 'KIM';  -- 인덱스 활용
+```
+
+컬럼에 함수를 씌워 검색하면 일반 인덱스는 사용되지 않으므로, 함수 자체를 인덱스로 만든다.
+
+### 4. 결합 인덱스 (Composite Index)
+
+```sql
+CREATE INDEX idx_emp_dept_sal ON emp (deptno, sal);
+```
+
+- 컬럼 순서가 매우 중요 — **선행 컬럼**부터 적용
+- `WHERE deptno = 10 AND sal > 1000` → 인덱스 활용
+- `WHERE sal > 1000` (선행 컬럼 없음) → **인덱스 활용 어려움**
+
+## 인덱스를 타지 않는(Index Suppression) 함정
+
+> ⚠️ **시험 빈출**: 다음 경우 인덱스가 무력화된다.
+
+```sql
+-- 인덱스 컬럼에 연산/함수 → 인덱스 무효 (함수 기반 인덱스 제외)
+WHERE SUBSTR(name, 1, 1) = 'K'        -- ✗
+WHERE sal * 12 > 100000                -- ✗
+WHERE name = 'KIM' || ''               -- ✗
+
+-- 묵시적 형변환
+WHERE empno = '7369'    -- empno가 NUMBER일 때 형변환 발생 → ✗
+
+-- NULL 비교 (Oracle B-Tree)
+WHERE name IS NULL                      -- ✗ (값이 인덱스에 없음)
+
+-- 부정 비교
+WHERE deptno <> 10                      -- ✗
+WHERE deptno NOT IN (10, 20)            -- ✗ (대부분)
+
+-- LIKE 선두 와일드카드
+WHERE name LIKE '%KIM%'                 -- ✗
+WHERE name LIKE 'KIM%'                  -- ✓ (선두 고정)
+```
+
+## 인덱스를 추가하면 안 되는 경우
+
+- **자주 갱신**되는 컬럼 (인덱스 유지 비용)
+- 카디널리티가 너무 **낮은** 컬럼 (B-Tree에 부적합)
+- 데이터가 너무 **적은** 테이블 (Full Scan이 더 빠름)
+- 검색에 **거의 사용되지 않는** 컬럼
+
+## 통계 정보와 옵티마이저
+
+옵티마이저는 통계 정보를 기반으로 인덱스 사용 여부를 결정한다.
+
+```sql
+-- 통계 갱신 (Oracle)
+EXEC DBMS_STATS.GATHER_TABLE_STATS('SCOTT', 'EMP');
+```
+
+통계가 오래되면 옵티마이저가 잘못된 판단을 내릴 수 있다 — **주기적 갱신** 필요.
+
+## 자주 나오는 함정
+
+> 📌 **시험 포인트**
+> - PRIMARY KEY 제약 = 자동으로 **UNIQUE INDEX** 생성됨
+> - UNIQUE 제약 = 자동으로 UNIQUE INDEX 생성됨
+> - 인덱스가 있다고 무조건 사용되는 것은 **아님** (옵티마이저 판단)
+> - Full Table Scan이 무조건 나쁜 것은 아님 (전체 데이터 필요 시 인덱스보다 빠를 수 있음)

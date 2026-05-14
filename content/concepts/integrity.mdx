@@ -1,0 +1,135 @@
+---
+slug: integrity
+title: 데이터 무결성 (Data Integrity)
+subject: 1
+category: 모델링 종합
+order: 10
+description: 데이터의 정확성·일관성·신뢰성을 보장하기 위한 제약조건들.
+relatedQuestions: []
+---
+
+## 데이터 무결성이란?
+
+데이터베이스에 저장된 데이터의 **정확성, 일관성, 신뢰성**을 보장하는 성질. 무결성이 깨지면 잘못된 비즈니스 판단으로 이어진다.
+
+## 무결성의 5가지 종류
+
+### 1. 개체 무결성 (Entity Integrity)
+
+> 모든 테이블은 PK를 가져야 하고, PK는 NULL이 될 수 없다.
+
+```sql
+CREATE TABLE emp (
+  empno NUMBER PRIMARY KEY,  -- NULL 불가, 중복 불가
+  ename VARCHAR2(50)
+);
+```
+
+### 2. 참조 무결성 (Referential Integrity)
+
+> FK의 값은 참조하는 PK에 존재하는 값이거나 NULL이어야 한다.
+
+```sql
+CREATE TABLE emp (
+  empno NUMBER PRIMARY KEY,
+  deptno NUMBER,
+  CONSTRAINT fk_dept FOREIGN KEY (deptno) REFERENCES dept (deptno)
+);
+```
+
+부모 행 삭제 시 자식의 처리 방식:
+
+| 옵션 | 동작 |
+|---|---|
+| **NO ACTION / RESTRICT** (기본) | 자식이 있으면 부모 삭제 차단 |
+| **CASCADE** | 자식도 같이 삭제 |
+| **SET NULL** | 자식의 FK를 NULL로 |
+| **SET DEFAULT** | 자식의 FK를 기본값으로 |
+
+```sql
+CONSTRAINT fk_dept
+  FOREIGN KEY (deptno) REFERENCES dept (deptno)
+  ON DELETE CASCADE
+```
+
+### 3. 도메인 무결성 (Domain Integrity)
+
+> 컬럼 값은 정의된 도메인(데이터 타입·범위·형식) 내에 있어야 한다.
+
+```sql
+CREATE TABLE emp (
+  empno NUMBER,
+  gender CHAR(1) CHECK (gender IN ('M', 'F')),
+  sal NUMBER CHECK (sal >= 0),
+  hiredate DATE DEFAULT SYSDATE
+);
+```
+
+### 4. 사용자 정의 무결성 (User-defined Integrity)
+
+비즈니스 규칙에 따른 무결성. 트리거나 어플리케이션 레벨에서 구현.
+
+```sql
+-- 예: 매니저의 급여는 부하보다 항상 높아야 한다
+CREATE TRIGGER trg_check_mgr_sal
+BEFORE INSERT OR UPDATE ON emp
+FOR EACH ROW
+BEGIN
+  -- ... 검증 로직
+END;
+```
+
+### 5. NULL 무결성
+
+> 특정 컬럼은 NULL을 가질 수 없다 (NOT NULL 제약).
+
+```sql
+ename VARCHAR2(50) NOT NULL
+```
+
+## 제약조건 (Constraints) 정리
+
+| 제약 | 무결성 종류 | 설명 |
+|---|---|---|
+| **PRIMARY KEY** | 개체 | 유일성 + NOT NULL |
+| **FOREIGN KEY** | 참조 | 다른 테이블 PK 참조 |
+| **UNIQUE** | 개체 | 유일성 (NULL 허용) |
+| **NOT NULL** | NULL | NULL 불허 |
+| **CHECK** | 도메인 | 조건 만족 |
+| **DEFAULT** | 도메인 | 기본값 |
+
+```sql
+CREATE TABLE emp (
+  empno NUMBER PRIMARY KEY,
+  ename VARCHAR2(50) NOT NULL,
+  email VARCHAR2(100) UNIQUE,
+  gender CHAR(1) CHECK (gender IN ('M', 'F')),
+  hiredate DATE DEFAULT SYSDATE,
+  deptno NUMBER REFERENCES dept(deptno)
+);
+```
+
+## 제약조건 관리
+
+```sql
+-- 추가
+ALTER TABLE emp ADD CONSTRAINT chk_sal CHECK (sal > 0);
+
+-- 비활성화 (검증 일시 중단)
+ALTER TABLE emp DISABLE CONSTRAINT chk_sal;
+
+-- 활성화
+ALTER TABLE emp ENABLE CONSTRAINT chk_sal;
+
+-- 삭제
+ALTER TABLE emp DROP CONSTRAINT chk_sal;
+```
+
+## 시험 빈출 포인트
+
+> 📌 **자주 출제**
+> - 5가지 무결성: 개체 / 참조 / 도메인 / 사용자 정의 / NULL
+> - PK는 NULL 불가 (개체 무결성)
+> - FK는 NULL 허용 가능 (참조 무결성)
+> - UNIQUE는 NULL 허용 (여러 NULL 공존 가능)
+> - ON DELETE 옵션: CASCADE, SET NULL, NO ACTION

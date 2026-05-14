@@ -1,0 +1,109 @@
+---
+slug: pivot
+title: PIVOT과 UNPIVOT
+subject: 2
+category: 그룹함수
+order: 10
+description: 행 ↔ 열을 변환하는 연산. 집계 보고서 작성에 필수.
+relatedQuestions: []
+---
+
+## PIVOT — 행을 열로
+
+세로로 쌓인 데이터를 가로(컬럼)로 변환한다.
+
+### 변환 전 (Long format)
+
+| deptno | year | sal_sum |
+|---|---|---|
+| 10 | 2024 | 1000 |
+| 10 | 2025 | 1200 |
+| 20 | 2024 | 2000 |
+| 20 | 2025 | 2400 |
+
+### 변환 후 (Wide format)
+
+| deptno | 2024 | 2025 |
+|---|---|---|
+| 10 | 1000 | 1200 |
+| 20 | 2000 | 2400 |
+
+### PIVOT 구문 (Oracle 11g+)
+
+```sql
+SELECT * FROM (
+  SELECT deptno, year, sal FROM emp
+)
+PIVOT (
+  SUM(sal)            -- 집계 함수 필수
+  FOR year IN (2024, 2025)  -- 펼칠 값들
+);
+```
+
+### CASE를 이용한 수동 PIVOT (모든 버전 호환)
+
+```sql
+SELECT deptno,
+  SUM(CASE WHEN year = 2024 THEN sal END) AS "2024",
+  SUM(CASE WHEN year = 2025 THEN sal END) AS "2025"
+FROM emp
+GROUP BY deptno;
+```
+
+## UNPIVOT — 열을 행으로
+
+가로 데이터를 세로로 변환. PIVOT의 역연산.
+
+### UNPIVOT 구문
+
+```sql
+SELECT * FROM dept_year
+UNPIVOT (
+  sal_amount        -- 값이 들어갈 컬럼명
+  FOR year_col IN (sal_2024 AS '2024', sal_2025 AS '2025')
+);
+```
+
+### UNION ALL을 이용한 수동 UNPIVOT
+
+```sql
+SELECT deptno, '2024' AS year, sal_2024 AS sal FROM dept_year
+UNION ALL
+SELECT deptno, '2025', sal_2025 FROM dept_year;
+```
+
+## 동적 PIVOT (XML)
+
+펼칠 값을 동적으로 결정해야 할 때:
+
+```sql
+SELECT * FROM (
+  SELECT deptno, year, sal FROM emp
+)
+PIVOT XML (
+  SUM(sal)
+  FOR year IN (ANY)  -- 모든 year 값을 자동으로
+);
+```
+
+결과는 XML 형식. 후처리 필요.
+
+## 활용 예: 월별 매출 보고서
+
+```sql
+SELECT customer_id,
+  SUM(CASE WHEN MONTH(date) = 1 THEN amount END) AS 1월,
+  SUM(CASE WHEN MONTH(date) = 2 THEN amount END) AS 2월,
+  SUM(CASE WHEN MONTH(date) = 3 THEN amount END) AS 3월
+FROM sales
+GROUP BY customer_id;
+```
+
+## 시험 빈출 포인트
+
+> 📌 **자주 출제**
+> - PIVOT은 행 → 열 (가로 보고서)
+> - UNPIVOT은 열 → 행 (정규화 복원)
+> - PIVOT에는 **반드시 집계함수** 필요
+> - `FOR ... IN (...)`로 펼칠 값 명시
+> - CASE WHEN으로 수동 PIVOT 가능 (호환성 ↑)

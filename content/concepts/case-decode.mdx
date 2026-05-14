@@ -1,0 +1,138 @@
+---
+slug: case-decode
+title: CASE 표현식과 DECODE 함수
+subject: 2
+category: 함수
+order: 1
+description: 조건부 표현식. SQL 표준 CASE와 Oracle 전용 DECODE의 차이.
+relatedQuestions: [q-056]
+---
+
+## CASE 표현식
+
+SQL 표준 조건부 표현식. **모든 DBMS 지원**.
+
+### Simple CASE — 등치 비교
+
+```sql
+SELECT ename,
+  CASE deptno
+    WHEN 10 THEN '인사부'
+    WHEN 20 THEN '개발부'
+    WHEN 30 THEN '영업부'
+    ELSE '기타'
+  END AS dept_name
+FROM emp;
+```
+
+### Searched CASE — 모든 조건
+
+```sql
+SELECT ename, sal,
+  CASE
+    WHEN sal >= 3000 THEN 'HIGH'
+    WHEN sal >= 2000 THEN 'MID'
+    WHEN sal >= 1000 THEN 'LOW'
+    ELSE 'NONE'
+  END AS grade
+FROM emp;
+```
+
+> 💡 **차이점**: Simple CASE는 등치(=)만, Searched CASE는 모든 조건(>=, BETWEEN, LIKE, IS NULL ...)
+
+### CASE의 활용 예
+
+**집계 분기 (피벗 효과)**
+
+```sql
+SELECT
+  SUM(CASE WHEN deptno = 10 THEN sal ELSE 0 END) AS dept10_total,
+  SUM(CASE WHEN deptno = 20 THEN sal ELSE 0 END) AS dept20_total,
+  SUM(CASE WHEN deptno = 30 THEN sal ELSE 0 END) AS dept30_total
+FROM emp;
+```
+
+**ORDER BY에서 사용자 정의 순서**
+
+```sql
+SELECT * FROM emp
+ORDER BY CASE deptno
+  WHEN 30 THEN 1   -- 영업부 먼저
+  WHEN 10 THEN 2
+  WHEN 20 THEN 3
+END;
+```
+
+## DECODE 함수 (Oracle 전용)
+
+**등치 비교만** 가능한 간단한 조건부 함수.
+
+```sql
+DECODE(컬럼, 비교1, 결과1, 비교2, 결과2, ..., 기본값)
+```
+
+```sql
+SELECT ename,
+  DECODE(deptno, 10, '인사부', 20, '개발부', 30, '영업부', '기타') AS dept_name
+FROM emp;
+
+-- 동치 CASE
+-- CASE deptno WHEN 10 THEN '인사부' WHEN 20 THEN '개발부' ... END
+```
+
+## CASE vs DECODE
+
+| | CASE | DECODE |
+|---|---|---|
+| **표준** | ANSI SQL (표준) | Oracle 전용 |
+| **비교 연산자** | 모든 비교 (=, >, <, BETWEEN, LIKE ...) | 등치(=)만 |
+| **NULL 비교** | `IS NULL`로 명시 | DECODE는 **NULL == NULL을 TRUE로 취급** |
+| **가독성** | 길지만 명확 | 짧지만 헷갈리기 쉬움 |
+| **권장** | 신규 코드 | 레거시 호환 |
+
+### DECODE의 NULL 특수 처리
+
+> ⚠️ **시험 빈출**: DECODE는 NULL을 같은 값으로 본다.
+
+```sql
+SELECT DECODE(NULL, NULL, '같음', '다름') FROM dual;
+-- 결과: '같음'
+
+-- CASE로 동치 표현
+SELECT CASE WHEN NULL IS NULL THEN '같음' ELSE '다름' END FROM dual;
+-- 결과: '같음'
+
+-- 일반 비교는 다름
+SELECT CASE WHEN NULL = NULL THEN '같음' ELSE '다름' END FROM dual;
+-- 결과: '다름' (NULL = NULL은 UNKNOWN)
+```
+
+## NULL 관련 함수 모음
+
+| 함수 | 동작 | 표준성 |
+|---|---|---|
+| `NVL(a, b)` | a가 NULL이면 b | Oracle |
+| `NVL2(a, b, c)` | a가 NULL 아니면 b, NULL이면 c | Oracle |
+| `COALESCE(a, b, c, ...)` | 처음 non-NULL 반환 | **표준** |
+| `NULLIF(a, b)` | a == b이면 NULL, 아니면 a | 표준 |
+| `ISNULL(a, b)` | a가 NULL이면 b | SQL Server |
+
+```sql
+SELECT
+  NVL(NULL, 'A'),                       -- 'A'
+  NVL2(NULL, 'B', 'A'),                 -- 'A'
+  NVL2('X', 'B', 'A'),                  -- 'B'
+  COALESCE(NULL, NULL, NULL, 'X', 'Y'), -- 'X'
+  NULLIF('A', 'A'),                     -- NULL
+  NULLIF('A', 'B')                      -- 'A'
+FROM dual;
+```
+
+## 시험 빈출 포인트
+
+> 📌 **자주 출제**
+> - DECODE는 등치 비교만, 범위 비교는 CASE
+> - DECODE의 NULL = NULL 특수 처리
+> - CASE는 표준, DECODE는 Oracle 전용
+> - CASE 안에서 다시 CASE 중첩 가능
+> - COALESCE는 다중 인자, NVL은 2개만

@@ -46,7 +46,186 @@ body {
   font-family: var(--font-mono);
 }
 
-/* 코드 블록 기본 */
+/* ============================================
+   Rendered Markdown (server-side built HTML)
+   ============================================ */
+.rendered-md {
+  font-size: 15px;
+  line-height: 1.75;
+  color: #27272a;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+.rendered-md > * + * {
+  margin-top: 0.75rem;
+}
+
+.rendered-md h1 {
+  font-size: 1.875rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #18181b;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  line-height: 1.25;
+}
+.rendered-md h2 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #18181b;
+  margin-top: 1.75rem;
+  margin-bottom: 0.75rem;
+  line-height: 1.3;
+}
+.rendered-md h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #18181b;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+.rendered-md h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #18181b;
+  margin-top: 1.25rem;
+  margin-bottom: 0.4rem;
+}
+
+.rendered-md p {
+  margin: 0.75rem 0;
+}
+
+.rendered-md strong {
+  font-weight: 700;
+  color: #18181b;
+}
+
+.rendered-md em {
+  font-style: italic;
+}
+
+.rendered-md a {
+  color: #2563eb;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.rendered-md a:hover {
+  color: #1d4ed8;
+}
+
+.rendered-md ul,
+.rendered-md ol {
+  margin: 0.75rem 0;
+  padding-left: 1.5rem;
+}
+.rendered-md ul {
+  list-style: disc;
+}
+.rendered-md ol {
+  list-style: decimal;
+}
+.rendered-md li {
+  margin: 0.25rem 0;
+  line-height: 1.7;
+}
+.rendered-md li > p {
+  margin: 0.25rem 0;
+}
+
+.rendered-md blockquote {
+  border-left: 3px solid #d4d4d8;
+  background: #fafafa;
+  padding: 0.5rem 1rem;
+  margin: 1rem 0;
+  color: #3f3f46;
+  border-radius: 0 4px 4px 0;
+}
+
+.rendered-md hr {
+  border: 0;
+  border-top: 1px solid #e4e4e7;
+  margin: 1.5rem 0;
+}
+
+.rendered-md code:not(pre code) {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  background: #f4f4f5;
+  border: 1px solid #e4e4e7;
+  border-radius: 4px;
+  padding: 0.125rem 0.375rem;
+  word-break: break-all;
+}
+
+/* Shiki 코드 블록 */
+.rendered-md pre {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  background: #fafafa !important;
+  border: 1px solid #e4e4e7;
+  border-radius: 6px;
+  padding: 1rem;
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+.rendered-md pre code {
+  background: transparent !important;
+  border: 0;
+  padding: 0;
+  font-size: inherit;
+}
+
+/* 표 */
+.rendered-md table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  margin: 1rem 0;
+  border: 1px solid #e4e4e7;
+}
+.rendered-md thead {
+  background: #fafafa;
+}
+.rendered-md th {
+  font-weight: 600;
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #e4e4e7;
+  color: #18181b;
+}
+.rendered-md td {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #e4e4e7;
+  vertical-align: top;
+}
+.rendered-md tr:nth-child(even) td {
+  background: #fafafa;
+}
+
+/* GFM callout (e.g. `> [!NOTE]`) — remark-gfm 6+ converts to <blockquote class="markdown-alert markdown-alert-note">  */
+.rendered-md .markdown-alert,
+.rendered-md blockquote.callout {
+  border-left-width: 4px;
+  padding: 0.75rem 1rem;
+  margin: 1rem 0;
+  border-radius: 0 6px 6px 0;
+}
+.rendered-md .markdown-alert-title {
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* 코드 블록 기본 (rendered-md 외 위치) */
 pre {
   font-family: var(--font-mono);
   font-size: 0.875rem;

@@ -1,32 +1,76 @@
 ---
 slug: group-by
-title: GROUP BY, HAVING, ROLLUP, CUBE
+title: GROUP BY · HAVING · ROLLUP · CUBE
 subject: 2
 category: 그룹함수
 order: 4
-description: 그룹핑과 집계 확장 함수
-relatedQuestions: [q-012, q-015]
+description: 행을 그룹으로 묶고 집계하는 모든 방법.
+relatedQuestions: [q-012, q-015, q-059, q-060, q-061, q-062, q-063]
 ---
 
-## GROUP BY와 HAVING
+## GROUP BY 기본
+
+행을 같은 값끼리 묶어 그룹으로 만든다. 그룹마다 하나의 결과 행 생성.
 
 ```sql
-SELECT deptno, COUNT(*), AVG(sal)
+SELECT deptno, COUNT(*), SUM(sal), AVG(sal)
 FROM emp
-WHERE sal > 1000        -- 행 필터 (그룹핑 전)
-GROUP BY deptno
-HAVING COUNT(*) >= 3    -- 그룹 필터 (그룹핑 후)
-ORDER BY deptno;
+GROUP BY deptno;
 ```
 
-| 구분 | 시점 | 집계함수 |
+### 핵심 규칙
+
+> 📌 **3대 규칙**
+
+1. **SELECT 절에 명시된 컬럼 중 집계함수가 아닌 것은 모두 GROUP BY에 포함**
+   ```sql
+   -- ✗ ename은 GROUP BY에 없음
+   SELECT deptno, ename, SUM(sal) FROM emp GROUP BY deptno;
+   
+   -- ✓
+   SELECT deptno, ename, SUM(sal) FROM emp GROUP BY deptno, ename;
+   ```
+
+2. **WHERE 절에서는 집계함수 사용 불가** (그룹핑 전에 실행)
+   ```sql
+   -- ✗
+   SELECT deptno FROM emp WHERE COUNT(*) >= 3 GROUP BY deptno;
+   
+   -- ✓ HAVING 사용
+   SELECT deptno FROM emp GROUP BY deptno HAVING COUNT(*) >= 3;
+   ```
+
+3. **GROUP BY는 NULL을 하나의 그룹으로** 처리
+
+## HAVING
+
+GROUP BY 결과에 대한 필터. 집계함수 사용 가능.
+
+```sql
+SELECT deptno, AVG(sal) avg_sal
+FROM emp
+WHERE sal > 1000          -- 행 필터 (그룹핑 전)
+GROUP BY deptno
+HAVING AVG(sal) > 2000    -- 그룹 필터 (그룹핑 후)
+ORDER BY avg_sal DESC;
+```
+
+| 구분 | WHERE | HAVING |
 |---|---|---|
-| WHERE | 그룹핑 **전** | 사용 불가 |
-| HAVING | 그룹핑 **후** | 사용 가능 |
+| 시점 | 그룹핑 **전** | 그룹핑 **후** |
+| 집계함수 | 불가 | 가능 |
+| 일반 컬럼 | 가능 | 가능 (단, GROUP BY 컬럼) |
 
-## ROLLUP
+## ROLLUP — 계층적 소계
 
-> **계층적(좌→우) 소계** + 총계
+`ROLLUP(A, B, C)`는 다음 조합으로 소계 + 총계.
+
+```
+(A, B, C)
+(A, B)       -- C 제거 (소계)
+(A)          -- B, C 제거 (소계)
+()           -- 총계
+```
 
 ```sql
 SELECT deptno, job, SUM(sal)
@@ -34,15 +78,20 @@ FROM emp
 GROUP BY ROLLUP(deptno, job);
 ```
 
-`ROLLUP(A, B, C)` 결과 조합:
-1. `(A, B, C)` — 가장 세분
-2. `(A, B)`
-3. `(A)`
-4. `()` — 총계
+| deptno | job | SUM(sal) | 의미 |
+|---|---|---|---|
+| 10 | CLERK | 1300 | 상세 |
+| 10 | MANAGER | 2450 | 상세 |
+| 10 | NULL | 3750 | 부서 10 소계 |
+| 20 | CLERK | 1900 | 상세 |
+| 20 | NULL | 1900 | 부서 20 소계 |
+| NULL | NULL | 5650 | 총계 |
 
-## CUBE
+> 💡 결과 조합 수 = **N + 1** (N은 컬럼 수)
 
-> **모든 가능한 조합** (2^n개)
+## CUBE — 모든 조합
+
+`CUBE(A, B)`는 2^N개 조합 (모든 가능한 부분집합).
 
 ```sql
 SELECT deptno, job, SUM(sal)
@@ -50,27 +99,118 @@ FROM emp
 GROUP BY CUBE(deptno, job);
 ```
 
-`CUBE(A, B)` 결과 조합:
-1. `(A, B)`
-2. `(A)`
-3. `(B)`
-4. `()`
+조합:
+- `(deptno, job)` — 가장 세분
+- `(deptno)` — 부서별 소계
+- `(job)` — 직무별 소계
+- `()` — 총계
 
-## GROUPING SETS
-
-> 원하는 조합만 명시
+## GROUPING SETS — 명시한 조합만
 
 ```sql
 SELECT deptno, job, SUM(sal)
 FROM emp
-GROUP BY GROUPING SETS((deptno, job), (deptno), (job));
+GROUP BY GROUPING SETS(
+  (deptno, job),
+  deptno,
+  job,
+  ()
+);
+```
+
+원하는 조합만 정확히 만들 때 사용. CUBE보다 유연.
+
+## ROLLUP vs CUBE vs GROUPING SETS
+
+```
+ROLLUP(A, B, C):
+  (A,B,C), (A,B), (A), ()                            → 4개
+
+CUBE(A, B, C):
+  (A,B,C), (A,B), (A,C), (B,C), (A), (B), (C), ()    → 8개
+
+GROUPING SETS((A,B), (B,C)):
+  (A,B), (B,C)                                       → 2개
 ```
 
 ## GROUPING 함수
 
-ROLLUP/CUBE/GROUPING SETS 결과에서 소계/총계 행을 식별.
+소계/총계 행을 식별. 일반 NULL과 그룹핑 NULL을 구분.
 
-| `GROUPING(컬럼)` | 의미 |
+| 반환값 | 의미 |
 |---|---|
-| `0` | 일반 행 (해당 컬럼이 그룹핑에 참여) |
-| `1` | 소계/총계 행 (해당 컬럼이 그룹핑에 미참여, 즉 NULL) |
+| `0` | 일반 그룹 (해당 컬럼이 그룹핑 키에 포함됨) |
+| `1` | 소계/총계 행 (해당 컬럼이 그룹핑 키에서 제외됨) |
+
+```sql
+SELECT deptno, job, SUM(sal),
+  GROUPING(deptno) AS g_deptno,
+  GROUPING(job) AS g_job,
+  CASE 
+    WHEN GROUPING(deptno) = 1 AND GROUPING(job) = 1 THEN '총계'
+    WHEN GROUPING(deptno) = 0 AND GROUPING(job) = 1 THEN '부서 소계'
+    ELSE '상세'
+  END AS 구분
+FROM emp
+GROUP BY ROLLUP(deptno, job);
+```
+
+### GROUPING_ID
+
+여러 컬럼의 GROUPING 결과를 비트로 결합.
+
+```sql
+SELECT deptno, job, SUM(sal),
+  GROUPING_ID(deptno, job) AS gid
+FROM emp
+GROUP BY CUBE(deptno, job);
+
+-- gid 해석:
+--   00 (0): 둘 다 그룹핑 → 상세
+--   01 (1): job만 제외   → 부서별 소계
+--   10 (2): deptno 제외   → 직무별 소계
+--   11 (3): 둘 다 제외   → 총계
+```
+
+## 집계 함수 모음
+
+| 함수 | NULL 처리 |
+|---|---|
+| `COUNT(*)` | NULL 포함, 전체 행 |
+| `COUNT(컬럼)` | NULL 제외 |
+| `COUNT(DISTINCT)` | NULL 제외 + 중복 제거 |
+| `SUM` | NULL 무시 |
+| `AVG` | NULL 무시 (분자, **분모 모두**) |
+| `MIN/MAX` | NULL 무시 |
+| `STDDEV/VARIANCE` | NULL 무시 |
+| `LISTAGG(컬럼, ',') WITHIN GROUP (ORDER BY ...)` | 문자열 결합 (Oracle 11g+) |
+
+### LISTAGG 예
+
+```sql
+SELECT deptno,
+  LISTAGG(ename, ', ') WITHIN GROUP (ORDER BY hiredate) AS members
+FROM emp
+GROUP BY deptno;
+```
+
+결과:
+| deptno | members |
+|---|---|
+| 10 | KING, CLARK, MILLER |
+| 20 | JONES, FORD, SCOTT |
+
+## 시험 빈출 포인트
+
+> 📌 **꼭 외울 것**
+>
+> 1. SELECT의 비집계 컬럼은 GROUP BY에 포함 필수
+> 2. WHERE는 집계함수 불가, HAVING은 가능
+> 3. GROUP BY는 NULL을 한 그룹으로
+> 4. ROLLUP(N) → N+1개 조합 (좌→우 계층적)
+> 5. CUBE(N) → 2^N개 조합 (모든 조합)
+> 6. GROUPING SETS → 명시한 조합만
+> 7. GROUPING(col) = 1이면 소계/총계 행
+> 8. AVG의 분모는 NULL 아닌 행 수
+> 9. SELECT alias는 HAVING에서 사용 불가 (HAVING이 SELECT 이전 실행)
+> 10. ORDER BY는 SELECT 이후 → alias 사용 가능

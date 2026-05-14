@@ -260,7 +260,10 @@ export function ExamResult({ allQuestions }: Props) {
                       문제 페이지에서 보기 →
                     </Link>
                     <div className="mt-3">
-                      <MarkdownView source={e.q.explanation} />
+                      <MarkdownView
+                        html={e.q.explanationHtml}
+                        source={e.q.explanation}
+                      />
                     </div>
                   </div>
                 )}

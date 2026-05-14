@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Question } from "@/lib/types";
 import { SUBJECT_LABELS, TYPE_LABELS } from "@/lib/types";
 import { useProgress } from "@/lib/store";
@@ -13,11 +13,19 @@ type Props = {
   question: Question;
   prevId?: string | null;
   nextId?: string | null;
+  index?: number | null;
+  total?: number | null;
 };
 
 type Selected = number | boolean | null;
 
-export function QuestionView({ question, prevId, nextId }: Props) {
+export function QuestionView({
+  question,
+  prevId,
+  nextId,
+  index,
+  total,
+}: Props) {
   const hydrated = useHydrated();
   const recordAttempt = useProgress((s) => s.recordAttempt);
   const toggleBookmark = useProgress((s) => s.toggleBookmark);
@@ -27,18 +35,39 @@ export function QuestionView({ question, prevId, nextId }: Props) {
   const [selected, setSelected] = useState<Selected>(null);
   const [submitted, setSubmitted] = useState(false);
   const [memo, setMemoLocal] = useState(attempt?.wrongNoteMemo ?? "");
+  const explanationRef = useRef<HTMLElement | null>(null);
 
   const isCorrect = selected !== null && selected === question.answer;
 
-  function submit() {
-    if (selected === null) return;
+  function submit(forced?: Selected) {
+    const value = forced ?? selected;
+    if (value === null) return;
+    setSelected(value);
     setSubmitted(true);
-    recordAttempt(question.id, selected, isCorrect);
+    recordAttempt(question.id, value, value === question.answer);
+    setTimeout(() => {
+      explanationRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 50);
   }
 
-  function reset() {
-    setSelected(null);
-    setSubmitted(false);
+  function pickChoice(value: number | boolean) {
+    if (submitted) return;
+    submit(value);
+  }
+
+  function goNext() {
+    if (nextId) {
+      window.location.href = `/practice/${nextId}`;
+    }
+  }
+
+  function goPrev() {
+    if (prevId) {
+      window.location.href = `/practice/${prevId}`;
+    }
   }
 
   useEffect(() => {
@@ -52,69 +81,95 @@ export function QuestionView({ question, prevId, nextId }: Props) {
       if (!submitted && question.type === "mc" && question.choices) {
         const num = parseInt(e.key);
         if (num >= 1 && num <= question.choices.length) {
-          setSelected(num - 1);
+          pickChoice(num - 1);
           return;
         }
       }
       if (!submitted && question.type === "ox") {
-        if (e.key.toLowerCase() === "o") setSelected(true);
-        if (e.key.toLowerCase() === "x") setSelected(false);
+        if (e.key.toLowerCase() === "o") pickChoice(true);
+        if (e.key.toLowerCase() === "x") pickChoice(false);
       }
-      if (e.key === "Enter" && !submitted && selected !== null) {
-        submit();
+      if (e.key === "Enter") {
+        if (submitted && nextId) goNext();
       }
-      if (e.key === "j" && nextId)
-        window.location.href = `/practice/${nextId}`;
-      if (e.key === "k" && prevId)
-        window.location.href = `/practice/${prevId}`;
+      if (e.key === "j" || e.key === "ArrowRight") {
+        if (nextId) goNext();
+      }
+      if (e.key === "k" || e.key === "ArrowLeft") {
+        if (prevId) goPrev();
+      }
       if (e.key === "b" && hydrated) toggleBookmark(question.id);
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [submitted, selected, question.id, nextId, prevId, hydrated]);
+  }, [submitted, question.id, nextId, prevId, hydrated]);
+
+  const progressPercent =
+    typeof index === "number" && typeof total === "number" && total > 0
+      ? (index / total) * 100
+      : null;
 
   return (
-    <article className="prose-ko">
-      <div className="mb-4 flex flex-wrap items-center gap-2 text-xs">
+    <article className="prose-ko pb-32">
+      {progressPercent !== null && (
+        <div className="fixed left-0 right-0 top-16 z-20 h-1 bg-zinc-100">
+          <div
+            className="h-full bg-zinc-900 transition-all"
+            style={{ width: `${progressPercent}%` }}
+          />
+        </div>
+      )}
+
+      <div className="mb-3 mt-2 flex flex-wrap items-center gap-2 text-xs">
+        {typeof index === "number" && typeof total === "number" && (
+          <span className="font-mono font-semibold text-zinc-900">
+            {index} <span className="text-zinc-300">/</span>{" "}
+            <span className="text-zinc-400">{total}</span>
+          </span>
+        )}
         <Tag>{SUBJECT_LABELS[question.subject]}</Tag>
         <Tag>{question.category}</Tag>
         <Tag>{TYPE_LABELS[question.type]}</Tag>
-        <span className="ml-auto font-mono text-zinc-400">{question.id}</span>
-      </div>
 
-      <header className="mb-6 flex items-start justify-between gap-3">
-        <h1 className="text-[1.4rem] font-bold leading-snug text-zinc-900">
-          문제
-        </h1>
         {hydrated && (
           <button
             onClick={() => toggleBookmark(question.id)}
             className={cn(
-              "shrink-0 rounded-md border px-3 py-1.5 text-sm font-medium transition",
+              "ml-auto rounded-md border px-2.5 py-1 text-xs font-medium transition",
               attempt?.bookmarked
                 ? "border-amber-300 bg-amber-50 text-amber-700"
-                : "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300"
+                : "border-zinc-200 bg-white text-zinc-500 hover:text-zinc-700"
             )}
-            aria-label="즐겨찾기 토글"
             title="단축키 B"
           >
-            {attempt?.bookmarked ? "★ 즐겨찾기" : "☆ 즐겨찾기"}
+            {attempt?.bookmarked ? "★" : "☆"} 즐겨찾기
           </button>
         )}
-      </header>
+      </div>
 
-      <div className="mb-6">
-        <MarkdownView source={question.question} />
-        {question.codeBlock && (
-          <pre className="mt-3">
-            <code>{question.codeBlock}</code>
-          </pre>
+      <div className="mb-7 mt-3">
+        <div className="text-[18px] font-medium leading-[1.7] text-zinc-900 md:text-[19px]">
+          <MarkdownView
+            html={question.questionHtml}
+            source={question.question}
+          />
+        </div>
+        {question.codeBlockHtml ? (
+          <div className="mt-4">
+            <MarkdownView html={question.codeBlockHtml} />
+          </div>
+        ) : (
+          question.codeBlock && (
+            <pre className="mt-4 text-[14px]">
+              <code>{question.codeBlock}</code>
+            </pre>
+          )
         )}
       </div>
 
       {question.type === "mc" && question.choices && (
-        <ol className="my-4 space-y-2">
+        <ol className="space-y-2.5">
           {question.choices.map((choice, i) => {
             const isThisCorrect = submitted && i === question.answer;
             const isThisSelectedWrong =
@@ -122,35 +177,41 @@ export function QuestionView({ question, prevId, nextId }: Props) {
             return (
               <li key={i}>
                 <button
-                  onClick={() => !submitted && setSelected(i)}
+                  onClick={() => pickChoice(i)}
                   disabled={submitted}
                   className={cn(
-                    "flex w-full items-start gap-3 rounded-md border px-4 py-3 text-left text-[15px] transition",
+                    "flex w-full items-start gap-3.5 rounded-lg border px-4 py-4 text-left text-[16px] leading-relaxed transition active:scale-[0.99]",
                     submitted
                       ? "cursor-default"
                       : "hover:border-zinc-400 hover:bg-zinc-50",
-                    selected === i && !submitted
-                      ? "border-blue-500 bg-blue-50"
-                      : "border-zinc-200 bg-white",
+                    !submitted && "border-zinc-200 bg-white",
                     isThisCorrect && "!border-emerald-500 !bg-emerald-50",
-                    isThisSelectedWrong && "!border-rose-500 !bg-rose-50"
+                    isThisSelectedWrong && "!border-rose-500 !bg-rose-50",
+                    submitted &&
+                      !isThisCorrect &&
+                      !isThisSelectedWrong &&
+                      "opacity-60"
                   )}
                 >
                   <span
                     className={cn(
-                      "grid h-6 w-6 shrink-0 place-items-center rounded-full border text-xs font-bold",
+                      "grid h-8 w-8 shrink-0 place-items-center rounded-full border text-sm font-bold",
                       isThisCorrect
                         ? "border-emerald-500 bg-emerald-500 text-white"
                         : isThisSelectedWrong
                           ? "border-rose-500 bg-rose-500 text-white"
-                          : selected === i
-                            ? "border-blue-500 bg-blue-500 text-white"
-                            : "border-zinc-300 text-zinc-500"
+                          : "border-zinc-300 bg-white text-zinc-500"
                     )}
                   >
                     {i + 1}
                   </span>
-                  <span className="flex-1 leading-relaxed">{choice}</span>
+                  <span className="flex-1 pt-0.5">{choice}</span>
+                  {isThisCorrect && (
+                    <span className="pt-0.5 text-emerald-600">✓</span>
+                  )}
+                  {isThisSelectedWrong && (
+                    <span className="pt-0.5 text-rose-600">✗</span>
+                  )}
                 </button>
               </li>
             );
@@ -159,58 +220,53 @@ export function QuestionView({ question, prevId, nextId }: Props) {
       )}
 
       {question.type === "ox" && (
-        <div className="my-4 grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-3">
           {[true, false].map((v) => {
-            const label = v ? "O (참)" : "X (거짓)";
             const isThisCorrect = submitted && v === question.answer;
             const isThisSelectedWrong =
               submitted && selected === v && v !== question.answer;
             return (
               <button
                 key={String(v)}
-                onClick={() => !submitted && setSelected(v)}
+                onClick={() => pickChoice(v)}
                 disabled={submitted}
                 className={cn(
-                  "rounded-md border px-4 py-6 text-lg font-bold transition",
+                  "rounded-lg border py-10 text-3xl font-bold transition active:scale-[0.98]",
                   submitted
                     ? "cursor-default"
                     : "hover:border-zinc-400 hover:bg-zinc-50",
-                  selected === v && !submitted
-                    ? "border-blue-500 bg-blue-50 text-blue-700"
-                    : "border-zinc-200 bg-white text-zinc-700",
+                  !submitted && "border-zinc-200 bg-white text-zinc-700",
                   isThisCorrect &&
                     "!border-emerald-500 !bg-emerald-50 !text-emerald-700",
                   isThisSelectedWrong &&
-                    "!border-rose-500 !bg-rose-50 !text-rose-700"
+                    "!border-rose-500 !bg-rose-50 !text-rose-700",
+                  submitted &&
+                    !isThisCorrect &&
+                    !isThisSelectedWrong &&
+                    "opacity-50"
                 )}
               >
-                {label}
+                {v ? "O" : "X"}
+                <div className="mt-1 text-xs font-normal text-zinc-500">
+                  {v ? "참" : "거짓"} <kbd>{v ? "O" : "X"}</kbd>
+                </div>
               </button>
             );
           })}
         </div>
       )}
 
-      <div className="mt-6 flex items-center gap-2">
-        {!submitted ? (
-          <button
-            onClick={submit}
-            disabled={selected === null}
-            className="rounded-md bg-zinc-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:bg-zinc-300"
-          >
-            제출 <kbd className="ml-1 !bg-zinc-700 !text-white">↵</kbd>
-          </button>
-        ) : (
-          <>
-            <button
-              onClick={reset}
-              className="rounded-md border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50"
-            >
-              다시 풀기
-            </button>
+      {submitted && (
+        <section
+          ref={(el) => {
+            explanationRef.current = el;
+          }}
+          className="mt-8 rounded-lg border border-zinc-200 bg-white p-5"
+        >
+          <div className="mb-3 flex items-center gap-2">
             <div
               className={cn(
-                "rounded-md px-3 py-1.5 text-sm font-semibold",
+                "rounded-md px-2.5 py-1 text-xs font-bold",
                 isCorrect
                   ? "bg-emerald-50 text-emerald-700"
                   : "bg-rose-50 text-rose-700"
@@ -218,19 +274,17 @@ export function QuestionView({ question, prevId, nextId }: Props) {
             >
               {isCorrect ? "✓ 정답" : "✗ 오답"}
             </div>
-          </>
-        )}
-      </div>
-
-      {submitted && (
-        <section className="mt-8 rounded-md border border-zinc-200 bg-zinc-50/50 p-5">
-          <h2 className="mb-2 text-sm font-semibold uppercase tracking-wider text-zinc-500">
-            해설
-          </h2>
-          <MarkdownView source={question.explanation} />
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-zinc-500">
+              해설
+            </h2>
+          </div>
+          <MarkdownView
+            html={question.explanationHtml}
+            source={question.explanation}
+          />
 
           {question.concepts.length > 0 && (
-            <div className="mt-4 flex flex-wrap gap-2 border-t border-zinc-200 pt-4">
+            <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-zinc-200 pt-4">
               <span className="text-xs text-zinc-500">관련 개념:</span>
               {question.concepts.map((c) => (
                 <Link
@@ -247,7 +301,7 @@ export function QuestionView({ question, prevId, nextId }: Props) {
       )}
 
       {submitted && !isCorrect && hydrated && (
-        <section className="mt-4">
+        <section className="mt-3">
           <label className="mb-1 block text-xs font-medium text-zinc-500">
             오답 메모 (자동 저장)
           </label>
@@ -257,35 +311,64 @@ export function QuestionView({ question, prevId, nextId }: Props) {
               setMemoLocal(e.target.value);
               setMemo(question.id, e.target.value);
             }}
-            placeholder="왜 틀렸는지 적어두면 나중에 보기 좋습니다."
-            rows={3}
+            placeholder="왜 틀렸는지 짧게 적어두면 나중에 다시 볼 때 도움됩니다."
+            rows={2}
             className="w-full rounded-md border border-zinc-200 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
           />
         </section>
       )}
 
-      <nav className="mt-10 flex items-center justify-between border-t border-zinc-200 pt-6 text-sm">
-        {prevId ? (
-          <Link
-            href={`/practice/${prevId}`}
-            className="flex items-center gap-2 text-zinc-600 hover:text-zinc-900"
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-zinc-200 bg-white/95 px-4 py-3 backdrop-blur-md md:px-6">
+        <div className="mx-auto flex max-w-[720px] items-center justify-between gap-2">
+          <button
+            onClick={goPrev}
+            disabled={!prevId}
+            className="flex items-center gap-1 rounded-md px-3 py-2 text-sm text-zinc-600 transition hover:text-zinc-900 disabled:opacity-30"
+            aria-label="이전 문제"
+            title="K / ←"
           >
-            <kbd>K</kbd> 이전
-          </Link>
-        ) : (
-          <span />
-        )}
-        {nextId ? (
-          <Link
-            href={`/practice/${nextId}`}
-            className="flex items-center gap-2 text-zinc-600 hover:text-zinc-900"
+            <span>←</span>
+            <span className="hidden sm:inline">이전</span>
+          </button>
+
+          {!submitted ? (
+            <div className="text-xs text-zinc-400">
+              {question.type === "mc" ? (
+                <>
+                  선택지를 누르거나{" "}
+                  <kbd>1</kbd>~<kbd>{question.choices?.length}</kbd>
+                </>
+              ) : (
+                <>
+                  <kbd>O</kbd>/<kbd>X</kbd>
+                </>
+              )}
+            </div>
+          ) : (
+            <button
+              onClick={goNext}
+              disabled={!nextId}
+              className="flex-1 rounded-lg bg-zinc-900 px-5 py-3 text-center text-[15px] font-semibold text-white shadow-sm transition hover:bg-zinc-800 disabled:bg-zinc-300"
+            >
+              다음 문제 <kbd className="ml-2 !bg-zinc-700 !text-white">↵</kbd>
+            </button>
+          )}
+
+          <button
+            onClick={goNext}
+            disabled={!nextId}
+            className={cn(
+              "flex items-center gap-1 rounded-md px-3 py-2 text-sm text-zinc-600 transition hover:text-zinc-900 disabled:opacity-30",
+              submitted && "hidden"
+            )}
+            aria-label="다음 문제"
+            title="J / →"
           >
-            다음 <kbd>J</kbd>
-          </Link>
-        ) : (
-          <span />
-        )}
-      </nav>
+            <span className="hidden sm:inline">건너뛰기</span>
+            <span>→</span>
+          </button>
+        </div>
+      </div>
     </article>
   );
 }

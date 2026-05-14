@@ -8,10 +8,13 @@ export type Question = {
   category: string;
   type: QuestionType;
   question: string;
+  questionHtml?: string;
   codeBlock?: string;
+  codeBlockHtml?: string;
   choices?: string[];
   answer: number | boolean;
   explanation: string;
+  explanationHtml?: string;
   concepts: string[];
   tags: string[];
   source: QuestionSource;
@@ -33,9 +36,10 @@ export type Concept = {
   description?: string;
   relatedQuestions: string[];
   body: string;
+  bodyHtml?: string;
 };
 
-export type ConceptMeta = Omit<Concept, "body">;
+export type ConceptMeta = Omit<Concept, "body" | "bodyHtml">;
 
 export const SUBJECT_LABELS: Record<Subject, string> = {
   1: "데이터 모델링의 이해",

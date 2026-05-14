@@ -1,0 +1,239 @@
+---
+slug: plsql
+title: PL/SQL 기본
+subject: 2
+category: 트랜잭션/PL-SQL
+order: 10
+description: Oracle의 절차형 SQL 확장. 변수·조건·반복·예외처리·프로시저·함수.
+relatedQuestions: [q-089, q-090]
+---
+
+## PL/SQL이란?
+
+**PL/SQL**(Procedural Language/SQL)은 Oracle이 SQL을 확장한 절차형 언어. 변수, 조건문, 반복문, 예외 처리, 프로시저, 함수 등을 지원.
+
+타 DBMS도 유사한 절차형 언어를 제공:
+- **PL/SQL**: Oracle
+- **T-SQL**: SQL Server
+- **PL/pgSQL**: PostgreSQL
+- **저장 프로시저**: MySQL
+
+## 블록 구조
+
+```sql
+DECLARE          -- (선택) 변수 선언
+   v_count NUMBER := 0;
+   v_name VARCHAR2(50);
+BEGIN            -- (필수) 실행부
+   SELECT COUNT(*), MAX(ename) INTO v_count, v_name FROM emp;
+   DBMS_OUTPUT.PUT_LINE('Count: ' || v_count);
+   DBMS_OUTPUT.PUT_LINE('Name: ' || v_name);
+EXCEPTION        -- (선택) 예외 처리
+   WHEN NO_DATA_FOUND THEN
+      DBMS_OUTPUT.PUT_LINE('데이터 없음');
+   WHEN OTHERS THEN
+      DBMS_OUTPUT.PUT_LINE('에러: ' || SQLERRM);
+END;             -- (필수)
+/
+```
+
+### 블록 종류
+
+| 종류 | 설명 |
+|---|---|
+| **익명 블록** | 일회성 실행, 저장 안 됨 |
+| **저장 프로시저** | `CREATE PROCEDURE`, 재사용 |
+| **저장 함수** | `CREATE FUNCTION`, 값 반환 |
+| **트리거** | 이벤트 발생 시 자동 실행 |
+| **패키지** | 프로시저·함수 묶음 |
+
+## 변수와 데이터 타입
+
+```sql
+DECLARE
+   v_id NUMBER := 100;                  -- 명시적 타입
+   v_name VARCHAR2(50);
+   v_emp emp%ROWTYPE;                   -- 테이블 행과 동일 구조
+   v_sal emp.sal%TYPE;                  -- 특정 컬럼 타입 참조
+   v_today DATE DEFAULT SYSDATE;        -- 기본값
+BEGIN
+   ...
+END;
+```
+
+`%ROWTYPE`, `%TYPE`은 컬럼 타입 변경 시 자동 반영되어 유지보수에 좋다.
+
+## 조건문
+
+```sql
+IF v_sal >= 3000 THEN
+   v_grade := 'A';
+ELSIF v_sal >= 2000 THEN
+   v_grade := 'B';
+ELSE
+   v_grade := 'C';
+END IF;
+
+-- CASE
+v_grade := CASE
+   WHEN v_sal >= 3000 THEN 'A'
+   WHEN v_sal >= 2000 THEN 'B'
+   ELSE 'C'
+END;
+```
+
+## 반복문
+
+### LOOP / EXIT
+
+```sql
+LOOP
+   v_count := v_count + 1;
+   EXIT WHEN v_count >= 10;
+END LOOP;
+```
+
+### WHILE
+
+```sql
+WHILE v_count < 10 LOOP
+   v_count := v_count + 1;
+END LOOP;
+```
+
+### FOR
+
+```sql
+FOR i IN 1..10 LOOP
+   DBMS_OUTPUT.PUT_LINE(i);
+END LOOP;
+
+-- 역순
+FOR i IN REVERSE 1..10 LOOP ... END LOOP;
+```
+
+### 커서 FOR LOOP
+
+```sql
+FOR rec IN (SELECT empno, ename FROM emp WHERE deptno = 10) LOOP
+   DBMS_OUTPUT.PUT_LINE(rec.empno || ': ' || rec.ename);
+END LOOP;
+```
+
+## 예외 처리
+
+```sql
+BEGIN
+   SELECT sal INTO v_sal FROM emp WHERE empno = 99999;
+EXCEPTION
+   WHEN NO_DATA_FOUND THEN
+      DBMS_OUTPUT.PUT_LINE('사원 없음');
+   WHEN TOO_MANY_ROWS THEN
+      DBMS_OUTPUT.PUT_LINE('여러 건 조회됨');
+   WHEN OTHERS THEN
+      DBMS_OUTPUT.PUT_LINE('SQLCODE: ' || SQLCODE);
+      DBMS_OUTPUT.PUT_LINE('SQLERRM: ' || SQLERRM);
+      RAISE;  -- 다시 던지기
+END;
+```
+
+### 사용자 정의 예외
+
+```sql
+DECLARE
+   ex_invalid_sal EXCEPTION;
+BEGIN
+   IF v_sal < 0 THEN
+      RAISE ex_invalid_sal;
+   END IF;
+EXCEPTION
+   WHEN ex_invalid_sal THEN
+      DBMS_OUTPUT.PUT_LINE('급여는 음수일 수 없습니다');
+END;
+```
+
+## 프로시저와 함수
+
+### PROCEDURE — 값 반환 안 함
+
+```sql
+CREATE OR REPLACE PROCEDURE raise_sal(
+   p_empno IN NUMBER,
+   p_amount IN NUMBER
+)
+IS
+BEGIN
+   UPDATE emp SET sal = sal + p_amount WHERE empno = p_empno;
+   COMMIT;
+END;
+/
+
+-- 호출
+EXEC raise_sal(7369, 100);
+```
+
+### FUNCTION — 값 반환
+
+```sql
+CREATE OR REPLACE FUNCTION get_annual_sal(
+   p_empno IN NUMBER
+) RETURN NUMBER
+IS
+   v_sal NUMBER;
+BEGIN
+   SELECT sal * 12 INTO v_sal FROM emp WHERE empno = p_empno;
+   RETURN v_sal;
+END;
+/
+
+-- 호출 (SQL에서도 사용 가능)
+SELECT get_annual_sal(7369) FROM dual;
+```
+
+### 파라미터 모드
+
+| 모드 | 방향 |
+|---|---|
+| **IN** (기본) | 호출자 → 프로시저 (읽기만) |
+| **OUT** | 프로시저 → 호출자 |
+| **IN OUT** | 양방향 |
+
+## 트리거
+
+```sql
+CREATE OR REPLACE TRIGGER trg_emp_log
+AFTER INSERT OR UPDATE OR DELETE ON emp
+FOR EACH ROW
+BEGIN
+   IF INSERTING THEN
+      INSERT INTO emp_log VALUES (:NEW.empno, 'INSERT', SYSDATE);
+   ELSIF UPDATING THEN
+      INSERT INTO emp_log VALUES (:NEW.empno, 'UPDATE', SYSDATE);
+   ELSIF DELETING THEN
+      INSERT INTO emp_log VALUES (:OLD.empno, 'DELETE', SYSDATE);
+   END IF;
+END;
+/
+```
+
+`:NEW`/`:OLD`는 변경 전/후 행을 의미.
+
+### 트리거 종류
+
+| 시점 | 단위 | 설명 |
+|---|---|---|
+| BEFORE | STATEMENT | 문장 실행 전, 한 번 |
+| BEFORE | FOR EACH ROW | 각 행 처리 전 |
+| AFTER | STATEMENT | 문장 실행 후, 한 번 |
+| AFTER | FOR EACH ROW | 각 행 처리 후 |
+| INSTEAD OF | (뷰) | DML 대신 실행 |
+
+## 시험 빈출 포인트
+
+> 📌 **자주 출제**
+> - 블록 구조: `DECLARE → BEGIN → EXCEPTION → END`
+> - `%TYPE`, `%ROWTYPE`의 의미
+> - 예외 처리에서 `OTHERS`는 모든 예외 catch
+> - 트리거의 BEFORE/AFTER, STATEMENT/ROW
+> - `:NEW`, `:OLD`로 변경 데이터 접근
+> - 프로시저는 값 반환 X, 함수는 RETURN 필수

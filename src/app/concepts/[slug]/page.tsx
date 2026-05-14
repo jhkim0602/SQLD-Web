@@ -59,7 +59,7 @@ export default async function ConceptPage({
         <p className="mb-6 text-zinc-600">{concept.description}</p>
       )}
 
-      <MarkdownView source={concept.body} />
+      <MarkdownView html={concept.bodyHtml} source={concept.body} />
 
       {related.length > 0 && (
         <section className="mt-12 rounded-md border border-zinc-200 bg-zinc-50/50 p-5">

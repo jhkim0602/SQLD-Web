@@ -1,77 +1,231 @@
 ---
 slug: window-functions
-title: 윈도우 함수
+title: 윈도우 함수 총정리
 subject: 2
 category: 윈도우함수
 order: 5
-description: 행 그룹에 대한 분석 함수 (RANK, LAG, NTILE 등)
-relatedQuestions: [q-017]
+description: 그룹별 순위·집계·전후 비교를 한 번에. SQLD의 핵심 도구.
+relatedQuestions: [q-017, q-073, q-074, q-075, q-076, q-077, q-078]
 ---
+
+## 윈도우 함수란?
+
+행 그룹(윈도우)에 대해 함수를 적용하지만 **결과 행 수는 줄이지 않는다**. GROUP BY와 다르게 원본 행은 유지.
+
+```sql
+-- GROUP BY: 결과 행 수 감소
+SELECT deptno, AVG(sal) FROM emp GROUP BY deptno;
+
+-- 윈도우 함수: 행 수 유지 + 그룹별 평균 표시
+SELECT ename, sal,
+  AVG(sal) OVER (PARTITION BY deptno) AS dept_avg
+FROM emp;
+```
 
 ## 기본 구조
 
 ```sql
 함수() OVER (
-  PARTITION BY 컬럼
-  ORDER BY 컬럼
-  ROWS BETWEEN ... AND ...
+  [PARTITION BY 컬럼1, 컬럼2 ...]
+  [ORDER BY 컬럼 [ASC|DESC] [NULLS FIRST|LAST]]
+  [ROWS|RANGE BETWEEN ... AND ...]
 )
 ```
 
-- **PARTITION BY**: 그룹 분할
-- **ORDER BY**: 그룹 내 순서
-- **ROWS/RANGE**: 윈도우 프레임 범위
+| 절 | 역할 | 생략 시 |
+|---|---|---|
+| `PARTITION BY` | 그룹 분할 | 전체를 하나의 윈도우 |
+| `ORDER BY` | 윈도우 내 순서 | (순위·LAG 등은 필수) |
+| `ROWS/RANGE` | 윈도우 프레임 | 기본 프레임 적용 |
 
-## 순위 함수
+## 1. 순위 함수
 
-| 함수 | 동순위 처리 |
-|---|---|
-| **RANK** | 동순위 후 순위 **건너뜀** (1,1,3,4) |
-| **DENSE_RANK** | 동순위 후 순위 **연속** (1,1,2,3) |
-| **ROW_NUMBER** | 동순위 없음, 무조건 +1 (1,2,3,4) |
-| **NTILE(n)** | n개 그룹으로 나눔 |
+| 함수 | 동순위 처리 | 예시 |
+|---|---|---|
+| `RANK()` | 동순위 후 **건너뜀** | 1, 1, **3**, 4 |
+| `DENSE_RANK()` | 동순위 후 **연속** | 1, 1, **2**, 3 |
+| `ROW_NUMBER()` | 동순위 없음 | 1, 2, 3, 4 |
+| `NTILE(n)` | n개 그룹으로 균등 분할 | 1~4 (n=4) |
 
 ```sql
 SELECT ename, sal,
   RANK()       OVER (ORDER BY sal DESC) AS r,
   DENSE_RANK() OVER (ORDER BY sal DESC) AS dr,
-  ROW_NUMBER() OVER (ORDER BY sal DESC) AS rn
+  ROW_NUMBER() OVER (ORDER BY sal DESC) AS rn,
+  NTILE(4)     OVER (ORDER BY sal DESC) AS quartile
 FROM emp;
 ```
 
-## 행 순서 함수
+### PARTITION BY와 함께
+
+```sql
+-- 부서별 급여 순위
+SELECT ename, deptno, sal,
+  RANK() OVER (PARTITION BY deptno ORDER BY sal DESC) AS dept_rank
+FROM emp;
+```
+
+## 2. 행 순서 함수 (LAG/LEAD)
+
+이전·다음 행의 값을 가져옴.
+
+```sql
+SELECT ename, hiredate, sal,
+  LAG(sal, 1, 0) OVER (ORDER BY hiredate) AS prev_sal,
+  LEAD(sal, 1, 0) OVER (ORDER BY hiredate) AS next_sal
+FROM emp;
+```
 
 | 함수 | 동작 |
 |---|---|
-| `LAG(컬럼, n, default)` | 이전 n번째 행의 값 |
-| `LEAD(컬럼, n, default)` | 다음 n번째 행의 값 |
-| `FIRST_VALUE(컬럼)` | 윈도우의 첫 행 |
-| `LAST_VALUE(컬럼)` | 윈도우의 마지막 행 |
+| `LAG(col, n, default)` | n행 이전 값 (없으면 default) |
+| `LEAD(col, n, default)` | n행 다음 값 |
+| `FIRST_VALUE(col)` | 윈도우 첫 행 |
+| `LAST_VALUE(col)` | 윈도우 마지막 행 (프레임 주의) |
+| `NTH_VALUE(col, n)` | n번째 행 |
+
+### LAST_VALUE 함정
+
+```sql
+-- ✗ 기본 프레임이 'CURRENT ROW'까지라 항상 본인 값 반환
+SELECT ename, sal,
+  LAST_VALUE(sal) OVER (ORDER BY sal) AS last_sal
+FROM emp;
+
+-- ✓ 프레임을 명시
+SELECT ename, sal,
+  LAST_VALUE(sal) OVER (
+    ORDER BY sal
+    ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
+  ) AS last_sal
+FROM emp;
+```
+
+## 3. 집계 함수의 윈도우 사용
+
+`SUM`, `AVG`, `COUNT`, `MIN`, `MAX` 모두 OVER 절과 함께 사용 가능.
+
+```sql
+SELECT ename, deptno, sal,
+  SUM(sal) OVER (PARTITION BY deptno) AS dept_total,
+  AVG(sal) OVER (PARTITION BY deptno) AS dept_avg,
+  COUNT(*) OVER (PARTITION BY deptno) AS dept_cnt,
+  MAX(sal) OVER (PARTITION BY deptno) AS dept_max
+FROM emp;
+```
+
+### 누적합
+
+```sql
+SELECT ename, hiredate, sal,
+  SUM(sal) OVER (
+    ORDER BY hiredate
+    ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+  ) AS cum_sal
+FROM emp;
+```
+
+### 이동평균 (최근 3행)
 
 ```sql
 SELECT ename, sal,
-  LAG(sal, 1, 0) OVER (ORDER BY hiredate) AS prev_sal
+  AVG(sal) OVER (
+    ORDER BY hiredate
+    ROWS BETWEEN 2 PRECEDING AND CURRENT ROW
+  ) AS moving_avg
 FROM emp;
 ```
 
-## 비율 함수
+## 4. 비율 함수
 
-| 함수 | 동작 |
+| 함수 | 의미 |
 |---|---|
-| `PERCENT_RANK()` | 순위 백분율 (0 ~ 1) |
+| `PERCENT_RANK()` | (RANK - 1) / (행수 - 1), 0~1 |
 | `CUME_DIST()` | 누적 분포 |
-| `RATIO_TO_REPORT(컬럼)` | 전체 합 대비 비율 |
-
-## 윈도우 프레임
+| `RATIO_TO_REPORT(col)` | 합계 대비 비율 |
 
 ```sql
-SUM(sal) OVER (
-  ORDER BY hiredate
-  ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
-)  -- 누적 합
+SELECT ename, sal,
+  PERCENT_RANK() OVER (ORDER BY sal) AS pct_rank,
+  CUME_DIST()    OVER (ORDER BY sal) AS cume_dist,
+  RATIO_TO_REPORT(sal) OVER () AS ratio
+FROM emp;
 ```
 
-- `UNBOUNDED PRECEDING`: 처음부터
-- `CURRENT ROW`: 현재 행
-- `n PRECEDING / FOLLOWING`: 앞/뒤 n행
-- `ROWS` vs `RANGE`: 행 단위 vs 값 단위
+## 윈도우 프레임 (ROWS vs RANGE)
+
+| 키워드 | 의미 |
+|---|---|
+| `UNBOUNDED PRECEDING` | 첫 행부터 |
+| `n PRECEDING` | n행 이전부터 |
+| `CURRENT ROW` | 현재 행 |
+| `n FOLLOWING` | n행 이후까지 |
+| `UNBOUNDED FOLLOWING` | 마지막 행까지 |
+
+### ROWS vs RANGE
+
+- **ROWS**: 행 단위 (위치 기반)
+- **RANGE**: 값 단위 (논리 기반, 동순위 그룹 묶음)
+
+```sql
+-- ROWS: 정확히 앞 2행
+SUM(sal) OVER (ORDER BY id ROWS BETWEEN 2 PRECEDING AND CURRENT ROW)
+
+-- RANGE: 값 기준 (동일 ORDER BY 값은 한꺼번에)
+SUM(sal) OVER (ORDER BY sal RANGE BETWEEN 100 PRECEDING AND CURRENT ROW)
+-- 현재 sal보다 100 작은 값까지의 합
+```
+
+## 그룹별 Top-N
+
+```sql
+-- 부서별 급여 상위 3명
+SELECT * FROM (
+  SELECT e.*,
+    RANK() OVER (PARTITION BY deptno ORDER BY sal DESC) AS r
+  FROM emp e
+) WHERE r <= 3;
+```
+
+> 💡 어떤 순위 함수를 쓸까?
+> - 동률 모두 포함 → `RANK`
+> - 정확히 N건만 → `ROW_NUMBER`
+> - 동률 후 연속 순위 → `DENSE_RANK`
+
+## 자주 틀리는 함정
+
+> 📌 **시험 빈출**
+
+1. **PARTITION BY 생략 시 전체 = 하나의 윈도우**
+2. **ORDER BY 생략 시 순위 함수는 결정적이지 않음**
+3. **LAST_VALUE의 기본 프레임 함정**
+4. **WHERE 절에서 윈도우 함수 사용 불가** (SELECT 절 이후 실행)
+   ```sql
+   -- ✗ 에러
+   SELECT * FROM emp WHERE RANK() OVER (...) <= 3;
+   -- ✓ 인라인 뷰로 감싸기
+   SELECT * FROM (SELECT *, RANK() OVER (...) r FROM emp) WHERE r <= 3;
+   ```
+5. **GROUP BY 결과에 윈도우 함수**: GROUP BY 후 윈도우 함수는 그룹 결과에 대해 적용
+
+## SQL 실행 순서에서의 위치
+
+```
+FROM → WHERE → GROUP BY → HAVING → 윈도우 함수 → SELECT → ORDER BY
+```
+
+> 윈도우 함수는 SELECT 절 직전에 평가. 그래서 WHERE/HAVING에서 사용 불가.
+
+## 시험 빈출 포인트
+
+> 📌 **꼭 외울 것**
+>
+> 1. 3가지 순위 함수: RANK(건너뜀), DENSE_RANK(연속), ROW_NUMBER(고유)
+> 2. `LAG(col, n, default)` — 이전 행, `LEAD` — 다음 행
+> 3. `PARTITION BY` = 그룹 분할
+> 4. ROWS = 행 단위, RANGE = 값 단위
+> 5. 누적합: `ROWS UNBOUNDED PRECEDING TO CURRENT ROW`
+> 6. WHERE에서 윈도우 함수 불가 → 인라인 뷰
+> 7. `NTILE(n)` = n개 분위수 그룹
+> 8. `RATIO_TO_REPORT` = 합계 대비 비율
+> 9. 그룹별 Top-N은 윈도우 함수 + 인라인 뷰

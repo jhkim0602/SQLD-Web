@@ -164,7 +164,10 @@ export function OxQuiz({ questions }: Props) {
             {isCorrect ? "✓ 정답" : "✗ 오답"} — 정답은{" "}
             {current.answer ? "O" : "X"}
           </div>
-          <MarkdownView source={current.explanation} />
+          <MarkdownView
+            html={current.explanationHtml}
+            source={current.explanation}
+          />
           <div className="mt-4 flex gap-2">
             <button
               onClick={next}

@@ -1,0 +1,123 @@
+---
+slug: top-n
+title: Top-N 쿼리 (상위 N건)
+subject: 2
+category: 윈도우함수
+order: 10
+description: 정렬된 결과의 상위 N건을 추출하는 다양한 방법. ROWNUM, FETCH FIRST, 윈도우 함수.
+relatedQuestions: []
+---
+
+## 무엇이 문제인가?
+
+\"부서별 급여 상위 3명\" 같은 쿼리는 단순한 ORDER BY + LIMIT으로 해결되지 않는다.
+
+## 방법 1: ROWNUM (Oracle 전통)
+
+```sql
+-- 급여 상위 5명
+SELECT * FROM (
+  SELECT * FROM emp ORDER BY sal DESC
+) WHERE ROWNUM <= 5;
+```
+
+> ⚠️ **함정**: ROWNUM은 **정렬 전**에 부여되므로 인라인 뷰로 정렬한 뒤 ROWNUM을 매겨야 한다.
+
+```sql
+-- ✗ 잘못된 예
+SELECT * FROM emp WHERE ROWNUM <= 5 ORDER BY sal DESC;
+-- → 임의의 5건을 뽑고 그것만 정렬
+
+-- ✓ 올바른 예
+SELECT * FROM (SELECT * FROM emp ORDER BY sal DESC) WHERE ROWNUM <= 5;
+```
+
+### ROWNUM 페이지네이션 함정
+
+\"6~10위만\" 같은 쿼리는?
+
+```sql
+-- ✗ ROWNUM은 1부터 시작해야 매겨지므로 BETWEEN 6 AND 10은 빈 결과
+SELECT * FROM (SELECT * FROM emp ORDER BY sal DESC)
+WHERE ROWNUM BETWEEN 6 AND 10;
+
+-- ✓ 한 번 더 감싸야 함
+SELECT * FROM (
+  SELECT inner_q.*, ROWNUM AS rn FROM (
+    SELECT * FROM emp ORDER BY sal DESC
+  ) inner_q WHERE ROWNUM <= 10
+) WHERE rn >= 6;
+```
+
+## 방법 2: FETCH FIRST (ANSI 표준, Oracle 12c+)
+
+```sql
+-- 상위 5건
+SELECT * FROM emp ORDER BY sal DESC
+FETCH FIRST 5 ROWS ONLY;
+
+-- 페이지네이션 (6~10위)
+SELECT * FROM emp ORDER BY sal DESC
+OFFSET 5 ROWS FETCH NEXT 5 ROWS ONLY;
+
+-- 동률 포함
+SELECT * FROM emp ORDER BY sal DESC
+FETCH FIRST 5 ROWS WITH TIES;  -- 5위와 같은 sal은 모두 포함
+```
+
+훨씬 직관적. ROWNUM보다 권장.
+
+## 방법 3: 윈도우 함수 (그룹별 Top-N)
+
+\"부서별 급여 상위 3명\" 같은 그룹 내 Top-N에 가장 강력하다.
+
+```sql
+SELECT * FROM (
+  SELECT e.*,
+    RANK() OVER (PARTITION BY deptno ORDER BY sal DESC) AS r
+  FROM emp e
+) WHERE r <= 3;
+```
+
+### 어떤 순위 함수를 쓸까?
+
+| 상황 | 함수 |
+|---|---|
+| **동률을 모두 포함** | RANK |
+| **동률 없이 정확히 N건** | ROW_NUMBER |
+| **동률 후 연속 순위** | DENSE_RANK |
+
+```sql
+-- 부서별 정확히 3명만 (동률은 임의 선택)
+WHERE ROW_NUMBER() OVER (PARTITION BY deptno ORDER BY sal DESC) <= 3
+```
+
+## 방법 4: SQL Server / PostgreSQL / MySQL 문법
+
+```sql
+-- SQL Server
+SELECT TOP 5 * FROM emp ORDER BY sal DESC;
+SELECT TOP 5 WITH TIES * FROM emp ORDER BY sal DESC;
+
+-- MySQL, PostgreSQL
+SELECT * FROM emp ORDER BY sal DESC LIMIT 5;
+SELECT * FROM emp ORDER BY sal DESC LIMIT 5 OFFSET 5;
+```
+
+## 시험 빈출 포인트
+
+> 📌 **자주 출제**
+> - ROWNUM은 정렬 **전** 부여되므로 인라인 뷰 필수
+> - ROWNUM 페이지네이션은 두 번 감싸야 함
+> - FETCH FIRST는 Oracle 12c+, ANSI 표준
+> - 그룹별 Top-N은 **윈도우 함수**가 정답
+> - `WITH TIES`로 동률 포함 처리
+
+## 비교 정리
+
+| 방법 | 장점 | 단점 |
+|---|---|---|
+| ROWNUM | Oracle 모든 버전 | 직관성 ↓, 페이지 처리 복잡 |
+| FETCH FIRST | 표준, 직관적 | Oracle 12c+ |
+| 윈도우 함수 | 그룹별 Top-N 가능 | 약간 복잡 |
+| LIMIT (MySQL/PG) | 매우 직관적 | Oracle 미지원 |

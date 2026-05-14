@@ -79,8 +79,14 @@ export function ExamRunner({ allQuestions }: Props) {
   ).length;
 
   function pickAnswer(value: number | boolean) {
-    if (!currentQuestion) return;
+    if (!currentQuestion || !activeExam) return;
     saveExamAnswer(currentQid, value);
+    const isLast = currentIdx >= activeExam.qids.length - 1;
+    if (isLast) {
+      setTimeout(() => setShowFinishConfirm(true), 250);
+    } else {
+      setTimeout(() => setCurrentIdx((i) => i + 1), 180);
+    }
   }
 
   function submitFinal() {
@@ -158,11 +164,20 @@ export function ExamRunner({ allQuestions }: Props) {
       </div>
 
       <div className="mb-6">
-        <MarkdownView source={currentQuestion.question} />
-        {currentQuestion.codeBlock && (
-          <pre className="mt-3">
-            <code>{currentQuestion.codeBlock}</code>
-          </pre>
+        <MarkdownView
+          html={currentQuestion.questionHtml}
+          source={currentQuestion.question}
+        />
+        {currentQuestion.codeBlockHtml ? (
+          <div className="mt-3">
+            <MarkdownView html={currentQuestion.codeBlockHtml} />
+          </div>
+        ) : (
+          currentQuestion.codeBlock && (
+            <pre className="mt-3">
+              <code>{currentQuestion.codeBlock}</code>
+            </pre>
+          )
         )}
       </div>
 

@@ -1,71 +1,204 @@
 ---
 slug: subquery
-title: 서브쿼리 (Subquery)
+title: 서브쿼리 종합
 subject: 2
 category: 서브쿼리
 order: 6
-description: 위치·반환·상관 여부로 분류되는 중첩 질의
-relatedQuestions: [q-016]
+description: 위치·반환 행수·상관 여부에 따른 분류와 함정.
+relatedQuestions: [q-016, q-064, q-065, q-066, q-067, q-068, q-069]
 ---
 
-## 위치별 분류
+## 서브쿼리의 3가지 분류 축
 
-| 위치 | 이름 | 반환 제약 |
+### 1. 위치별
+
+| 위치 | 이름 | 제약 |
 |---|---|---|
-| **SELECT 절** | 스칼라 서브쿼리 | **단일 행, 단일 컬럼** |
-| **FROM 절** | 인라인 뷰 | 제약 없음 |
-| **WHERE 절** | 중첩 서브쿼리 | 연산자에 따라 다름 |
+| SELECT | **스칼라 서브쿼리** | 단일 행, 단일 컬럼 |
+| FROM | **인라인 뷰** | 자유 (다중 행/컬럼) |
+| WHERE | **중첩 서브쿼리** | 연산자에 따라 다름 |
+| HAVING | (중첩과 유사) | 집계 결과 비교용 |
 
-```sql
--- 스칼라 서브쿼리
-SELECT ename, (SELECT dname FROM dept WHERE deptno = e.deptno) AS dname
-FROM emp e;
+### 2. 반환 행수별
 
--- 인라인 뷰
-SELECT * FROM (SELECT ename, sal FROM emp WHERE sal > 1000) WHERE sal < 2000;
-
--- 중첩 서브쿼리
-SELECT * FROM emp WHERE deptno IN (SELECT deptno FROM dept WHERE loc = 'SEOUL');
-```
-
-## 반환 행 수에 따른 연산자
-
-| 단일 행 | 다중 행 |
+| 반환 | 사용 가능 연산자 |
 |---|---|
-| =, <>, <, >, <=, >= | IN, NOT IN, ANY, ALL, EXISTS |
+| **단일 행** (1행) | `=`, `<>`, `<`, `>`, `<=`, `>=` |
+| **다중 행** (여러 행) | `IN`, `NOT IN`, `ANY`, `ALL`, `EXISTS`, `NOT EXISTS` |
+| **다중 컬럼** | `(c1, c2) IN ((v1, v2), ...)` |
+
+### 3. 메인쿼리 참조 여부
+
+| 종류 | 설명 |
+|---|---|
+| **비상관 (Non-correlated)** | 메인 컬럼 참조 X, 한 번만 실행 |
+| **상관 (Correlated)** | 메인 컬럼 참조 O, 메인 행마다 실행 |
+
+## 1. 스칼라 서브쿼리 (SELECT 절)
+
+**단일 행, 단일 컬럼**만 반환.
 
 ```sql
--- 단일 행: 최대 급여 사원
+SELECT e.ename,
+  (SELECT d.dname FROM dept d WHERE d.deptno = e.deptno) AS 부서명
+FROM emp e;
+```
+
+> ⚠️ **함정**: 2건 이상 반환 시 `ORA-01427: single-row subquery returns more than one row` 에러.
+
+```sql
+-- ✗ dept.deptno가 중복되면 에러
+SELECT e.ename,
+  (SELECT d.dname FROM dept d WHERE d.deptno >= e.deptno) FROM emp e;
+```
+
+해결: 조건을 좁히거나 `MAX/MIN`으로 단일 값으로.
+
+## 2. 인라인 뷰 (FROM 절)
+
+서브쿼리 결과를 임시 테이블처럼.
+
+```sql
+SELECT * FROM (
+  SELECT deptno, AVG(sal) AS avg_sal
+  FROM emp
+  GROUP BY deptno
+) d
+WHERE d.avg_sal > 2000;
+```
+
+- alias 필수
+- ORDER BY는 인라인 뷰 안에서 보통 무시됨 (옵티마이저 결정)
+- 페이지네이션, Top-N, 사전 집계에 자주 사용
+
+### CTE (WITH 절) — 인라인 뷰의 표준 대안
+
+```sql
+WITH dept_avg AS (
+  SELECT deptno, AVG(sal) AS avg_sal FROM emp GROUP BY deptno
+)
+SELECT * FROM dept_avg WHERE avg_sal > 2000;
+```
+
+- 가독성 ↑
+- **재사용** 가능 (같은 CTE를 여러 곳에서 참조)
+- 재귀 CTE로 계층 쿼리 표현 가능 (ANSI 표준)
+
+## 3. 중첩 서브쿼리 (WHERE 절)
+
+### 단일 행 서브쿼리
+
+```sql
+-- 평균 급여보다 높은 사원
+SELECT * FROM emp WHERE sal > (SELECT AVG(sal) FROM emp);
+
+-- 최대 급여 사원
 SELECT * FROM emp WHERE sal = (SELECT MAX(sal) FROM emp);
-
--- 다중 행
-SELECT * FROM emp WHERE sal > ALL (SELECT sal FROM emp WHERE deptno = 10);
--- 10번 부서 모든 사원보다 급여가 높은 사원
-
-SELECT * FROM emp WHERE sal > ANY (SELECT sal FROM emp WHERE deptno = 10);
--- 10번 부서 누구 한 명보다라도 높은 사원
 ```
 
-## 상관 vs 비상관
-
-| | 상관 (Correlated) | 비상관 (Non-correlated) |
-|---|---|---|
-| 메인 컬럼 참조 | O | X |
-| 실행 횟수 | 메인 행마다 | 한 번 |
-| 예시 연산자 | EXISTS | IN |
+### 다중 행 서브쿼리
 
 ```sql
--- 상관: 부서별 최대 급여 사원
-SELECT * FROM emp e
-WHERE sal = (SELECT MAX(sal) FROM emp WHERE deptno = e.deptno);
+-- IN: 어느 하나와 일치
+SELECT * FROM emp WHERE deptno IN (SELECT deptno FROM dept WHERE loc = 'SEOUL');
 
--- 비상관: 한 번만 실행
-SELECT * FROM emp
-WHERE deptno IN (SELECT deptno FROM dept WHERE loc = 'SEOUL');
+-- ANY/SOME: 어느 하나라도 조건 만족
+SELECT * FROM emp WHERE sal > ANY (SELECT sal FROM emp WHERE deptno = 10);
+-- 10번 부서의 최소 급여보다라도 높은 사원
+
+-- ALL: 모두 조건 만족
+SELECT * FROM emp WHERE sal > ALL (SELECT sal FROM emp WHERE deptno = 10);
+-- 10번 부서의 최대 급여보다 높은 사원
+
+-- EXISTS: 매칭 존재 여부 (Boolean)
+SELECT * FROM emp e WHERE EXISTS (
+  SELECT 1 FROM dept d WHERE d.deptno = e.deptno AND d.loc = 'SEOUL'
+);
 ```
 
-## EXISTS vs IN
+### ANY vs ALL
 
-- **IN**: 결과 집합을 만들고 비교
-- **EXISTS**: 한 건이라도 있으면 TRUE, 보통 성능 좋음
-- **NOT IN**: NULL이 한 건이라도 있으면 결과 없음 → **NOT EXISTS** 권장
+| 연산자 | 의미 | 동치 |
+|---|---|---|
+| `> ANY (...)` | 최소값보다 큼 | `> MIN(...)` |
+| `< ANY (...)` | 최대값보다 작음 | `< MAX(...)` |
+| `> ALL (...)` | 최대값보다 큼 | `> MAX(...)` |
+| `< ALL (...)` | 최소값보다 작음 | `< MIN(...)` |
+| `= ANY` | IN과 동일 | `IN` |
+| `<> ALL` | NOT IN과 동일 | `NOT IN` |
+
+## 4. 상관 서브쿼리 (Correlated)
+
+메인 행마다 서브쿼리 재실행.
+
+```sql
+-- 부서별 최대 급여 사원
+SELECT * FROM emp e
+WHERE sal = (
+  SELECT MAX(sal) FROM emp 
+  WHERE deptno = e.deptno   -- ← 외부 컬럼 참조
+);
+```
+
+```sql
+-- 부서 평균보다 많이 받는 사원
+SELECT * FROM emp e
+WHERE sal > (
+  SELECT AVG(sal) FROM emp WHERE deptno = e.deptno
+);
+```
+
+### EXISTS는 거의 항상 상관
+
+```sql
+-- 부서에 사원이 있는 부서만
+SELECT * FROM dept d
+WHERE EXISTS (SELECT 1 FROM emp e WHERE e.deptno = d.deptno);
+```
+
+## EXISTS vs IN vs JOIN
+
+세 가지 모두 \"매칭되는 것만\" 표현 가능. 어떤 걸 쓸까?
+
+| | 가독성 | 성능 (대체로) | NULL 안전 |
+|---|---|---|---|
+| **IN** | 좋음 | 작은 결과셋 | NULL 함정 |
+| **EXISTS** | 보통 | 빠름 (첫 매치 시 종료) | 안전 |
+| **JOIN** | 결과에 다른 컬럼도 필요할 때 | 빠름 | 안전 |
+
+### NOT IN의 NULL 함정 → NOT EXISTS 사용
+
+```sql
+-- ✗ NOT IN + NULL = 항상 빈 결과
+WHERE deptno NOT IN (SELECT deptno FROM dept);
+
+-- ✓ NULL 안전
+WHERE NOT EXISTS (
+  SELECT 1 FROM dept d WHERE d.deptno = e.deptno
+);
+```
+
+## 다중 컬럼 서브쿼리
+
+```sql
+-- 부서별 최대 급여를 받는 사원
+SELECT * FROM emp
+WHERE (deptno, sal) IN (
+  SELECT deptno, MAX(sal) FROM emp GROUP BY deptno
+);
+```
+
+## 시험 빈출 포인트
+
+> 📌 **꼭 외울 것**
+>
+> 1. **위치별 분류**: SELECT(스칼라), FROM(인라인뷰), WHERE(중첩)
+> 2. **스칼라 서브쿼리** = 단일 행 단일 컬럼 (위반 시 ORA-01427)
+> 3. **단일 행 연산자**: =, <>, <, >, <=, >=
+> 4. **다중 행 연산자**: IN, ANY, ALL, EXISTS
+> 5. `> ANY` = 최소보다 큼, `> ALL` = 최대보다 큼
+> 6. `NOT IN` + NULL = 함정 (`NOT EXISTS` 사용)
+> 7. 상관 vs 비상관: 외부 컬럼 참조 여부
+> 8. EXISTS는 첫 매치 시 종료 → 성능 좋음
+> 9. CTE(WITH 절)는 가독성·재사용 ↑
+> 10. 인라인 뷰의 ORDER BY는 보통 무시됨

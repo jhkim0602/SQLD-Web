@@ -1,0 +1,150 @@
+---
+slug: optimizer
+title: 옵티마이저와 실행계획
+subject: 2
+category: JOIN
+order: 10
+description: SQL을 어떻게 실행할지 결정하는 DBMS의 두뇌. 실행계획 읽는 법과 힌트.
+relatedQuestions: [q-052]
+---
+
+## 옵티마이저란?
+
+**옵티마이저(Optimizer)**는 SQL 문을 가장 효율적으로 실행할 방법(실행계획)을 결정하는 DBMS 내부 모듈이다.
+
+### 옵티마이저의 두 종류
+
+| 종류 | 설명 | 사용 |
+|---|---|---|
+| **RBO** (Rule-Based) | 고정된 규칙으로 우선순위 결정 | Oracle 10g 이전 (deprecated) |
+| **CBO** (Cost-Based) | **통계 정보 기반 비용 계산** | 현대 DBMS 표준 |
+
+CBO는 테이블 크기, 인덱스 분포도, 컬럼 카디널리티 등을 통계로 보고 가장 비용이 낮은 계획 선택.
+
+## JOIN 처리 방식
+
+CBO는 상황에 따라 다음 3가지 중 하나를 선택한다.
+
+### 1. Nested Loop Join (NL Join)
+
+```
+for each row in OUTER:
+    for each row in INNER where condition:
+        join
+```
+
+- **선행 테이블(외부)의 행 수가 적고**, 후행 테이블에 인덱스가 있을 때 유리
+- **OLTP** (소량 데이터, 빠른 응답)에 적합
+- 인덱스 없는 NL은 매우 느림
+
+### 2. Hash Join
+
+```
+phase 1: 작은 쪽으로 hash table 생성
+phase 2: 큰 쪽을 순회하며 hash table을 probe
+```
+
+- **등치(=) 조인 전용**
+- **대용량** 데이터에 강함
+- 메모리 사용이 큼 (PGA, work_mem)
+- 인덱스 없어도 효율적
+
+### 3. Sort Merge Join
+
+```
+phase 1: 양쪽 데이터를 조인 키로 정렬
+phase 2: 정렬된 결과를 병합
+```
+
+- 이미 정렬되어 있는 경우 매우 빠름
+- **등치/범위 조인 모두** 가능
+- 데이터가 큰 경우 정렬 비용이 부담
+
+### 비교 정리
+
+| 방식 | 적합 상황 | 비등치 | 인덱스 |
+|---|---|---|---|
+| NL Join | 소량 + 후행 인덱스 | ✓ | 필요 |
+| Hash Join | 대량 + 등치 | ✗ | 불필요 |
+| Sort Merge | 정렬된 대량 + 범위 가능 | ✓ | 불필요 |
+
+## 실행계획 (Execution Plan)
+
+실행계획은 옵티마이저가 결정한 SQL 실행 방법을 보여준다.
+
+```sql
+-- Oracle
+EXPLAIN PLAN FOR
+SELECT * FROM emp e, dept d
+WHERE e.deptno = d.deptno;
+
+SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY);
+```
+
+```
+| Id  | Operation                    | Name  | Rows | Cost |
+|-----|------------------------------|-------|------|------|
+|   0 | SELECT STATEMENT             |       |   14 |    5 |
+|   1 |  HASH JOIN                   |       |   14 |    5 |
+|   2 |   TABLE ACCESS FULL          | DEPT  |    4 |    2 |
+|   3 |   TABLE ACCESS FULL          | EMP   |   14 |    2 |
+```
+
+읽는 순서: **들여쓰기가 깊은 것부터, 같은 깊이면 위→아래**.
+
+### 주요 Operation
+
+| Operation | 의미 |
+|---|---|
+| TABLE ACCESS FULL | 테이블 전체 스캔 |
+| TABLE ACCESS BY INDEX ROWID | 인덱스로 ROWID 찾고 테이블 접근 |
+| INDEX UNIQUE SCAN | 인덱스 단일 행 |
+| INDEX RANGE SCAN | 인덱스 범위 |
+| INDEX FULL SCAN | 인덱스 전체 |
+| NESTED LOOPS | NL 조인 |
+| HASH JOIN | 해시 조인 |
+| MERGE JOIN | 정렬 병합 |
+| SORT | 정렬 |
+| FILTER | 필터링 |
+
+## 옵티마이저 힌트
+
+힌트(`/*+ ... */`)로 옵티마이저의 결정을 강제할 수 있다 (남용 주의).
+
+```sql
+SELECT /*+ FULL(e) */ * FROM emp e;        -- emp를 Full Scan
+
+SELECT /*+ INDEX(e idx_emp_sal) */ *        -- 특정 인덱스 사용
+FROM emp e WHERE sal > 1000;
+
+SELECT /*+ USE_NL(e d) */ *                 -- NL 조인 강제
+FROM emp e, dept d WHERE e.deptno = d.deptno;
+
+SELECT /*+ USE_HASH(e d) */ *               -- Hash 조인 강제
+FROM emp e, dept d WHERE e.deptno = d.deptno;
+
+SELECT /*+ LEADING(d) */ *                  -- 선행 테이블 지정
+FROM emp e, dept d WHERE e.deptno = d.deptno;
+```
+
+## 통계 정보 관리
+
+```sql
+-- 테이블 통계 갱신
+EXEC DBMS_STATS.GATHER_TABLE_STATS('SCOTT', 'EMP');
+
+-- 스키마 전체
+EXEC DBMS_STATS.GATHER_SCHEMA_STATS('SCOTT');
+```
+
+통계가 오래되면 옵티마이저가 잘못된 계획을 선택할 수 있어 **주기적 갱신** 필요.
+
+## 시험 빈출 포인트
+
+> 📌 **자주 출제**
+> - RBO vs CBO (현대는 CBO)
+> - 3가지 JOIN 방식의 동작·적합 상황
+> - 실행계획 읽는 순서 (안쪽 → 바깥쪽, 위 → 아래)
+> - NL은 소량 + 인덱스, Hash는 대량 + 등치
+> - 통계 정보가 옵티마이저 결정의 근거
+> - 힌트는 강제 수단 (테스트·튜닝 목적)
