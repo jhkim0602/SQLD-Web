@@ -1,0 +1,19 @@
+{
+  "id": "q-135",
+  "subject": 2,
+  "category": "그룹함수",
+  "type": "mc",
+  "question": "다음 결과의 SUM 값은?\n\nemp.sal: 1000, 2000, NULL, 3000, NULL",
+  "codeBlock": "SELECT SUM(sal), AVG(sal), MAX(sal), MIN(sal),\n       COUNT(*), COUNT(sal)\nFROM emp;",
+  "choices": [
+    "SUM=6000, AVG=1200, MAX=3000, MIN=1000, COUNT(*)=5, COUNT(sal)=3",
+    "SUM=6000, AVG=2000, MAX=3000, MIN=1000, COUNT(*)=5, COUNT(sal)=3",
+    "SUM=6000, AVG=2000, MAX=3000, MIN=0, COUNT(*)=5, COUNT(sal)=5",
+    "SUM=NULL, AVG=NULL, MAX=NULL, MIN=NULL, COUNT(*)=5, COUNT(sal)=3"
+  ],
+  "answer": 1,
+  "explanation": "**집계함수와 NULL** ⭐ 1순위 함정\n\n| 함수 | 결과 | 설명 |\n|---|---|---|\n| `SUM(sal)` | **6000** | NULL 제외 합산 (1000+2000+3000) |\n| `AVG(sal)` | **2000** | NULL 제외 평균 (6000/3) ← 6000/5 아님! |\n| `MAX(sal)` | 3000 | NULL 제외 최대 |\n| `MIN(sal)` | 1000 | NULL 제외 최소 |\n| `COUNT(*)` | 5 | NULL 포함 전체 행 |\n| `COUNT(sal)` | 3 | NULL 제외 컬럼 카운트 |\n\n**핵심 함정**: AVG의 분모는 **NULL이 아닌 행 수** = 3 (전체 5가 아님).\n\n선택지 1번 (AVG=1200)은 6000/5 = 1200으로 계산한 오답.\n\n**규칙**: 모든 집계함수는 NULL 무시. 단 COUNT(*)만 NULL 포함.",
+  "concepts": ["group-by", "null-handling"],
+  "tags": ["집계함수", "NULL", "AVG"],
+  "source": "self"
+}

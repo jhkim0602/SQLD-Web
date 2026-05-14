@@ -1,0 +1,18 @@
+{
+  "id": "q-107",
+  "subject": 1,
+  "category": "속성",
+  "type": "mc",
+  "question": "NULL 속성에 대한 설명으로 옳지 않은 것은?",
+  "choices": [
+    "NULL은 \"알 수 없음\" 또는 \"값이 없음\"을 의미한다.",
+    "NULL은 0이나 빈 문자열과 다르다.",
+    "NULL 값을 비교할 때는 = 또는 <> 연산자를 사용한다.",
+    "주식별자는 NULL 값을 가질 수 없다."
+  ],
+  "answer": 2,
+  "explanation": "NULL과의 비교는 **반드시 `IS NULL` 또는 `IS NOT NULL`**을 사용해야 합니다. `= NULL` 또는 `<> NULL`은 항상 UNKNOWN을 반환해 의도와 다르게 동작합니다.\n\n```sql\n-- ✗ 항상 거짓\nWHERE comm = NULL\n\n-- ✓ 정상 동작\nWHERE comm IS NULL\n```\n\n3치 논리:\n- `NULL = NULL` → UNKNOWN (TRUE 아님)\n- `NULL <> 1` → UNKNOWN\n- `NULL IS NULL` → **TRUE** ✓\n- `1 + NULL` → NULL (사칙 전파)",
+  "concepts": ["null-handling"],
+  "tags": ["NULL", "IS NULL"],
+  "source": "self"
+}

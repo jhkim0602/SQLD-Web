@@ -1,0 +1,18 @@
+{
+  "id": "q-164",
+  "subject": 2,
+  "category": "트랜잭션/PL-SQL",
+  "type": "mc",
+  "question": "다음 PL/SQL 블록 구조에서 필수 부분만 짝지어진 것은?",
+  "choices": [
+    "DECLARE, BEGIN",
+    "BEGIN, END",
+    "DECLARE, EXCEPTION, END",
+    "DECLARE, BEGIN, EXCEPTION, END"
+  ],
+  "answer": 1,
+  "explanation": "**PL/SQL 블록 구조** (암기: **데비익엔**):\n\n```sql\nDECLARE          -- (선택) 변수 선언\n   v_count NUMBER;\nBEGIN            -- (필수)\n   SELECT COUNT(*) INTO v_count FROM emp;\nEXCEPTION        -- (선택) 예외 처리\n   WHEN OTHERS THEN NULL;\nEND;             -- (필수)\n```\n\n| 부분 | 필수 여부 |\n|---|---|\n| **DECLARE** | 선택 |\n| **BEGIN** | **필수** |\n| **EXCEPTION** | 선택 |\n| **END** | **필수** |\n\n최소 블록:\n```sql\nBEGIN\n   DBMS_OUTPUT.PUT_LINE('Hello');\nEND;\n```\n\n**블록 종류**:\n- 익명 블록: 일회성\n- 저장 프로시저: CREATE PROCEDURE\n- 함수: CREATE FUNCTION (RETURN 필수)\n- 트리거: CREATE TRIGGER\n- 패키지: 관련 프로시저·함수 묶음",
+  "concepts": ["plsql"],
+  "tags": ["PL/SQL", "블록 구조"],
+  "source": "self"
+}

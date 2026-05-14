@@ -1,0 +1,18 @@
+{
+  "id": "q-132",
+  "subject": 2,
+  "category": "그룹함수",
+  "type": "mc",
+  "question": "다음 중 CUBE에 대한 설명으로 옳은 것은?",
+  "choices": [
+    "CUBE(A, B)는 (A, B), (A), () 3개 조합을 생성한다.",
+    "CUBE(A, B)는 (A, B), (A), (B), () 4개 조합을 생성한다.",
+    "CUBE는 ROLLUP의 다른 이름이다.",
+    "CUBE는 ANSI 표준이 아니다."
+  ],
+  "answer": 1,
+  "explanation": "**CUBE(N)** = **2^N개** 조합 (모든 가능한 부분집합).\n\n`CUBE(A, B)` 조합:\n1. `(A, B)` — 최세분\n2. `(A)` — A별 소계\n3. `(B)` — B별 소계\n4. `()` — 총계\n\n→ **2^2 = 4개**\n\n비교:\n- ROLLUP(N): N+1개 (계층적)\n- CUBE(N): 2^N개 (모든 조합)\n- GROUPING SETS: 명시한 조합만\n\n```sql\nGROUP BY CUBE(deptno, job)\n-- = GROUPING SETS((deptno,job), (deptno), (job), ())\n```\n\nROLLUP/CUBE 모두 **표준 SQL**(ISO/ANSI)에 포함됩니다.",
+  "concepts": ["group-by"],
+  "tags": ["CUBE", "ROLLUP", "그룹함수"],
+  "source": "self"
+}

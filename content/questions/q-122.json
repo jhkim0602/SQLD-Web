@@ -1,0 +1,19 @@
+{
+  "id": "q-122",
+  "subject": 2,
+  "category": "JOIN",
+  "type": "mc",
+  "question": "다음 쿼리에서 의도와 다른 결과가 나오는 이유는?",
+  "codeBlock": "-- 의도: 모든 사원 출력 + 부서가 있다면 SEOUL인 부서만\nSELECT e.ename, d.loc\nFROM emp e LEFT OUTER JOIN dept d\n  ON e.deptno = d.deptno\nWHERE d.loc = 'SEOUL';",
+  "choices": [
+    "WHERE 절이 NULL 행을 걸러내어 사실상 INNER JOIN과 같아짐",
+    "LEFT 키워드를 RIGHT로 바꿔야 함",
+    "조인 조건이 잘못됨",
+    "정상 동작함"
+  ],
+  "answer": 0,
+  "explanation": "**LEFT OUTER JOIN + WHERE 조건 함정** ⭐ 시험 빈출\n\nLEFT OUTER JOIN으로 매칭 없는 행은 d.loc이 NULL이 됨. 그런데 WHERE `d.loc = 'SEOUL'`은 NULL을 거르므로 → **INNER JOIN과 동일**.\n\n**해결**: 조건을 **ON 절에 추가**\n\n```sql\n-- ✓ 의도대로 작동\nSELECT e.ename, d.loc\nFROM emp e LEFT OUTER JOIN dept d\n  ON e.deptno = d.deptno AND d.loc = 'SEOUL';\n```\n\n또는 WHERE에 NULL 포함:\n```sql\nWHERE d.loc = 'SEOUL' OR d.loc IS NULL\n```\n\n**규칙**: OUTER JOIN의 NULL을 살리려면 조건을 **ON에** 두기.",
+  "concepts": ["join-types", "null-handling"],
+  "tags": ["LEFT OUTER", "WHERE", "ON", "함정"],
+  "source": "self"
+}

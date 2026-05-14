@@ -1,6 +1,6 @@
 {
-  "builtAt": "2026-05-14T08:33:08.956Z",
-  "totalQuestions": 90,
+  "builtAt": "2026-05-14T08:50:01.222Z",
+  "totalQuestions": 170,
   "totalConcepts": 25,
   "questions": [
     {
@@ -1048,6 +1048,936 @@
         "INSTEAD OF"
       ],
       "preview": "다음 중 트리거(Trigger) 종류가 아닌 것은?"
+    },
+    {
+      "id": "q-091",
+      "subject": 1,
+      "category": "관계",
+      "type": "mc",
+      "tags": [
+        "식별관계",
+        "비식별관계"
+      ],
+      "preview": "다음 중 식별 관계(Identifying Relationship)의 특징으로 옳지 않은 것은?"
+    },
+    {
+      "id": "q-092",
+      "subject": 1,
+      "category": "관계",
+      "type": "mc",
+      "tags": [
+        "선택성",
+        "Optionality"
+      ],
+      "preview": "다음 중 관계 선택성(Optionality)에 대한 설명으로 옳은 것은?"
+    },
+    {
+      "id": "q-093",
+      "subject": 1,
+      "category": "관계",
+      "type": "mc",
+      "tags": [
+        "M:N",
+        "교차 엔터티",
+        "관계 해소"
+      ],
+      "preview": "M:N 관계가 발견되었을 때 처리 방법으로 가장 적절한 것은?"
+    },
+    {
+      "id": "q-094",
+      "subject": 1,
+      "category": "관계",
+      "type": "ox",
+      "tags": [
+        "1:1",
+        "관계 차수"
+      ],
+      "preview": "1:1 관계에서는 한쪽 엔터티만 다른 쪽 엔터티의 정보를 알 수 있다."
+    },
+    {
+      "id": "q-095",
+      "subject": 1,
+      "category": "관계",
+      "type": "mc",
+      "tags": [
+        "자기참조",
+        "재귀",
+        "계층"
+      ],
+      "preview": "다음 중 자기 참조(Recursive) 관계에 가장 적합한 예시는?"
+    },
+    {
+      "id": "q-096",
+      "subject": 1,
+      "category": "트랜잭션",
+      "type": "mc",
+      "tags": [
+        "ACID",
+        "원자성"
+      ],
+      "preview": "트랜잭션의 ACID 특성 중 'All or Nothing'에 해당하는 것은?"
+    },
+    {
+      "id": "q-097",
+      "subject": 1,
+      "category": "트랜잭션",
+      "type": "mc",
+      "tags": [
+        "데드락",
+        "Deadlock",
+        "락"
+      ],
+      "preview": "두 트랜잭션이 서로의 락을 기다리는 교착 상태를 무엇이라 하는가?"
+    },
+    {
+      "id": "q-098",
+      "subject": 1,
+      "category": "트랜잭션",
+      "type": "mc",
+      "tags": [
+        "격리수준",
+        "Isolation Level",
+        "SERIALIZABLE"
+      ],
+      "preview": "다음 중 트랜잭션의 격리 수준(Isolation Level)에서 가장 엄격한(높은) 수준은?"
+    },
+    {
+      "id": "q-099",
+      "subject": 1,
+      "category": "트랜잭션",
+      "type": "mc",
+      "tags": [
+        "Dirty Read",
+        "격리수준"
+      ],
+      "preview": "다음 중 Dirty Read에 대한 설명으로 옳은 것은?"
+    },
+    {
+      "id": "q-100",
+      "subject": 1,
+      "category": "식별자",
+      "type": "mc",
+      "tags": [
+        "슈퍼키",
+        "후보키",
+        "키 분류"
+      ],
+      "preview": "다음 중 슈퍼키(Super Key)에 대한 설명으로 옳은 것은?"
+    },
+    {
+      "id": "q-101",
+      "subject": 1,
+      "category": "식별자",
+      "type": "mc",
+      "tags": [
+        "인조식별자",
+        "본질식별자"
+      ],
+      "preview": "다음 중 인조 식별자(Surrogate Identifier)를 도입하는 적절한 시점이 아닌 것은?"
+    },
+    {
+      "id": "q-102",
+      "subject": 1,
+      "category": "식별자",
+      "type": "ox",
+      "tags": [
+        "FK",
+        "NULL",
+        "외래키"
+      ],
+      "preview": "외래키(FK)에 NULL 값이 들어갈 수 있다."
+    },
+    {
+      "id": "q-103",
+      "subject": 1,
+      "category": "식별자",
+      "type": "mc",
+      "tags": [
+        "식별자 분류"
+      ],
+      "preview": "다음 식별자 분류 중 잘못 짝지어진 것은?"
+    },
+    {
+      "id": "q-104",
+      "subject": 1,
+      "category": "정규화",
+      "type": "mc",
+      "tags": [
+        "2NF",
+        "부분종속",
+        "정규화"
+      ],
+      "preview": "다음 테이블의 정규형은? 주문상세(주문번호, 상품번호, 수량, 상품명, 단가) - PK: (주문번호, 상품번호) - (주문번호, 상품번호) → 수량 - 상품번호 → 상품명, 단가"
+    },
+    {
+      "id": "q-105",
+      "subject": 1,
+      "category": "정규화",
+      "type": "mc",
+      "tags": [
+        "반정규화",
+        "성능"
+      ],
+      "preview": "반정규화(Denormalization)를 적용해야 하는 가장 적절한 시점은?"
+    },
+    {
+      "id": "q-106",
+      "subject": 1,
+      "category": "정규화",
+      "type": "mc",
+      "tags": [
+        "정규형",
+        "도부이결다조"
+      ],
+      "preview": "다음 정규형의 발생 순서를 올바르게 나열한 것은?"
+    },
+    {
+      "id": "q-107",
+      "subject": 1,
+      "category": "속성",
+      "type": "mc",
+      "tags": [
+        "NULL",
+        "IS NULL"
+      ],
+      "preview": "NULL 속성에 대한 설명으로 옳지 않은 것은?"
+    },
+    {
+      "id": "q-108",
+      "subject": 1,
+      "category": "엔터티",
+      "type": "mc",
+      "tags": [
+        "엔터티 명명",
+        "표준화"
+      ],
+      "preview": "다음 중 엔터티의 명명 규칙으로 가장 부적절한 것은?"
+    },
+    {
+      "id": "q-109",
+      "subject": 1,
+      "category": "모델링 종합",
+      "type": "mc",
+      "tags": [
+        "좋은 모델",
+        "완중업재의통"
+      ],
+      "preview": "다음 중 좋은 데이터 모델의 6가지 특징에 해당하지 않는 것은?"
+    },
+    {
+      "id": "q-110",
+      "subject": 1,
+      "category": "모델링 종합",
+      "type": "mc",
+      "tags": [
+        "참조 무결성",
+        "FK",
+        "5가지 무결성"
+      ],
+      "preview": "데이터 무결성의 5가지 종류 중 \"FK는 참조 PK에 존재하는 값이거나 NULL\"을 보장하는 것은?"
+    },
+    {
+      "id": "q-111",
+      "subject": 2,
+      "category": "SELECT/WHERE",
+      "type": "mc",
+      "tags": [
+        "COUNT",
+        "NULL",
+        "DISTINCT"
+      ],
+      "preview": "다음 SQL의 실행 결과로 옳은 것은? (emp.deptno: 10, 10, 20, 30, NULL)"
+    },
+    {
+      "id": "q-112",
+      "subject": 2,
+      "category": "SELECT/WHERE",
+      "type": "mc",
+      "tags": [
+        "WHERE",
+        "NULL",
+        "BETWEEN",
+        "LIKE"
+      ],
+      "preview": "다음 WHERE 절 사용 중 옳지 않은 것은?"
+    },
+    {
+      "id": "q-113",
+      "subject": 2,
+      "category": "SELECT/WHERE",
+      "type": "mc",
+      "tags": [
+        "WHERE",
+        "NULL",
+        "ORDER BY"
+      ],
+      "preview": "다음 SQL의 실행 결과로 옳은 것은? emp(empno, ename, sal): (1,'A',1000), (2,'B',NULL), (3,'C',2000)"
+    },
+    {
+      "id": "q-114",
+      "subject": 2,
+      "category": "SELECT/WHERE",
+      "type": "mc",
+      "tags": [
+        "연산자 우선순위"
+      ],
+      "preview": "다음 중 SQL 연산자의 우선순위가 가장 높은 것은?"
+    },
+    {
+      "id": "q-115",
+      "subject": 2,
+      "category": "SELECT/WHERE",
+      "type": "mc",
+      "tags": [
+        "alias",
+        "실행 순서"
+      ],
+      "preview": "다음 중 SELECT 절에 부여한 alias를 사용할 수 있는 절은?"
+    },
+    {
+      "id": "q-116",
+      "subject": 2,
+      "category": "함수",
+      "type": "mc",
+      "tags": [
+        "문자 함수",
+        "REPLACE",
+        "SUBSTR"
+      ],
+      "preview": "다음 함수 결과로 옳지 않은 것은?"
+    },
+    {
+      "id": "q-117",
+      "subject": 2,
+      "category": "함수",
+      "type": "mc",
+      "tags": [
+        "ROUND",
+        "TRUNC",
+        "숫자 함수"
+      ],
+      "preview": "다음 함수 결과로 옳은 것은? ROUND(-3.456, 1) = ? TRUNC(-3.456, 1) = ?"
+    },
+    {
+      "id": "q-118",
+      "subject": 2,
+      "category": "함수",
+      "type": "mc",
+      "tags": [
+        "NULL",
+        "NVL",
+        "사칙연산"
+      ],
+      "preview": "다음 결과가 NULL이 아닌 것은?"
+    },
+    {
+      "id": "q-119",
+      "subject": 2,
+      "category": "함수",
+      "type": "mc",
+      "tags": [
+        "CASE",
+        "NULL",
+        "Searched CASE"
+      ],
+      "preview": "다음 CASE 표현식 결과로 옳은 것은?"
+    },
+    {
+      "id": "q-120",
+      "subject": 2,
+      "category": "함수",
+      "type": "mc",
+      "tags": [
+        "DECODE",
+        "CASE",
+        "NULL"
+      ],
+      "preview": "다음 중 DECODE와 CASE에 대한 설명으로 옳지 않은 것은?"
+    },
+    {
+      "id": "q-121",
+      "subject": 2,
+      "category": "JOIN",
+      "type": "mc",
+      "tags": [
+        "LEFT OUTER",
+        "JOIN",
+        "행 수"
+      ],
+      "preview": "다음 LEFT OUTER JOIN의 결과 행 수는? A = (1, 2, 3, 3, 4) -- 5건 B = (3, 3, 4, 5) -- 4건 조인 조건: A.x = B.x"
+    },
+    {
+      "id": "q-122",
+      "subject": 2,
+      "category": "JOIN",
+      "type": "mc",
+      "tags": [
+        "LEFT OUTER",
+        "WHERE",
+        "ON",
+        "함정"
+      ],
+      "preview": "다음 쿼리에서 의도와 다른 결과가 나오는 이유는?"
+    },
+    {
+      "id": "q-123",
+      "subject": 2,
+      "category": "JOIN",
+      "type": "mc",
+      "tags": [
+        "Oracle",
+        "(+)",
+        "OUTER JOIN",
+        "ANSI"
+      ],
+      "preview": "다음 Oracle 구문에 해당하는 ANSI JOIN 구문은?"
+    },
+    {
+      "id": "q-124",
+      "subject": 2,
+      "category": "JOIN",
+      "type": "mc",
+      "tags": [
+        "INNER JOIN",
+        "NULL",
+        "매칭"
+      ],
+      "preview": "다음 JOIN 결과로 옳은 것은? emp(empno, deptno) = (1, 10), (2, 20), (3, NULL) dept(deptno, dname) = (10, 'A'),"
+    },
+    {
+      "id": "q-125",
+      "subject": 2,
+      "category": "JOIN",
+      "type": "mc",
+      "tags": [
+        "다중 테이블 조인",
+        "n-1 규칙"
+      ],
+      "preview": "다음 3개 테이블 조인 쿼리에서 필요한 조인 조건의 최소 개수는? FROM emp e, dept d, salgrade s"
+    },
+    {
+      "id": "q-126",
+      "subject": 2,
+      "category": "JOIN",
+      "type": "mc",
+      "tags": [
+        "USING",
+        "ON",
+        "JOIN"
+      ],
+      "preview": "다음 USING 절 사용 중 옳지 않은 것은?"
+    },
+    {
+      "id": "q-127",
+      "subject": 2,
+      "category": "JOIN",
+      "type": "mc",
+      "tags": [
+        "NATURAL JOIN",
+        "JOIN"
+      ],
+      "preview": "다음 NATURAL JOIN 결과로 옳은 것은? emp(empno, ename, deptno) dept(deptno, dname, loc)"
+    },
+    {
+      "id": "q-128",
+      "subject": 2,
+      "category": "JOIN",
+      "type": "mc",
+      "tags": [
+        "JOIN 처리",
+        "Hash Join",
+        "옵티마이저"
+      ],
+      "preview": "다음 중 옵티마이저의 JOIN 처리 방식에 대한 설명으로 옳지 않은 것은?"
+    },
+    {
+      "id": "q-129",
+      "subject": 2,
+      "category": "JOIN",
+      "type": "ox",
+      "tags": [
+        "INNER JOIN",
+        "OUTER JOIN",
+        "행 수"
+      ],
+      "preview": "INNER JOIN의 결과는 LEFT OUTER JOIN의 결과보다 항상 적거나 같다."
+    },
+    {
+      "id": "q-130",
+      "subject": 2,
+      "category": "JOIN",
+      "type": "mc",
+      "tags": [
+        "SELF JOIN",
+        "LEFT OUTER",
+        "계층"
+      ],
+      "preview": "다음 SELF JOIN 쿼리의 결과는? emp(empno, ename, mgr) = (1, 'KING', NULL) (2, 'JONES', 1) (3, 'SCOTT', 2)"
+    },
+    {
+      "id": "q-131",
+      "subject": 2,
+      "category": "그룹함수",
+      "type": "mc",
+      "tags": [
+        "ROLLUP",
+        "그룹함수"
+      ],
+      "preview": "다음 ROLLUP 쿼리의 결과 그룹 수는?"
+    },
+    {
+      "id": "q-132",
+      "subject": 2,
+      "category": "그룹함수",
+      "type": "mc",
+      "tags": [
+        "CUBE",
+        "ROLLUP",
+        "그룹함수"
+      ],
+      "preview": "다음 중 CUBE에 대한 설명으로 옳은 것은?"
+    },
+    {
+      "id": "q-133",
+      "subject": 2,
+      "category": "그룹함수",
+      "type": "mc",
+      "tags": [
+        "GROUPING",
+        "ROLLUP",
+        "소계"
+      ],
+      "preview": "다음 GROUPING 함수 결과로 옳은 것은?"
+    },
+    {
+      "id": "q-134",
+      "subject": 2,
+      "category": "그룹함수",
+      "type": "mc",
+      "tags": [
+        "HAVING",
+        "alias",
+        "실행 순서"
+      ],
+      "preview": "다음 HAVING 절 사용 중 옳지 않은 것은?"
+    },
+    {
+      "id": "q-135",
+      "subject": 2,
+      "category": "그룹함수",
+      "type": "mc",
+      "tags": [
+        "집계함수",
+        "NULL",
+        "AVG"
+      ],
+      "preview": "다음 결과의 SUM 값은? emp.sal: 1000, 2000, NULL, 3000, NULL"
+    },
+    {
+      "id": "q-136",
+      "subject": 2,
+      "category": "서브쿼리",
+      "type": "mc",
+      "tags": [
+        "인라인 뷰",
+        "서브쿼리"
+      ],
+      "preview": "다음 중 인라인 뷰(Inline View)에 대한 설명으로 옳은 것은?"
+    },
+    {
+      "id": "q-137",
+      "subject": 2,
+      "category": "서브쿼리",
+      "type": "mc",
+      "tags": [
+        "ANY",
+        "ALL",
+        "서브쿼리"
+      ],
+      "preview": "다음 중 \"> ANY (서브쿼리)\"의 의미와 동일한 것은?"
+    },
+    {
+      "id": "q-138",
+      "subject": 2,
+      "category": "서브쿼리",
+      "type": "mc",
+      "tags": [
+        "NOT IN",
+        "NULL",
+        "NOT EXISTS"
+      ],
+      "preview": "다음 쿼리에서 결과가 비어있는 이유는? emp.deptno: 10, 20, 30 dept.deptno: 10, 20, NULL"
+    },
+    {
+      "id": "q-139",
+      "subject": 2,
+      "category": "서브쿼리",
+      "type": "mc",
+      "tags": [
+        "상관 서브쿼리",
+        "그룹별 최대",
+        "RANK"
+      ],
+      "preview": "다음 상관 서브쿼리와 동일한 결과를 내는 쿼리는?"
+    },
+    {
+      "id": "q-140",
+      "subject": 2,
+      "category": "서브쿼리",
+      "type": "mc",
+      "tags": [
+        "스칼라 서브쿼리",
+        "ORA-01427"
+      ],
+      "preview": "다음 쿼리에서 에러가 발생하는 이유는?"
+    },
+    {
+      "id": "q-141",
+      "subject": 2,
+      "category": "집합연산",
+      "type": "mc",
+      "tags": [
+        "INTERSECT",
+        "집합연산"
+      ],
+      "preview": "다음 집합 연산자 결과로 옳은 것은? A = {1, 1, 2, 3} B = {2, 3, 3, 4}"
+    },
+    {
+      "id": "q-142",
+      "subject": 2,
+      "category": "집합연산",
+      "type": "ox",
+      "tags": [
+        "UNION ALL",
+        "성능"
+      ],
+      "preview": "UNION ALL이 UNION보다 성능이 좋다."
+    },
+    {
+      "id": "q-143",
+      "subject": 2,
+      "category": "윈도우함수",
+      "type": "mc",
+      "tags": [
+        "RANK",
+        "DENSE_RANK",
+        "ROW_NUMBER"
+      ],
+      "preview": "다음 데이터에 대한 윈도우 함수 결과로 옳은 것은? sal = (100, 200, 200, 300, 400)"
+    },
+    {
+      "id": "q-144",
+      "subject": 2,
+      "category": "윈도우함수",
+      "type": "mc",
+      "tags": [
+        "윈도우 프레임",
+        "누적합"
+      ],
+      "preview": "다음 쿼리에서 누적합을 구하는 올바른 윈도우 프레임은?"
+    },
+    {
+      "id": "q-145",
+      "subject": 2,
+      "category": "윈도우함수",
+      "type": "mc",
+      "tags": [
+        "LAG",
+        "LEAD",
+        "윈도우 함수"
+      ],
+      "preview": "다음 LAG/LEAD 함수 결과로 옳은 것은? sal (정렬 순): 100, 200, 300, 400"
+    },
+    {
+      "id": "q-146",
+      "subject": 2,
+      "category": "윈도우함수",
+      "type": "mc",
+      "tags": [
+        "RANK",
+        "그룹별 Top-N"
+      ],
+      "preview": "다음 쿼리에서 \"부서별 급여 상위 3명\"을 정확히 구하려면?"
+    },
+    {
+      "id": "q-147",
+      "subject": 2,
+      "category": "윈도우함수",
+      "type": "mc",
+      "tags": [
+        "윈도우 함수",
+        "WHERE",
+        "실행 순서"
+      ],
+      "preview": "다음 윈도우 함수 사용 중 에러가 발생하는 것은?"
+    },
+    {
+      "id": "q-148",
+      "subject": 2,
+      "category": "윈도우함수",
+      "type": "mc",
+      "tags": [
+        "NTILE",
+        "분위수"
+      ],
+      "preview": "다음 NTILE 함수의 의미로 옳은 것은?"
+    },
+    {
+      "id": "q-149",
+      "subject": 2,
+      "category": "윈도우함수",
+      "type": "ox",
+      "tags": [
+        "PARTITION BY",
+        "윈도우 함수"
+      ],
+      "preview": "PARTITION BY 절을 생략하면 윈도우 함수 사용이 불가능하다."
+    },
+    {
+      "id": "q-150",
+      "subject": 2,
+      "category": "계층/순환",
+      "type": "mc",
+      "tags": [
+        "계층형",
+        "Bottom-Up",
+        "CONNECT BY"
+      ],
+      "preview": "다음 계층형 질의는 어떤 방향으로 트리를 탐색하는가?"
+    },
+    {
+      "id": "q-151",
+      "subject": 2,
+      "category": "계층/순환",
+      "type": "mc",
+      "tags": [
+        "LEVEL",
+        "계층형"
+      ],
+      "preview": "다음 계층형 질의에서 LEVEL의 값으로 옳은 것은? 계층: KING (mgr=NULL) └── JONES (mgr=KING) └── SCOTT (mgr=JONES) └── ADA"
+    },
+    {
+      "id": "q-152",
+      "subject": 2,
+      "category": "계층/순환",
+      "type": "mc",
+      "tags": [
+        "SYS_CONNECT_BY_PATH",
+        "계층형",
+        "경로"
+      ],
+      "preview": "다음 SYS_CONNECT_BY_PATH 결과로 옳은 것은? 계층: KING → JONES → SCOTT"
+    },
+    {
+      "id": "q-153",
+      "subject": 2,
+      "category": "DDL/DML/DCL",
+      "type": "mc",
+      "tags": [
+        "DDL",
+        "분류"
+      ],
+      "preview": "다음 중 DDL 명령어로만 묶인 것은?"
+    },
+    {
+      "id": "q-154",
+      "subject": 2,
+      "category": "DDL/DML/DCL",
+      "type": "mc",
+      "tags": [
+        "DELETE",
+        "TRUNCATE",
+        "DROP"
+      ],
+      "preview": "다음 DELETE와 TRUNCATE의 차이로 옳지 않은 것은?"
+    },
+    {
+      "id": "q-155",
+      "subject": 2,
+      "category": "DDL/DML/DCL",
+      "type": "mc",
+      "tags": [
+        "UNIQUE",
+        "NULL",
+        "제약조건"
+      ],
+      "preview": "다음 중 NULL 허용에 대한 설명으로 옳지 않은 것은?"
+    },
+    {
+      "id": "q-156",
+      "subject": 2,
+      "category": "DDL/DML/DCL",
+      "type": "mc",
+      "tags": [
+        "ON DELETE",
+        "SET NULL",
+        "노카셋셋"
+      ],
+      "preview": "다음 ON DELETE 옵션 중 \"부모 행 삭제 시 자식의 FK를 NULL로 설정\"하는 옵션은?"
+    },
+    {
+      "id": "q-157",
+      "subject": 2,
+      "category": "DDL/DML/DCL",
+      "type": "mc",
+      "tags": [
+        "MERGE",
+        "UPSERT",
+        "DML"
+      ],
+      "preview": "다음 MERGE 문에 대한 설명으로 옳지 않은 것은?"
+    },
+    {
+      "id": "q-158",
+      "subject": 2,
+      "category": "DDL/DML/DCL",
+      "type": "mc",
+      "tags": [
+        "VIEW",
+        "갱신 가능"
+      ],
+      "preview": "다음 중 VIEW의 갱신(INSERT/UPDATE/DELETE)이 가능한 경우는?"
+    },
+    {
+      "id": "q-159",
+      "subject": 2,
+      "category": "DDL/DML/DCL",
+      "type": "mc",
+      "tags": [
+        "GRANT",
+        "WITH GRANT OPTION",
+        "DCL"
+      ],
+      "preview": "다음 GRANT 문에서 WITH GRANT OPTION의 효과는?"
+    },
+    {
+      "id": "q-160",
+      "subject": 2,
+      "category": "DDL/DML/DCL",
+      "type": "ox",
+      "tags": [
+        "DDL",
+        "자동 커밋"
+      ],
+      "preview": "DDL 명령어는 실행 후 자동으로 COMMIT된다."
+    },
+    {
+      "id": "q-161",
+      "subject": 2,
+      "category": "트랜잭션/PL-SQL",
+      "type": "mc",
+      "tags": [
+        "SAVEPOINT",
+        "ROLLBACK TO",
+        "TCL"
+      ],
+      "preview": "다음 트랜잭션 흐름 후 emp 테이블의 상태로 옳은 것은?"
+    },
+    {
+      "id": "q-162",
+      "subject": 2,
+      "category": "트랜잭션/PL-SQL",
+      "type": "mc",
+      "tags": [
+        "격리수준",
+        "REPEATABLE READ"
+      ],
+      "preview": "다음 트랜잭션 격리 수준 중 \"Non-repeatable Read\"를 차단하는 최소 수준은?"
+    },
+    {
+      "id": "q-163",
+      "subject": 2,
+      "category": "트랜잭션/PL-SQL",
+      "type": "mc",
+      "tags": [
+        "ACID",
+        "구현",
+        "MVCC"
+      ],
+      "preview": "다음 ACID 특성과 구현 방법이 잘못 짝지어진 것은?"
+    },
+    {
+      "id": "q-164",
+      "subject": 2,
+      "category": "트랜잭션/PL-SQL",
+      "type": "mc",
+      "tags": [
+        "PL/SQL",
+        "블록 구조"
+      ],
+      "preview": "다음 PL/SQL 블록 구조에서 필수 부분만 짝지어진 것은?"
+    },
+    {
+      "id": "q-165",
+      "subject": 2,
+      "category": "트랜잭션/PL-SQL",
+      "type": "mc",
+      "tags": [
+        "PROCEDURE",
+        "FUNCTION",
+        "PL/SQL"
+      ],
+      "preview": "다음 중 PL/SQL의 PROCEDURE와 FUNCTION의 차이로 옳지 않은 것은?"
+    },
+    {
+      "id": "q-166",
+      "subject": 2,
+      "category": "트랜잭션/PL-SQL",
+      "type": "mc",
+      "tags": [
+        "%ROWTYPE",
+        "%TYPE",
+        "PL/SQL"
+      ],
+      "preview": "다음 PL/SQL 변수 선언에서 `emp%ROWTYPE`의 의미는?"
+    },
+    {
+      "id": "q-167",
+      "subject": 2,
+      "category": "트랜잭션/PL-SQL",
+      "type": "mc",
+      "tags": [
+        "NO_DATA_FOUND",
+        "예외",
+        "PL/SQL"
+      ],
+      "preview": "다음 PL/SQL 예외 처리 중 \"SELECT INTO 결과가 0행일 때\" 발생하는 예외는?"
+    },
+    {
+      "id": "q-168",
+      "subject": 2,
+      "category": "트랜잭션/PL-SQL",
+      "type": "mc",
+      "tags": [
+        "트리거",
+        ":NEW",
+        ":OLD"
+      ],
+      "preview": "다음 트리거 구문에서 `:NEW`와 `:OLD`의 의미로 옳은 것은?"
+    },
+    {
+      "id": "q-169",
+      "subject": 2,
+      "category": "트랜잭션/PL-SQL",
+      "type": "mc",
+      "tags": [
+        "INSTEAD OF",
+        "트리거",
+        "뷰 갱신"
+      ],
+      "preview": "다음 트리거 종류 중 \"갱신 불가능한 뷰에 INSERT/UPDATE/DELETE를 가능하게\" 만드는 트리거는?"
+    },
+    {
+      "id": "q-170",
+      "subject": 2,
+      "category": "트랜잭션/PL-SQL",
+      "type": "mc",
+      "tags": [
+        "Lock",
+        "공유락",
+        "배타락"
+      ],
+      "preview": "다음 트랜잭션의 락(Lock)에 대한 설명으로 옳지 않은 것은?"
     }
   ],
   "concepts": [

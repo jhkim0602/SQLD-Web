@@ -1,0 +1,19 @@
+{
+  "id": "q-113",
+  "subject": 2,
+  "category": "SELECT/WHERE",
+  "type": "mc",
+  "question": "다음 SQL의 실행 결과로 옳은 것은?\n\nemp(empno, ename, sal): (1,'A',1000), (2,'B',NULL), (3,'C',2000)",
+  "codeBlock": "SELECT ename FROM emp\nWHERE sal > 500\nORDER BY sal ASC;",
+  "choices": [
+    "A, C, B",
+    "A, C (NULL 제외)",
+    "A, B, C",
+    "B, A, C"
+  ],
+  "answer": 1,
+  "explanation": "**WHERE 조건에서 NULL은 제외**됩니다 (`NULL > 500`은 UNKNOWN).\n\n실행 흐름:\n1. WHERE: `sal > 500` → A(1000), C(2000) 통과 (B는 NULL이라 제외)\n2. ORDER BY sal ASC: A(1000) → C(2000)\n\n결과: **A, C**\n\n**Oracle 정렬 시 NULL 위치**:\n- ASC: NULL **마지막**\n- DESC: NULL **처음**\n\n명시적 제어: `NULLS FIRST` / `NULLS LAST`\n\n단, 이 문제는 WHERE에서 이미 NULL이 제외되었으므로 정렬에 영향 없음.",
+  "concepts": ["null-handling"],
+  "tags": ["WHERE", "NULL", "ORDER BY"],
+  "source": "self"
+}

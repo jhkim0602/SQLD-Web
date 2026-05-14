@@ -1,0 +1,18 @@
+{
+  "id": "q-112",
+  "subject": 2,
+  "category": "SELECT/WHERE",
+  "type": "mc",
+  "question": "다음 WHERE 절 사용 중 옳지 않은 것은?",
+  "choices": [
+    "WHERE sal BETWEEN 1000 AND 2000 — 양쪽 끝 포함",
+    "WHERE ename LIKE '_M%' — 두 번째 글자가 M인 이름",
+    "WHERE deptno IN (10, 20, 30) — IN 목록 매칭",
+    "WHERE comm = NULL — comm이 NULL인 행"
+  ],
+  "answer": 3,
+  "explanation": "**`= NULL`은 항상 UNKNOWN** → 결과가 비어버립니다. NULL 비교는 반드시 **`IS NULL`** 사용.\n\n```sql\n-- ✗ 항상 빈 결과\nWHERE comm = NULL\n\n-- ✓ 정상\nWHERE comm IS NULL\n```\n\n나머지는 모두 옳습니다:\n- `BETWEEN a AND b`: **a, b 포함** (inclusive)\n- `LIKE '_M%'`: `_`는 1자, `%`는 0자 이상\n- `IN (...)`: 목록 매칭\n\n**LIKE 와일드카드**:\n- `%`: 0개 이상의 임의 문자\n- `_`: 정확히 1개 문자",
+  "concepts": ["null-handling", "select-order"],
+  "tags": ["WHERE", "NULL", "BETWEEN", "LIKE"],
+  "source": "self"
+}

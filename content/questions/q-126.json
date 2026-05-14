@@ -1,0 +1,18 @@
+{
+  "id": "q-126",
+  "subject": 2,
+  "category": "JOIN",
+  "type": "mc",
+  "question": "다음 USING 절 사용 중 옳지 않은 것은?",
+  "choices": [
+    "USING (deptno) — 양쪽 테이블에 같은 이름의 컬럼 필요",
+    "USING 절에서는 결과에 조인 컬럼이 한 번만 나타남",
+    "USING (e.deptno) — 한정자(테이블 alias) 사용 가능",
+    "USING 절은 ON 절과 함께 사용할 수 없음"
+  ],
+  "answer": 2,
+  "explanation": "**USING 절에서는 한정자(테이블 alias) 사용 불가** ⭐ 함정\n\n```sql\n-- ✓ 올바름\nSELECT deptno FROM emp JOIN dept USING (deptno);\n\n-- ✗ 에러\nSELECT e.deptno FROM emp e JOIN dept d USING (deptno);\n-- USING 컬럼은 한정자 없이 참조해야 함\n```\n\n**USING vs ON 비교**:\n| | ON | USING |\n|---|---|---|\n| 컬럼 명시 | 명시적 (`e.x = d.y`) | 이름만 (`USING (x)`) |\n| 다른 이름 컬럼 | OK | 불가 |\n| 결과 컬럼 | 양쪽 등장 | **한 번만** |\n| 한정자 | OK | **불가** |\n\nUSING은 한정자 없이 `deptno`로만 참조.",
+  "concepts": ["join-types"],
+  "tags": ["USING", "ON", "JOIN"],
+  "source": "self"
+}

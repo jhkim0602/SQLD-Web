@@ -1,0 +1,18 @@
+{
+  "id": "q-167",
+  "subject": 2,
+  "category": "트랜잭션/PL-SQL",
+  "type": "mc",
+  "question": "다음 PL/SQL 예외 처리 중 \"SELECT INTO 결과가 0행일 때\" 발생하는 예외는?",
+  "choices": [
+    "TOO_MANY_ROWS",
+    "NO_DATA_FOUND",
+    "DUP_VAL_ON_INDEX",
+    "ZERO_DIVIDE"
+  ],
+  "answer": 1,
+  "explanation": "**NO_DATA_FOUND**: `SELECT INTO`로 0행이 반환될 때 발생.\n\n**주요 사전 정의 예외** ⭐:\n\n| 예외 | 발생 시점 |\n|---|---|\n| **NO_DATA_FOUND** | SELECT INTO 결과 **0행** |\n| **TOO_MANY_ROWS** | SELECT INTO 결과 **다중 행** |\n| **DUP_VAL_ON_INDEX** | UNIQUE 제약 중복 |\n| **ZERO_DIVIDE** | 0으로 나눗셈 |\n| **VALUE_ERROR** | 변환 오류 (예: 숫자 변환 실패) |\n| **CURSOR_ALREADY_OPEN** | 커서 중복 OPEN |\n| **OTHERS** | 모든 예외 catch |\n\n```sql\nBEGIN\n   SELECT sal INTO v_sal FROM emp WHERE empno = 99999;\nEXCEPTION\n   WHEN NO_DATA_FOUND THEN\n      DBMS_OUTPUT.PUT_LINE('사원 없음');\n   WHEN TOO_MANY_ROWS THEN\n      DBMS_OUTPUT.PUT_LINE('여러 사원 조회됨');\n   WHEN OTHERS THEN\n      DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);\nEND;\n```\n\n**SQLCODE**, **SQLERRM**: 에러 코드와 메시지.",
+  "concepts": ["plsql"],
+  "tags": ["NO_DATA_FOUND", "예외", "PL/SQL"],
+  "source": "self"
+}

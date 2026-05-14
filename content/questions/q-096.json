@@ -1,0 +1,18 @@
+{
+  "id": "q-096",
+  "subject": 1,
+  "category": "트랜잭션",
+  "type": "mc",
+  "question": "트랜잭션의 ACID 특성 중 'All or Nothing'에 해당하는 것은?",
+  "choices": [
+    "Atomicity (원자성)",
+    "Consistency (일관성)",
+    "Isolation (고립성)",
+    "Durability (지속성)"
+  ],
+  "answer": 0,
+  "explanation": "**원자성(Atomicity)**: 트랜잭션 내 모든 작업이 **다 성공하거나 다 실패**해야 함. \"All or Nothing\".\n\n예: 계좌 이체 = \"A 출금\" + \"B 입금\". 둘 중 하나만 성공하면 시스템 붕괴.\n\n**ACID 요약** (암기: 원일고지):\n- **A**tomicity (원자성): All or Nothing\n- **C**onsistency (일관성): 무결성 유지\n- **I**solation (고립성): 동시 차단\n- **D**urability (지속성): 커밋 결과 영구",
+  "concepts": ["transaction"],
+  "tags": ["ACID", "원자성"],
+  "source": "self"
+}

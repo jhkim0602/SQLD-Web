@@ -1,0 +1,19 @@
+{
+  "id": "q-143",
+  "subject": 2,
+  "category": "윈도우함수",
+  "type": "mc",
+  "question": "다음 데이터에 대한 윈도우 함수 결과로 옳은 것은?\n\nsal = (100, 200, 200, 300, 400)",
+  "codeBlock": "SELECT sal,\n  RANK()       OVER (ORDER BY sal) AS r,\n  DENSE_RANK() OVER (ORDER BY sal) AS dr,\n  ROW_NUMBER() OVER (ORDER BY sal) AS rn\nFROM t;",
+  "choices": [
+    "r=[1,2,2,3,4], dr=[1,2,2,3,4], rn=[1,2,3,4,5]",
+    "r=[1,2,2,4,5], dr=[1,2,2,3,4], rn=[1,2,3,4,5]",
+    "r=[1,2,3,4,5], dr=[1,2,2,3,4], rn=[1,2,3,4,5]",
+    "r=[1,2,3,4,5], dr=[1,2,3,4,5], rn=[1,2,3,4,5]"
+  ],
+  "answer": 1,
+  "explanation": "**순위 함수 차이** ⭐ 빈출\n\n| sal | RANK | DENSE_RANK | ROW_NUMBER |\n|---|---|---|---|\n| 100 | 1 | 1 | 1 |\n| 200 | 2 | 2 | 2 |\n| 200 | 2 | 2 | 3 |\n| 300 | **4** | **3** | 4 |\n| 400 | 5 | 4 | 5 |\n\n**핵심 차이**:\n- **RANK**: 동순위 후 **건너뜀** (1, 2, 2, **4**, 5)\n- **DENSE_RANK**: 동순위 후 **연속** (1, 2, 2, **3**, 4)\n- **ROW_NUMBER**: **무조건 +1** (1, 2, 3, 4, 5)\n\n암기법: **\"랭(RANK)은 건너뛰고, 덴스(DENSE)는 빽빽하게\"**",
+  "concepts": ["window-functions"],
+  "tags": ["RANK", "DENSE_RANK", "ROW_NUMBER"],
+  "source": "self"
+}

@@ -1,0 +1,19 @@
+{
+  "id": "q-148",
+  "subject": 2,
+  "category": "윈도우함수",
+  "type": "mc",
+  "question": "다음 NTILE 함수의 의미로 옳은 것은?",
+  "codeBlock": "NTILE(4) OVER (ORDER BY sal)",
+  "choices": [
+    "급여 상위 4명을 선택",
+    "급여 기준 4분위 그룹 번호 (1~4)를 부여",
+    "급여를 4로 나눈 몫",
+    "급여 순위에서 4위까지 표시"
+  ],
+  "answer": 1,
+  "explanation": "**NTILE(n)**: 결과를 **n개의 균등 그룹**으로 나누어 1~n의 그룹 번호 부여.\n\n예: 8개 행을 NTILE(4)로 → 2행씩 4그룹\n```\nsal: 100, 200, 300, 400, 500, 600, 700, 800\n     1    1    2    2    3    3    4    4   ← NTILE(4)\n```\n\n행 수가 n으로 나누어 떨어지지 않으면 **앞쪽 그룹부터 1행씩 더** 배정.\n\n예: 10개 행을 NTILE(4)로:\n```\n3, 3, 2, 2 (앞 2그룹에 1행씩 더)\n```\n\n**활용**: 분위수(quartile, decile, percentile) 계산\n```sql\nSELECT sal,\n  NTILE(4) OVER (ORDER BY sal) AS quartile,\n  NTILE(10) OVER (ORDER BY sal) AS decile,\n  NTILE(100) OVER (ORDER BY sal) AS percentile\nFROM emp;\n```",
+  "concepts": ["window-functions"],
+  "tags": ["NTILE", "분위수"],
+  "source": "self"
+}

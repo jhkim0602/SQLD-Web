@@ -1,0 +1,18 @@
+{
+  "id": "q-137",
+  "subject": 2,
+  "category": "서브쿼리",
+  "type": "mc",
+  "question": "다음 중 \"> ANY (서브쿼리)\"의 의미와 동일한 것은?",
+  "choices": [
+    "서브쿼리 결과의 최소값보다 큼 (> MIN)",
+    "서브쿼리 결과의 최대값보다 큼 (> MAX)",
+    "서브쿼리 결과의 평균보다 큼 (> AVG)",
+    "서브쿼리 결과 중 어느 하나라도 작으면 TRUE"
+  ],
+  "answer": 0,
+  "explanation": "**`> ANY`는 \"어느 하나라도 만족\"** = **`> MIN`**과 동일.\n\n| 연산자 | 의미 | 동치 |\n|---|---|---|\n| `> ANY (...)` | 최소값보다 큼 | `> MIN(...)` |\n| `< ANY (...)` | 최대값보다 작음 | `< MAX(...)` |\n| `> ALL (...)` | **최대값**보다 큼 | `> MAX(...)` |\n| `< ALL (...)` | **최소값**보다 작음 | `< MIN(...)` |\n| `= ANY` | IN과 동일 | `IN` |\n| `<> ALL` | NOT IN과 동일 | `NOT IN` |\n\n예시:\n```sql\nSELECT * FROM emp\nWHERE sal > ANY (SELECT sal FROM emp WHERE deptno = 10);\n-- = sal > MIN(10번 부서 급여)\n-- = 10번 부서의 최소 급여보다라도 높은 사원\n```\n\n암기법: **\">ANY = >MIN, >ALL = >MAX\"**",
+  "concepts": ["subquery"],
+  "tags": ["ANY", "ALL", "서브쿼리"],
+  "source": "self"
+}

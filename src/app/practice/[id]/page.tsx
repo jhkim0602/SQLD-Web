@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getAllQuestions, getQuestion } from "@/lib/content";
@@ -36,13 +37,15 @@ export default async function QuestionPage({
   const nextId = idx < all.length - 1 ? all[idx + 1].id : null;
 
   return (
-    <QuestionView
-      key={question.id}
-      question={question}
-      prevId={prevId}
-      nextId={nextId}
-      index={idx + 1}
-      total={all.length}
-    />
+    <Suspense fallback={null}>
+      <QuestionView
+        key={question.id}
+        question={question}
+        prevId={prevId}
+        nextId={nextId}
+        index={idx + 1}
+        total={all.length}
+      />
+    </Suspense>
   );
 }

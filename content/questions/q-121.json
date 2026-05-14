@@ -1,0 +1,18 @@
+{
+  "id": "q-121",
+  "subject": 2,
+  "category": "JOIN",
+  "type": "mc",
+  "question": "다음 LEFT OUTER JOIN의 결과 행 수는?\n\nA = (1, 2, 3, 3, 4)  -- 5건\nB = (3, 3, 4, 5)      -- 4건\n조인 조건: A.x = B.x",
+  "choices": [
+    "5",
+    "6",
+    "7",
+    "8"
+  ],
+  "answer": 2,
+  "explanation": "**LEFT OUTER JOIN**은 왼쪽 전체 + 매칭. 매칭이 여러 개면 여러 행으로 펼쳐짐.\n\n| A.x | B.x 매칭 |\n|---|---|\n| 1 | NULL (매칭 없음) | 1행 |\n| 2 | NULL | 1행 |\n| 3 | 3, 3 (B에 2건) | 2행 |\n| 3 | 3, 3 | 2행 |\n| 4 | 4 | 1행 |\n\n결과: 1 + 1 + 2 + 2 + 1 = **7행**\n\n**핵심**: 매칭이 다중이면 LEFT여도 행 수가 늘어남.\n\nLEFT OUTER 행 수 공식:\n- 매칭 없는 A의 행: 각 1행\n- 매칭 있는 A의 행: B의 매칭 수만큼 펼쳐짐",
+  "concepts": ["join-types"],
+  "tags": ["LEFT OUTER", "JOIN", "행 수"],
+  "source": "self"
+}

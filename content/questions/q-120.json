@@ -1,0 +1,18 @@
+{
+  "id": "q-120",
+  "subject": 2,
+  "category": "함수",
+  "type": "mc",
+  "question": "다음 중 DECODE와 CASE에 대한 설명으로 옳지 않은 것은?",
+  "choices": [
+    "DECODE는 등치(=) 비교만 가능하다.",
+    "CASE는 ANSI 표준으로 모든 DBMS에서 지원한다.",
+    "DECODE는 NULL = NULL을 FALSE로 처리한다.",
+    "DECODE는 Oracle 전용이다."
+  ],
+  "answer": 2,
+  "explanation": "**DECODE는 NULL = NULL을 TRUE로 처리**합니다. 일반 SQL의 NULL 비교(UNKNOWN)와 다른 특수 동작.\n\n```sql\nSELECT DECODE(NULL, NULL, '같음', '다름') FROM dual;\n-- 결과: '같음'  ← NULL = NULL을 TRUE로 취급\n\n-- 동치 CASE\nSELECT CASE WHEN NULL IS NULL THEN '같음' ELSE '다름' END FROM dual;\n-- 결과: '같음'\n```\n\n**DECODE vs CASE**:\n| | DECODE | CASE |\n|---|---|---|\n| 표준 | Oracle 전용 | ANSI 표준 |\n| 비교 연산자 | **등치(=)만** | 모든 비교 |\n| NULL 비교 | **TRUE 취급** | UNKNOWN |\n| 권장 | 레거시 | **신규** |",
+  "concepts": ["case-decode"],
+  "tags": ["DECODE", "CASE", "NULL"],
+  "source": "self"
+}

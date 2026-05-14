@@ -17,6 +17,10 @@ type Indexed = {
 
 const STATIC_PAGES: Indexed[] = [
   { type: "page", id: "home", title: "홈", href: "/" },
+  { type: "page", id: "random", title: "🎲 랜덤 풀이", href: "/practice/random" },
+  { type: "page", id: "random-untried", title: "🎲 미풀이 랜덤", href: "/practice/random?mode=untried" },
+  { type: "page", id: "random-wrong", title: "🎲 오답 랜덤", href: "/practice/random?mode=wrong" },
+  { type: "page", id: "random-bookmarked", title: "🎲 즐겨찾기 랜덤", href: "/practice/random?mode=bookmarked" },
   { type: "page", id: "practice", title: "기출 풀이", href: "/practice" },
   { type: "page", id: "concepts", title: "개념 정리", href: "/concepts" },
   { type: "page", id: "exam", title: "모의고사", href: "/exam" },

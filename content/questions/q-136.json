@@ -1,0 +1,18 @@
+{
+  "id": "q-136",
+  "subject": 2,
+  "category": "서브쿼리",
+  "type": "mc",
+  "question": "다음 중 인라인 뷰(Inline View)에 대한 설명으로 옳은 것은?",
+  "choices": [
+    "SELECT 절에서 사용되는 단일 행 서브쿼리이다.",
+    "WHERE 절에서 사용되는 중첩 서브쿼리이다.",
+    "FROM 절에서 사용되며 임시 테이블처럼 동작한다.",
+    "메인쿼리의 컬럼을 참조하는 서브쿼리이다."
+  ],
+  "answer": 2,
+  "explanation": "**서브쿼리의 위치별 분류 = \"스인중\"**:\n\n| 위치 | 이름 | 제약 |\n|---|---|---|\n| SELECT | **스칼라** | 단일 행, 단일 컬럼 |\n| FROM | **인라인 뷰** | 임시 테이블처럼 |\n| WHERE | **중첩** | 연산자에 따라 |\n\n```sql\n-- 인라인 뷰 예\nSELECT * FROM (\n  SELECT deptno, AVG(sal) AS avg_sal\n  FROM emp\n  GROUP BY deptno\n) d\nWHERE d.avg_sal > 2000;\n```\n\n**인라인 뷰 특징**:\n- alias 필수\n- 임시 결과 집합\n- ORDER BY는 보통 무시\n- Top-N, 페이지네이션, 사전 집계에 활용\n\n**CTE (WITH 절)**은 표준화된 인라인 뷰의 대안.",
+  "concepts": ["subquery"],
+  "tags": ["인라인 뷰", "서브쿼리"],
+  "source": "self"
+}

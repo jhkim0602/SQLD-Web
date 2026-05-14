@@ -1,0 +1,19 @@
+{
+  "id": "q-138",
+  "subject": 2,
+  "category": "서브쿼리",
+  "type": "mc",
+  "question": "다음 쿼리에서 결과가 비어있는 이유는?\n\nemp.deptno: 10, 20, 30\ndept.deptno: 10, 20, NULL",
+  "codeBlock": "SELECT * FROM emp\nWHERE deptno NOT IN (SELECT deptno FROM dept);",
+  "choices": [
+    "NOT IN과 NULL이 함께 사용되어 모든 결과가 UNKNOWN",
+    "emp에 30이 있어서 매칭되지 않음",
+    "권한 부족",
+    "정상 동작함 (30이 출력됨)"
+  ],
+  "answer": 0,
+  "explanation": "**NOT IN + NULL = 항상 빈 결과** ⭐ 시험 1순위 함정\n\n```sql\nWHERE deptno NOT IN (10, 20, NULL)\n-- = deptno <> 10 AND deptno <> 20 AND deptno <> NULL\n-- = ... AND UNKNOWN\n-- → UNKNOWN ⇒ WHERE 통과 X\n```\n\n해결책:\n\n**방법 1: 서브쿼리에서 NULL 제거**\n```sql\nWHERE deptno NOT IN (\n  SELECT deptno FROM dept WHERE deptno IS NOT NULL\n);\n```\n\n**방법 2: NOT EXISTS (NULL 안전)** ⭐ 권장\n```sql\nWHERE NOT EXISTS (\n  SELECT 1 FROM dept d WHERE d.deptno = e.deptno\n);\n```\n\n암기법: \"**NOT IN에 NULL이 섞이면 빈 집합, NOT EXISTS로 대체**\"",
+  "concepts": ["subquery", "null-handling"],
+  "tags": ["NOT IN", "NULL", "NOT EXISTS"],
+  "source": "self"
+}

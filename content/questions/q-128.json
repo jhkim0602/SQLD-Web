@@ -1,0 +1,18 @@
+{
+  "id": "q-128",
+  "subject": 2,
+  "category": "JOIN",
+  "type": "mc",
+  "question": "다음 중 옵티마이저의 JOIN 처리 방식에 대한 설명으로 옳지 않은 것은?",
+  "choices": [
+    "Nested Loop는 선행 테이블이 작고 후행에 인덱스가 있을 때 유리하다.",
+    "Hash Join은 비등치(<, >) 조인에도 사용할 수 있다.",
+    "Sort Merge는 양쪽 데이터를 정렬한 뒤 병합한다.",
+    "Hash Join은 OLTP 환경의 대용량 등치 조인에 강하다."
+  ],
+  "answer": 1,
+  "explanation": "**Hash Join은 등치(=) 조인 전용**입니다. 비등치 조인은 NL Join이나 Sort Merge로 처리.\n\n**JOIN 처리 방식 3종**:\n\n| 방식 | 동작 | 등치 | 비등치 | 적합 |\n|---|---|---|---|---|\n| **Nested Loop** | 외부 행 × 내부 행 | ✓ | ✓ | 소량 + 후행 인덱스 |\n| **Hash Join** | hash 빌드 + probe | ✓ | **✗** | 대량 + 등치 |\n| **Sort Merge** | 양쪽 정렬 후 병합 | ✓ | ✓ | 정렬된 대량, 범위 |\n\n암기:\n- NL: \"둘러쌈, 소량+인덱스\"\n- Hash: \"=계열, 대량\"\n- Sort Merge: \"정렬+범위\"",
+  "concepts": ["optimizer"],
+  "tags": ["JOIN 처리", "Hash Join", "옵티마이저"],
+  "source": "self"
+}

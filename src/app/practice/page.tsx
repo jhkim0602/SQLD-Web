@@ -51,6 +51,41 @@ export default async function PracticePage({
         </p>
       </header>
 
+      <section className="mb-6 grid gap-2 md:grid-cols-4">
+        <Link
+          href="/practice/random"
+          className="rounded-lg border border-zinc-200 bg-white p-3 text-center transition hover:border-zinc-900 hover:bg-zinc-50"
+        >
+          <div className="text-2xl">🎲</div>
+          <div className="mt-1 text-sm font-semibold text-zinc-900">전체 랜덤</div>
+          <div className="text-[11px] text-zinc-500">어떤 문제든 무작위</div>
+        </Link>
+        <Link
+          href="/practice/random?mode=untried"
+          className="rounded-lg border border-zinc-200 bg-white p-3 text-center transition hover:border-blue-300 hover:bg-blue-50/50"
+        >
+          <div className="text-2xl">📘</div>
+          <div className="mt-1 text-sm font-semibold text-zinc-900">미풀이 랜덤</div>
+          <div className="text-[11px] text-zinc-500">아직 안 푼 문제</div>
+        </Link>
+        <Link
+          href="/practice/random?mode=wrong"
+          className="rounded-lg border border-zinc-200 bg-white p-3 text-center transition hover:border-rose-300 hover:bg-rose-50/50"
+        >
+          <div className="text-2xl">🔁</div>
+          <div className="mt-1 text-sm font-semibold text-zinc-900">오답 랜덤</div>
+          <div className="text-[11px] text-zinc-500">틀린 문제 다시</div>
+        </Link>
+        <Link
+          href="/practice/random?mode=bookmarked"
+          className="rounded-lg border border-zinc-200 bg-white p-3 text-center transition hover:border-amber-300 hover:bg-amber-50/50"
+        >
+          <div className="text-2xl">★</div>
+          <div className="mt-1 text-sm font-semibold text-zinc-900">즐겨찾기 랜덤</div>
+          <div className="text-[11px] text-zinc-500">별표 친 문제</div>
+        </Link>
+      </section>
+
       <PracticeFilters
         currentSubject={params.subject ?? ""}
         currentCategory={params.category ?? ""}

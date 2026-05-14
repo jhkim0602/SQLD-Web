@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import type { Question } from "@/lib/types";
 import { SUBJECT_LABELS, TYPE_LABELS } from "@/lib/types";
 import { useProgress } from "@/lib/store";
@@ -26,6 +27,9 @@ export function QuestionView({
   index,
   total,
 }: Props) {
+  const searchParams = useSearchParams();
+  const randomMode = searchParams.get("from") === "random";
+  const randomModeKind = searchParams.get("mode");
   const hydrated = useHydrated();
   const recordAttempt = useProgress((s) => s.recordAttempt);
   const toggleBookmark = useProgress((s) => s.toggleBookmark);
@@ -59,6 +63,13 @@ export function QuestionView({
   }
 
   function goNext() {
+    if (randomMode) {
+      const params = new URLSearchParams();
+      params.set("exclude", question.id);
+      if (randomModeKind) params.set("mode", randomModeKind);
+      window.location.href = `/practice/random?${params.toString()}`;
+      return;
+    }
     if (nextId) {
       window.location.href = `/practice/${nextId}`;
     }
@@ -68,6 +79,10 @@ export function QuestionView({
     if (prevId) {
       window.location.href = `/practice/${prevId}`;
     }
+  }
+
+  function goRandom() {
+    window.location.href = `/practice/random?exclude=${question.id}`;
   }
 
   useEffect(() => {
@@ -99,11 +114,12 @@ export function QuestionView({
         if (prevId) goPrev();
       }
       if (e.key === "b" && hydrated) toggleBookmark(question.id);
+      if (e.key === "r") goRandom();
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [submitted, question.id, nextId, prevId, hydrated]);
+  }, [submitted, question.id, nextId, prevId, hydrated, randomMode]);
 
   const progressPercent =
     typeof index === "number" && typeof total === "number" && total > 0
@@ -122,11 +138,17 @@ export function QuestionView({
       )}
 
       <div className="mb-3 mt-2 flex flex-wrap items-center gap-2 text-xs">
-        {typeof index === "number" && typeof total === "number" && (
-          <span className="font-mono font-semibold text-zinc-900">
-            {index} <span className="text-zinc-300">/</span>{" "}
-            <span className="text-zinc-400">{total}</span>
+        {randomMode ? (
+          <span className="rounded-md border border-purple-200 bg-purple-50 px-2 py-0.5 font-mono font-semibold text-purple-700">
+            🎲 랜덤{randomModeKind ? ` · ${randomModeKindLabel(randomModeKind)}` : ""}
           </span>
+        ) : (
+          typeof index === "number" && typeof total === "number" && (
+            <span className="font-mono font-semibold text-zinc-900">
+              {index} <span className="text-zinc-300">/</span>{" "}
+              <span className="text-zinc-400">{total}</span>
+            </span>
+          )
         )}
         <Tag>{SUBJECT_LABELS[question.subject]}</Tag>
         <Tag>{question.category}</Tag>
@@ -332,11 +354,10 @@ export function QuestionView({
           </button>
 
           {!submitted ? (
-            <div className="text-xs text-zinc-400">
+            <div className="flex items-center gap-2 text-xs text-zinc-400">
               {question.type === "mc" ? (
                 <>
-                  선택지를 누르거나{" "}
-                  <kbd>1</kbd>~<kbd>{question.choices?.length}</kbd>
+                  선택지를 누르거나 <kbd>1</kbd>~<kbd>{question.choices?.length}</kbd>
                 </>
               ) : (
                 <>
@@ -347,26 +368,36 @@ export function QuestionView({
           ) : (
             <button
               onClick={goNext}
-              disabled={!nextId}
+              disabled={!randomMode && !nextId}
               className="flex-1 rounded-lg bg-zinc-900 px-5 py-3 text-center text-[15px] font-semibold text-white shadow-sm transition hover:bg-zinc-800 disabled:bg-zinc-300"
             >
-              다음 문제 <kbd className="ml-2 !bg-zinc-700 !text-white">↵</kbd>
+              {randomMode ? "🎲 다음 랜덤" : "다음 문제"}{" "}
+              <kbd className="ml-2 !bg-zinc-700 !text-white">↵</kbd>
             </button>
           )}
 
-          <button
-            onClick={goNext}
-            disabled={!nextId}
-            className={cn(
-              "flex items-center gap-1 rounded-md px-3 py-2 text-sm text-zinc-600 transition hover:text-zinc-900 disabled:opacity-30",
-              submitted && "hidden"
-            )}
-            aria-label="다음 문제"
-            title="J / →"
-          >
-            <span className="hidden sm:inline">건너뛰기</span>
-            <span>→</span>
-          </button>
+          {!submitted && (
+            <div className="flex items-center gap-1">
+              <button
+                onClick={goRandom}
+                className="flex items-center gap-1 rounded-md border border-zinc-200 bg-white px-2.5 py-1.5 text-xs text-zinc-600 transition hover:border-purple-300 hover:text-purple-700"
+                aria-label="랜덤 문제로"
+                title="랜덤 문제로 (R)"
+              >
+                🎲
+              </button>
+              <button
+                onClick={goNext}
+                disabled={!nextId}
+                className="flex items-center gap-1 rounded-md px-3 py-2 text-sm text-zinc-600 transition hover:text-zinc-900 disabled:opacity-30"
+                aria-label="다음 문제"
+                title="J / →"
+              >
+                <span className="hidden sm:inline">건너뛰기</span>
+                <span>→</span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </article>
@@ -379,4 +410,17 @@ function Tag({ children }: { children: React.ReactNode }) {
       {children}
     </span>
   );
+}
+
+function randomModeKindLabel(mode: string): string {
+  switch (mode) {
+    case "untried":
+      return "미풀이만";
+    case "wrong":
+      return "오답만";
+    case "bookmarked":
+      return "즐겨찾기만";
+    default:
+      return mode;
+  }
 }

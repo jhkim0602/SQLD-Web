@@ -21,6 +21,7 @@ const NAV: NavGroup[] = [
     title: "학습",
     items: [
       { href: "/", label: "홈" },
+      { href: "/practice/random", label: "🎲 랜덤 풀이" },
       { href: "/practice", label: "기출 풀이" },
       { href: "/concepts", label: "개념 정리" },
       { href: "/quiz/ox", label: "OX 빠른 복습" },

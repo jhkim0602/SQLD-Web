@@ -1,0 +1,18 @@
+{
+  "id": "q-162",
+  "subject": 2,
+  "category": "트랜잭션/PL-SQL",
+  "type": "mc",
+  "question": "다음 트랜잭션 격리 수준 중 \"Non-repeatable Read\"를 차단하는 최소 수준은?",
+  "choices": [
+    "READ UNCOMMITTED",
+    "READ COMMITTED",
+    "REPEATABLE READ",
+    "SERIALIZABLE"
+  ],
+  "answer": 2,
+  "explanation": "**격리 수준별 현상 차단** ⭐ 빈출\n\n| 수준 | Dirty Read | Non-repeatable | Phantom |\n|---|---|---|---|\n| READ UNCOMMITTED | 발생 | 발생 | 발생 |\n| READ COMMITTED | 차단 | 발생 | 발생 |\n| **REPEATABLE READ** | 차단 | **차단** | 발생 |\n| SERIALIZABLE | 차단 | 차단 | 차단 |\n\n**Non-repeatable Read**: 같은 행을 두 번 읽었는데 값이 다른 현상.\n\n```\nT1: SELECT sal FROM emp WHERE empno=100;  → 1000\nT2: UPDATE emp SET sal=2000 WHERE empno=100; COMMIT;\nT1: SELECT sal FROM emp WHERE empno=100;  → 2000 (다름!)\n```\n\n**최소 차단 수준**: REPEATABLE READ.\n\n**DBMS 기본값**:\n- Oracle: READ COMMITTED\n- **MySQL InnoDB**: **REPEATABLE READ**\n- PostgreSQL: READ COMMITTED\n- SQL Server: READ COMMITTED",
+  "concepts": ["transaction"],
+  "tags": ["격리수준", "REPEATABLE READ"],
+  "source": "self"
+}

@@ -1,0 +1,19 @@
+{
+  "id": "q-133",
+  "subject": 2,
+  "category": "그룹함수",
+  "type": "mc",
+  "question": "다음 GROUPING 함수 결과로 옳은 것은?",
+  "codeBlock": "SELECT deptno, job, SUM(sal),\n  GROUPING(deptno) AS g_d,\n  GROUPING(job) AS g_j\nFROM emp\nGROUP BY ROLLUP(deptno, job);\n\n-- 결과 중 deptno=NULL, job=NULL 행의 g_d, g_j는?",
+  "choices": [
+    "g_d=0, g_j=0",
+    "g_d=0, g_j=1",
+    "g_d=1, g_j=0",
+    "g_d=1, g_j=1"
+  ],
+  "answer": 3,
+  "explanation": "**GROUPING(컬럼)**:\n- `0`: 일반 그룹 (해당 컬럼이 그룹핑 키에 포함)\n- `1`: 소계/총계 행 (해당 컬럼이 그룹핑에서 제외)\n\n`deptno=NULL, job=NULL`인 행은 **전체 총계** → 두 컬럼 모두 그룹핑에서 제외 → **g_d=1, g_j=1**.\n\nROLLUP(deptno, job)의 결과 행 종류:\n\n| 행 종류 | deptno | job | g_d | g_j |\n|---|---|---|---|---|\n| 상세 | 값 | 값 | 0 | 0 |\n| 부서 소계 | 값 | NULL | 0 | 1 |\n| 총계 | NULL | NULL | **1** | **1** |\n\n**활용**: 일반 NULL과 그룹핑 NULL 구분.\n```sql\nCASE WHEN GROUPING(deptno) = 1 THEN '총계' ELSE TO_CHAR(deptno) END\n```",
+  "concepts": ["group-by"],
+  "tags": ["GROUPING", "ROLLUP", "소계"],
+  "source": "self"
+}

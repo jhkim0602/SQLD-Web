@@ -1,0 +1,19 @@
+{
+  "id": "q-140",
+  "subject": 2,
+  "category": "서브쿼리",
+  "type": "mc",
+  "question": "다음 쿼리에서 에러가 발생하는 이유는?",
+  "codeBlock": "SELECT ename,\n  (SELECT dname FROM dept WHERE deptno >= e.deptno) AS dname\nFROM emp e;",
+  "choices": [
+    "서브쿼리에 alias가 없음",
+    "스칼라 서브쿼리가 다중 행을 반환할 가능성",
+    "조인 조건이 잘못됨",
+    "권한 부족"
+  ],
+  "answer": 1,
+  "explanation": "**ORA-01427: single-row subquery returns more than one row**\n\n**스칼라 서브쿼리**(SELECT 절)는 **단일 행, 단일 컬럼**만 반환해야 함. `deptno >= e.deptno`는 여러 행을 반환할 수 있어 에러.\n\n해결 1: 단일 행 보장 조건\n```sql\nSELECT ename,\n  (SELECT dname FROM dept WHERE deptno = e.deptno) AS dname\nFROM emp e;\n```\n\n해결 2: 집계로 단일 값 보장\n```sql\nSELECT ename,\n  (SELECT MAX(dname) FROM dept WHERE deptno >= e.deptno) AS dname\nFROM emp e;\n```\n\n해결 3: JOIN 사용 (더 깔끔)\n```sql\nSELECT e.ename, d.dname\nFROM emp e LEFT JOIN dept d ON e.deptno = d.deptno;\n```",
+  "concepts": ["subquery"],
+  "tags": ["스칼라 서브쿼리", "ORA-01427"],
+  "source": "self"
+}

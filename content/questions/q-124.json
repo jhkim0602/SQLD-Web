@@ -1,0 +1,19 @@
+{
+  "id": "q-124",
+  "subject": 2,
+  "category": "JOIN",
+  "type": "mc",
+  "question": "다음 JOIN 결과로 옳은 것은?\n\nemp(empno, deptno) = (1, 10), (2, 20), (3, NULL)\ndept(deptno, dname) = (10, 'A'), (30, 'C')",
+  "codeBlock": "SELECT * FROM emp e INNER JOIN dept d\n  ON e.deptno = d.deptno;",
+  "choices": [
+    "(1, 10, 10, 'A')",
+    "(1, 10, 10, 'A'), (2, 20, NULL, NULL)",
+    "(1, 10, 10, 'A'), (3, NULL, NULL, NULL)",
+    "모든 행"
+  ],
+  "answer": 0,
+  "explanation": "**INNER JOIN**은 양쪽 매칭만 반환. NULL은 매칭에 사용되지 않음.\n\n매칭 확인:\n- (1, 10): dept에 10 있음 → 매칭 ✓\n- (2, 20): dept에 20 없음 → 매칭 ✗\n- (3, NULL): NULL = NULL은 UNKNOWN → 매칭 ✗\n\n결과: **(1, 10, 10, 'A')** 1건만\n\n**LEFT OUTER였다면**:\n```\n(1, 10, 10, 'A')\n(2, 20, NULL, NULL)\n(3, NULL, NULL, NULL)\n```\n\n**FULL OUTER였다면** + dept의 30 추가:\n```\n... 위 3행 + (NULL, NULL, 30, 'C')\n```",
+  "concepts": ["join-types", "null-handling"],
+  "tags": ["INNER JOIN", "NULL", "매칭"],
+  "source": "self"
+}

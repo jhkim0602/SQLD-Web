@@ -1,0 +1,19 @@
+{
+  "id": "q-139",
+  "subject": 2,
+  "category": "서브쿼리",
+  "type": "mc",
+  "question": "다음 상관 서브쿼리와 동일한 결과를 내는 쿼리는?",
+  "codeBlock": "-- 부서별 최대 급여 사원\nSELECT * FROM emp e\nWHERE sal = (\n  SELECT MAX(sal) FROM emp WHERE deptno = e.deptno\n);",
+  "choices": [
+    "SELECT * FROM emp ORDER BY sal DESC LIMIT 1",
+    "SELECT * FROM (SELECT e.*, RANK() OVER (PARTITION BY deptno ORDER BY sal DESC) r FROM emp e) WHERE r = 1",
+    "SELECT * FROM emp WHERE sal = (SELECT MAX(sal) FROM emp)",
+    "SELECT * FROM emp WHERE sal > (SELECT AVG(sal) FROM emp)"
+  ],
+  "answer": 1,
+  "explanation": "**부서별 최대 급여**는 **상관 서브쿼리** 또는 **윈도우 함수**로 표현 가능.\n\n```sql\n-- 윈도우 함수로 동치\nSELECT * FROM (\n  SELECT e.*, RANK() OVER (PARTITION BY deptno ORDER BY sal DESC) r\n  FROM emp e\n) WHERE r = 1;\n```\n\n나머지 분석:\n- 선택지 1: 전체 최대 1명만 (Top-N), 부서별 X\n- 선택지 3: **전체 최대 급여** (모든 부서 합쳐서)\n- 선택지 4: 평균 초과 사원\n\n**상관 vs 비상관**:\n- 상관: 외부 컬럼 참조 (`e.deptno`), 메인 행마다 실행\n- 비상관: 한 번만 실행\n\n부서별 같은 그룹 내 비교는 항상 **상관 서브쿼리** 또는 **PARTITION BY**.",
+  "concepts": ["subquery", "window-functions"],
+  "tags": ["상관 서브쿼리", "그룹별 최대", "RANK"],
+  "source": "self"
+}

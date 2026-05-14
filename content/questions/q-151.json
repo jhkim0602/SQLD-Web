@@ -1,0 +1,19 @@
+{
+  "id": "q-151",
+  "subject": 2,
+  "category": "계층/순환",
+  "type": "mc",
+  "question": "다음 계층형 질의에서 LEVEL의 값으로 옳은 것은?\n\n계층:\n  KING (mgr=NULL)\n  └── JONES (mgr=KING)\n      └── SCOTT (mgr=JONES)\n          └── ADAMS (mgr=SCOTT)",
+  "codeBlock": "SELECT ename, LEVEL\nFROM emp\nSTART WITH mgr IS NULL\nCONNECT BY PRIOR empno = mgr;",
+  "choices": [
+    "KING=0, JONES=1, SCOTT=2, ADAMS=3",
+    "KING=1, JONES=2, SCOTT=3, ADAMS=4",
+    "KING=4, JONES=3, SCOTT=2, ADAMS=1",
+    "모두 LEVEL=1"
+  ],
+  "answer": 1,
+  "explanation": "**LEVEL의사 컬럼**: 계층 깊이를 표시. **루트 = 1**, 자식으로 갈수록 +1.\n\n| ename | LEVEL | 설명 |\n|---|---|---|\n| KING | **1** | 루트 (mgr IS NULL) |\n| JONES | **2** | KING의 자식 |\n| SCOTT | **3** | JONES의 자식 |\n| ADAMS | **4** | SCOTT의 자식 |\n\n**핵심**: LEVEL은 **1부터** 시작 (0이 아님).\n\n**시각화** (들여쓰기):\n```sql\nSELECT LPAD(' ', (LEVEL-1)*2) || ename AS hierarchy\nFROM emp\nSTART WITH mgr IS NULL\nCONNECT BY PRIOR empno = mgr;\n```\n결과:\n```\nKING            ← LEVEL 1\n  JONES         ← LEVEL 2\n    SCOTT       ← LEVEL 3\n      ADAMS     ← LEVEL 4\n```",
+  "concepts": ["hierarchical"],
+  "tags": ["LEVEL", "계층형"],
+  "source": "self"
+}

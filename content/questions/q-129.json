@@ -1,0 +1,12 @@
+{
+  "id": "q-129",
+  "subject": 2,
+  "category": "JOIN",
+  "type": "ox",
+  "question": "INNER JOIN의 결과는 LEFT OUTER JOIN의 결과보다 항상 적거나 같다.",
+  "answer": true,
+  "explanation": "참(O). **LEFT OUTER JOIN ⊇ INNER JOIN**\n\nLEFT OUTER JOIN은 INNER JOIN의 결과 + 왼쪽에만 있는 행(없는 쪽 NULL)을 포함하므로 항상 ≥ INNER JOIN.\n\n```\nA = {1, 2, 3}, B = {2, 3, 4}\n\nINNER JOIN ON A.x = B.x:\n  (2, 2), (3, 3)                        → 2건\n\nLEFT OUTER JOIN:\n  (1, NULL), (2, 2), (3, 3)              → 3건\n\nFULL OUTER JOIN:\n  (1, NULL), (2, 2), (3, 3), (NULL, 4)   → 4건\n```\n\n행 수 관계:\n- INNER ≤ LEFT ≤ FULL\n- INNER ≤ RIGHT ≤ FULL\n- INNER ≤ CROSS (= m × n)",
+  "concepts": ["join-types"],
+  "tags": ["INNER JOIN", "OUTER JOIN", "행 수"],
+  "source": "self"
+}

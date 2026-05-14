@@ -26,6 +26,21 @@ export default function HomePage() {
 
       <section className="mt-10 grid gap-4 md:grid-cols-2">
         <Link
+          href="/practice/random"
+          className="block rounded-md border-2 border-zinc-900 bg-zinc-900 p-6 text-white transition hover:bg-zinc-800"
+        >
+          <div className="text-xs font-medium uppercase tracking-wider text-zinc-300">
+            🎲 랜덤 풀이
+          </div>
+          <h2 className="mt-2 text-lg font-bold">
+            지금 바로 시작
+          </h2>
+          <p className="mt-1.5 text-sm text-zinc-300">
+            무작위 문제로 한 손에 풀이. R 키로 빠르게 다음 랜덤.
+          </p>
+        </Link>
+
+        <Link
           href="/practice"
           className="block rounded-md border border-zinc-200 p-6 transition hover:border-zinc-400 hover:bg-zinc-50"
         >
@@ -36,8 +51,8 @@ export default function HomePage() {
             과목·카테고리별로 문제 풀기
           </h2>
           <p className="mt-1.5 text-sm text-zinc-600">
-            현재 {questions.length}문제. 필터로 약점만 골라 풀거나 무작위로
-            돌아가며 풀 수 있습니다.
+            현재 {questions.length}문제. 필터로 약점만 풀거나 미풀이/오답만
+            랜덤 모드도 제공.
           </p>
         </Link>
 

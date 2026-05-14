@@ -1,0 +1,12 @@
+{
+  "id": "q-149",
+  "subject": 2,
+  "category": "윈도우함수",
+  "type": "ox",
+  "question": "PARTITION BY 절을 생략하면 윈도우 함수 사용이 불가능하다.",
+  "answer": false,
+  "explanation": "거짓(X). **PARTITION BY 생략 시 전체 데이터를 하나의 윈도우**로 취급해 동작합니다.\n\n```sql\n-- PARTITION BY 생략: 전체를 1개 윈도우\nSELECT ename, sal,\n  RANK() OVER (ORDER BY sal DESC) AS r\nFROM emp;\n-- 모든 사원 중 sal 순위\n\n-- PARTITION BY 있음: 부서별 윈도우\nSELECT ename, deptno, sal,\n  RANK() OVER (PARTITION BY deptno ORDER BY sal DESC) AS dept_r\nFROM emp;\n-- 부서별 sal 순위\n```\n\n**윈도우 함수 절 정리**:\n| 절 | 생략 시 |\n|---|---|\n| `PARTITION BY` | 전체를 1개 윈도우 |\n| `ORDER BY` | 정렬 없음 (순위 함수에서는 결정적이지 않음) |\n| `ROWS/RANGE` | 기본 프레임 적용 |\n\n순위 함수(RANK, ROW_NUMBER)는 `ORDER BY`가 필수.",
+  "concepts": ["window-functions"],
+  "tags": ["PARTITION BY", "윈도우 함수"],
+  "source": "self"
+}

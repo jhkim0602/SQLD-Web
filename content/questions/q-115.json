@@ -1,0 +1,18 @@
+{
+  "id": "q-115",
+  "subject": 2,
+  "category": "SELECT/WHERE",
+  "type": "mc",
+  "question": "다음 중 SELECT 절에 부여한 alias를 사용할 수 있는 절은?",
+  "choices": [
+    "WHERE",
+    "GROUP BY",
+    "HAVING",
+    "ORDER BY"
+  ],
+  "answer": 3,
+  "explanation": "**SELECT alias는 ORDER BY에서만 사용 가능**합니다.\n\n이유: SQL 실행 순서 = `FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY`\n\nWHERE/GROUP BY/HAVING은 **SELECT 이전에 실행**되므로 alias를 알 수 없습니다.\n\n```sql\n-- ✗ alias 사용 불가\nSELECT sal * 12 AS annual FROM emp WHERE annual > 10000;\n\n-- ✓ ORDER BY는 SELECT 이후 → alias OK\nSELECT sal * 12 AS annual FROM emp ORDER BY annual DESC;\n```\n\n암기법: **FWGHSO** (From-Where-Group-Having-Select-Order)",
+  "concepts": ["select-order"],
+  "tags": ["alias", "실행 순서"],
+  "source": "self"
+}

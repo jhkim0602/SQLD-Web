@@ -1,0 +1,18 @@
+{
+  "id": "q-095",
+  "subject": 1,
+  "category": "관계",
+  "type": "mc",
+  "question": "다음 중 자기 참조(Recursive) 관계에 가장 적합한 예시는?",
+  "choices": [
+    "고객과 주문",
+    "사원과 부서",
+    "사원과 사원의 매니저",
+    "학생과 과목"
+  ],
+  "answer": 2,
+  "explanation": "**자기 참조 관계**는 한 엔터티가 자기 자신과 관계를 맺는 경우입니다.\n\n**사원과 사원의 매니저** = 사원 엔터티 안에 `mgr` 컬럼이 있어 자신의 다른 사원(매니저)을 참조.\n\n```sql\nCREATE TABLE emp (\n  empno NUMBER PRIMARY KEY,\n  ename VARCHAR2(50),\n  mgr NUMBER,                              -- 자기 참조 FK\n  FOREIGN KEY (mgr) REFERENCES emp(empno)\n);\n```\n\n계층 구조(조직도, 카테고리, 답글) 표현에 활용. SELF JOIN 또는 CONNECT BY로 조회.",
+  "concepts": ["relationship"],
+  "tags": ["자기참조", "재귀", "계층"],
+  "source": "self"
+}

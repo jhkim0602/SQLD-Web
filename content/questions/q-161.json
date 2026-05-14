@@ -1,0 +1,19 @@
+{
+  "id": "q-161",
+  "subject": 2,
+  "category": "트랜잭션/PL-SQL",
+  "type": "mc",
+  "question": "다음 트랜잭션 흐름 후 emp 테이블의 상태로 옳은 것은?",
+  "codeBlock": "BEGIN;\nINSERT INTO emp VALUES (1, 'A');\nSAVEPOINT sp1;\nINSERT INTO emp VALUES (2, 'B');\nSAVEPOINT sp2;\nINSERT INTO emp VALUES (3, 'C');\nROLLBACK TO sp1;\nINSERT INTO emp VALUES (4, 'D');\nCOMMIT;",
+  "choices": [
+    "(1,'A'), (4,'D')",
+    "(1,'A'), (2,'B'), (4,'D')",
+    "(1,'A'), (2,'B'), (3,'C'), (4,'D')",
+    "(4,'D')"
+  ],
+  "answer": 0,
+  "explanation": "**SAVEPOINT + ROLLBACK TO 동작** ⭐\n\n단계별 추적:\n1. INSERT (1, 'A') → 임시: [A]\n2. SAVEPOINT sp1 → 체크포인트 [A]\n3. INSERT (2, 'B') → [A, B]\n4. SAVEPOINT sp2 → 체크포인트 [A, B]\n5. INSERT (3, 'C') → [A, B, C]\n6. **ROLLBACK TO sp1** → sp1 시점으로 → [A] (B, C 모두 취소)\n7. INSERT (4, 'D') → [A, D]\n8. COMMIT → 영구: **[(1,'A'), (4,'D')]**\n\n**핵심**: `ROLLBACK TO sp1`은 sp1 이후 변경을 **모두 취소** (sp2 변경도 포함).\n\n**TCL 명령**:\n- COMMIT: 확정\n- ROLLBACK: 전체 취소\n- ROLLBACK TO sp: 저장점까지만 취소\n- SAVEPOINT sp: 저장점 표시\n\nsp 이전의 변경(A)은 유지됨.",
+  "concepts": ["transaction"],
+  "tags": ["SAVEPOINT", "ROLLBACK TO", "TCL"],
+  "source": "self"
+}

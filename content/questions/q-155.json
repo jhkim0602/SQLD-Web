@@ -1,0 +1,18 @@
+{
+  "id": "q-155",
+  "subject": 2,
+  "category": "DDL/DML/DCL",
+  "type": "mc",
+  "question": "다음 중 NULL 허용에 대한 설명으로 옳지 않은 것은?",
+  "choices": [
+    "PRIMARY KEY는 NULL을 허용하지 않는다.",
+    "FOREIGN KEY는 NULL을 허용할 수 있다.",
+    "UNIQUE 제약은 NULL을 허용하지 않는다.",
+    "NOT NULL 제약은 NULL을 허용하지 않는다."
+  ],
+  "answer": 2,
+  "explanation": "**UNIQUE는 NULL을 허용합니다.** 표준 SQL에서 **여러 NULL이 공존**할 수 있습니다.\n\n```sql\nCREATE TABLE t (\n  email VARCHAR2(100) UNIQUE\n);\n\nINSERT INTO t VALUES (NULL);   -- ✓\nINSERT INTO t VALUES (NULL);   -- ✓ (또 다른 NULL OK)\nINSERT INTO t VALUES ('a@b');  -- ✓\nINSERT INTO t VALUES ('a@b');  -- ✗ 중복\n```\n\n**NULL 허용 표** ⭐ 외울 것:\n\n| 제약 | NULL |\n|---|---|\n| PRIMARY KEY | ✗ (개체 무결성) |\n| UNIQUE | **○** (여러 NULL OK) |\n| FOREIGN KEY | **○** (선택 관계) |\n| NOT NULL | ✗ |\n| CHECK | 조건 의존 |\n\n시험 빈출 함정:\n- \"FK는 NULL 불가\" → ✗\n- \"UNIQUE는 NULL 불가\" → ✗\n- \"PK는 NULL 가능\" → ✗",
+  "concepts": ["ddl-dml-dcl", "integrity"],
+  "tags": ["UNIQUE", "NULL", "제약조건"],
+  "source": "self"
+}
