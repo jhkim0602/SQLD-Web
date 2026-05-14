@@ -4,44 +4,49 @@ title: Top-N 쿼리 (상위 N건)
 subject: 2
 category: 윈도우함수
 order: 10
-description: 정렬된 결과의 상위 N건을 추출하는 다양한 방법. ROWNUM, FETCH FIRST, 윈도우 함수.
+description: ROWNUM · FETCH FIRST · 윈도우 함수로 상위 N건 추출.
 relatedQuestions: []
 ---
 
-## 무엇이 문제인가?
+## 1. Top-N 쿼리란?
 
-\"부서별 급여 상위 3명\" 같은 쿼리는 단순한 ORDER BY + LIMIT으로 해결되지 않는다.
+정렬된 결과에서 **상위 N건만** 추출. \"매출 상위 5개 상품\", \"부서별 급여 상위 3명\" 등.
 
-## 방법 1: ROWNUM (Oracle 전통)
+## 2. 4가지 방법 비교 ⭐⭐⭐
+
+| 방법 | 사용 | 장점 | 단점 |
+|---|---|---|---|
+| **ROWNUM** | Oracle 전버전 | 호환성 | 정렬과 함정 |
+| **FETCH FIRST** | Oracle 12c+, ANSI | 직관, 표준 | 구버전 ✗ |
+| **윈도우 함수** | 모던 DBMS | **그룹별 Top-N** | 약간 복잡 |
+| **LIMIT** | MySQL, PG | 매우 간단 | Oracle ✗ |
+
+## 3. ROWNUM (Oracle) ⭐⭐
 
 ```sql
--- 급여 상위 5명
+-- 상위 5명
 SELECT * FROM (
   SELECT * FROM emp ORDER BY sal DESC
 ) WHERE ROWNUM <= 5;
 ```
 
-> ⚠️ **함정**: ROWNUM은 **정렬 전**에 부여되므로 인라인 뷰로 정렬한 뒤 ROWNUM을 매겨야 한다.
+> ⚠️ **ROWNUM 함정**: 정렬 **전**에 부여됨 → 인라인 뷰 필수
 
 ```sql
--- ✗ 잘못된 예
+-- ✗ 임의 5건만 뽑고 정렬
 SELECT * FROM emp WHERE ROWNUM <= 5 ORDER BY sal DESC;
--- → 임의의 5건을 뽑고 그것만 정렬
 
--- ✓ 올바른 예
+-- ✓ 정렬 후 ROWNUM 매김
 SELECT * FROM (SELECT * FROM emp ORDER BY sal DESC) WHERE ROWNUM <= 5;
 ```
 
-### ROWNUM 페이지네이션 함정
-
-\"6~10위만\" 같은 쿼리는?
+### 페이지네이션 함정 ⭐
 
 ```sql
--- ✗ ROWNUM은 1부터 시작해야 매겨지므로 BETWEEN 6 AND 10은 빈 결과
-SELECT * FROM (SELECT * FROM emp ORDER BY sal DESC)
+-- ✗ 빈 결과 (ROWNUM은 1부터)
 WHERE ROWNUM BETWEEN 6 AND 10;
 
--- ✓ 한 번 더 감싸야 함
+-- ✓ 두 번 감싸기
 SELECT * FROM (
   SELECT inner_q.*, ROWNUM AS rn FROM (
     SELECT * FROM emp ORDER BY sal DESC
@@ -49,29 +54,28 @@ SELECT * FROM (
 ) WHERE rn >= 6;
 ```
 
-## 방법 2: FETCH FIRST (ANSI 표준, Oracle 12c+)
+> 🔑 **암기법**: \"ROWNUM은 정렬 후, 페이지는 두 번 감싸기\"
+
+## 4. FETCH FIRST (ANSI, Oracle 12c+) ⭐⭐
 
 ```sql
 -- 상위 5건
 SELECT * FROM emp ORDER BY sal DESC
 FETCH FIRST 5 ROWS ONLY;
 
--- 페이지네이션 (6~10위)
+-- 페이지네이션
 SELECT * FROM emp ORDER BY sal DESC
 OFFSET 5 ROWS FETCH NEXT 5 ROWS ONLY;
 
 -- 동률 포함
 SELECT * FROM emp ORDER BY sal DESC
-FETCH FIRST 5 ROWS WITH TIES;  -- 5위와 같은 sal은 모두 포함
+FETCH FIRST 5 ROWS WITH TIES;
 ```
 
-훨씬 직관적. ROWNUM보다 권장.
-
-## 방법 3: 윈도우 함수 (그룹별 Top-N)
-
-\"부서별 급여 상위 3명\" 같은 그룹 내 Top-N에 가장 강력하다.
+## 5. 윈도우 함수 — 그룹별 Top-N ⭐⭐⭐
 
 ```sql
+-- 부서별 급여 상위 3명
 SELECT * FROM (
   SELECT e.*,
     RANK() OVER (PARTITION BY deptno ORDER BY sal DESC) AS r
@@ -79,45 +83,81 @@ SELECT * FROM (
 ) WHERE r <= 3;
 ```
 
-### 어떤 순위 함수를 쓸까?
+### 순위 함수 선택
 
 | 상황 | 함수 |
 |---|---|
-| **동률을 모두 포함** | RANK |
-| **동률 없이 정확히 N건** | ROW_NUMBER |
+| **동률 모두 포함** | RANK |
+| **정확히 N건만** | ROW_NUMBER |
 | **동률 후 연속 순위** | DENSE_RANK |
 
-```sql
--- 부서별 정확히 3명만 (동률은 임의 선택)
-WHERE ROW_NUMBER() OVER (PARTITION BY deptno ORDER BY sal DESC) <= 3
-```
-
-## 방법 4: SQL Server / PostgreSQL / MySQL 문법
+## 6. 다른 DBMS 문법
 
 ```sql
 -- SQL Server
 SELECT TOP 5 * FROM emp ORDER BY sal DESC;
 SELECT TOP 5 WITH TIES * FROM emp ORDER BY sal DESC;
 
--- MySQL, PostgreSQL
+-- MySQL / PostgreSQL
 SELECT * FROM emp ORDER BY sal DESC LIMIT 5;
 SELECT * FROM emp ORDER BY sal DESC LIMIT 5 OFFSET 5;
 ```
 
-## 시험 빈출 포인트
+## 7. ⚠️ 자주 틀리는 함정
 
-> 📌 **자주 출제**
-> - ROWNUM은 정렬 **전** 부여되므로 인라인 뷰 필수
-> - ROWNUM 페이지네이션은 두 번 감싸야 함
-> - FETCH FIRST는 Oracle 12c+, ANSI 표준
-> - 그룹별 Top-N은 **윈도우 함수**가 정답
-> - `WITH TIES`로 동률 포함 처리
+1. **\"ROWNUM은 정렬 후 부여\"** → ✗ 정렬 전
+2. **\"ROWNUM BETWEEN 6 AND 10 가능\"** → ✗ 1부터 매겨야
+3. **\"FETCH FIRST는 모든 버전\"** → ✗ Oracle 12c+
+4. **\"WITH TIES는 정확히 N건\"** → ✗ N+α 가능
+5. **\"Oracle도 LIMIT 가능\"** → ✗
 
-## 비교 정리
+## 8. 📝 기출 출제 패턴
 
-| 방법 | 장점 | 단점 |
-|---|---|---|
-| ROWNUM | Oracle 모든 버전 | 직관성 ↓, 페이지 처리 복잡 |
-| FETCH FIRST | 표준, 직관적 | Oracle 12c+ |
-| 윈도우 함수 | 그룹별 Top-N 가능 | 약간 복잡 |
-| LIMIT (MySQL/PG) | 매우 직관적 | Oracle 미지원 |
+### 패턴 A: ROWNUM 함정 ⭐
+> \"왜 결과가 의도와 다른가?\"
+- 정렬 전 ROWNUM 부여 → 인라인 뷰 필요
+
+### 패턴 B: 그룹별 Top-N
+> \"부서별 상위 3명?\"
+- 윈도우 + 인라인 뷰
+
+### 패턴 C: WITH TIES
+> \"동률 포함 상위 5건?\"
+
+### 패턴 D: 페이지네이션
+> \"6~10위만?\"
+
+## 9. 🔑 암기법 종합
+
+| 항목 | 암기법 |
+|---|---|
+| ROWNUM 함정 | \"정렬 전 부여\" |
+| 페이지네이션 | \"두 번 감싸기\" |
+| FETCH FIRST | \"12c+, ANSI\" |
+| WITH TIES | \"동률 모두\" |
+| 그룹별 | \"PARTITION + RANK + 인라인 뷰\" |
+
+## 10. 📌 시험 합격 핵심 요약
+
+> **시험장 입실 5분 전 점검**
+
+✅ **4가지 방법**: ROWNUM · FETCH FIRST · 윈도우 · LIMIT
+
+✅ **ROWNUM 핵심 함정**:
+   - **정렬 전 부여** → 반드시 인라인 뷰
+   - 페이지네이션 = **두 번 감싸기**
+
+✅ **FETCH FIRST**:
+   - `N ROWS ONLY` — 정확히 N건
+   - `WITH TIES` — 동률 포함
+   - `OFFSET m ROWS FETCH NEXT n` — 페이지
+
+✅ **그룹별 Top-N**:
+   ```sql
+   SELECT * FROM (
+     SELECT *, RANK() OVER (PARTITION BY G ORDER BY X DESC) r
+     FROM t
+   ) WHERE r <= N;
+   ```
+
+✅ **빈출**: \"ROWNUM은 정렬 전 부여\"

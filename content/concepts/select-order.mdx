@@ -4,59 +4,200 @@ title: SELECT 문 실행 순서
 subject: 2
 category: SELECT/WHERE
 order: 1
-description: 작성 순서와 실행 순서가 다른 SQL의 핵심
-relatedQuestions: [q-011]
+description: 작성 순서와 실행 순서의 차이가 만드는 SQL의 모든 규칙.
+relatedQuestions: [q-011, q-041, q-043]
 ---
 
-## 작성 순서 vs 실행 순서
+## 1. 핵심 정의
+
+SQL은 **작성하는 순서**와 **실행되는 순서**가 다르다. 이 차이가 SQL의 거의 모든 규칙·제약·함정의 원인이 된다.
+
+## 2. 작성 vs 실행 순서 ⭐⭐⭐ (최빈출)
 
 | 단계 | 작성(논리) 순서 | 실행 순서 |
 |---|---|---|
-| 1 | SELECT | **FROM** |
-| 2 | FROM | **WHERE** |
-| 3 | WHERE | **GROUP BY** |
-| 4 | GROUP BY | **HAVING** |
-| 5 | HAVING | **SELECT** |
-| 6 | ORDER BY | **ORDER BY** |
+| 1 | `SELECT` | **`FROM`** |
+| 2 | `FROM` | **`WHERE`** |
+| 3 | `WHERE` | **`GROUP BY`** |
+| 4 | `GROUP BY` | **`HAVING`** |
+| 5 | `HAVING` | **`SELECT`** |
+| 6 | `ORDER BY` | **`ORDER BY`** |
 
-## 실행 순서가 만드는 규칙
+> 🔑 **암기법: "From Where Group Having Select Order"**
+> ➡️ **"F-W-G-H-S-O"** (영문 첫 글자) — 회사 출근하듯 \"From\"부터
 
-### 1. WHERE에서는 집계함수 불가
+> 🔑 **한글 암기**: "프로그래머가 선언한 그(GROUP) 햄(HAVING) 셀(SELECT) 오(ORDER)"
+
+## 3. 실행 순서가 만드는 핵심 규칙 ⭐⭐⭐
+
+### 규칙 1: WHERE 절에서 집계함수 불가
+
 ```sql
--- ✗ 에러
-SELECT deptno FROM emp WHERE COUNT(*) > 1;
+-- ✗ 에러: WHERE는 그룹핑 전 실행
+SELECT deptno FROM emp WHERE COUNT(*) > 1 GROUP BY deptno;
 
--- ✓ HAVING 사용
+-- ✓ HAVING은 그룹핑 후 실행
 SELECT deptno FROM emp GROUP BY deptno HAVING COUNT(*) > 1;
 ```
-WHERE는 그룹핑 전에 실행되므로 집계 결과를 알 수 없다.
 
-### 2. SELECT alias는 ORDER BY에서만 사용 가능
+**이유**: WHERE는 그룹핑 전에 실행되므로 집계 결과를 알 수 없다.
+
+### 규칙 2: SELECT 절 alias는 WHERE·GROUP BY·HAVING에서 사용 불가
+
 ```sql
--- ✗ 에러 (WHERE는 SELECT 이전)
-SELECT sal * 12 AS annual FROM emp WHERE annual > 10000;
+-- ✗ 에러
+SELECT sal * 12 AS annual
+FROM emp
+WHERE annual > 10000;   -- WHERE는 SELECT 이전 실행, annual 모름
 
--- ✓ ORDER BY는 SELECT 이후
-SELECT sal * 12 AS annual FROM emp ORDER BY annual DESC;
+-- ✗ 에러
+SELECT deptno, AVG(sal) AS avg_sal
+FROM emp
+GROUP BY deptno
+HAVING avg_sal > 2000;  -- HAVING도 SELECT 이전
+
+-- ✓ ORDER BY는 SELECT 이후 실행
+SELECT sal * 12 AS annual
+FROM emp
+ORDER BY annual DESC;   -- ✓ alias 사용 가능
 ```
 
-### 3. ORDER BY는 SELECT에 없는 컬럼도 가능
-SELECT에 명시되지 않은 컬럼도 ORDER BY에서 참조 가능. (단, DISTINCT와 함께 쓸 때는 제약 있음)
+### 규칙 3: ORDER BY는 SELECT에 없는 컬럼도 정렬 가능
 
-## 시각화
+```sql
+SELECT ename FROM emp ORDER BY sal DESC;
+-- ✓ sal이 SELECT에 없어도 ORDER BY 가능
+
+-- 단, DISTINCT나 GROUP BY와 함께 쓸 때는 제약
+SELECT DISTINCT deptno FROM emp ORDER BY ename;
+-- ✗ ename은 DISTINCT에 포함되지 않음
+```
+
+## 4. 실행 흐름 시각화
 
 ```
 [디스크/메모리]
-    ↓ FROM
+    ↓ FROM (데이터 가져옴)
 [전체 행]
-    ↓ WHERE (행 필터)
+    ↓ WHERE (행 필터링)
 [조건 만족 행]
     ↓ GROUP BY (행 → 그룹)
-[그룹]
-    ↓ HAVING (그룹 필터)
+[그룹들]
+    ↓ HAVING (그룹 필터링)
 [조건 만족 그룹]
     ↓ SELECT (컬럼 투영, alias 부여)
 [결과]
     ↓ ORDER BY (정렬)
-[최종]
+[최종 결과]
 ```
+
+## 5. 절별 역할 정리
+
+### FROM
+- 데이터 소스 지정 (테이블, 뷰, 인라인뷰)
+- 조인 처리
+
+### WHERE
+- **행 단위** 필터
+- 집계함수 사용 **불가**
+- 인덱스 활용 가능
+
+### GROUP BY
+- 같은 값을 가진 행을 그룹으로 묶음
+- 비집계 SELECT 컬럼은 GROUP BY에 포함 필수
+- NULL을 하나의 그룹으로 처리
+
+### HAVING
+- **그룹 단위** 필터
+- 집계함수 사용 **가능**
+- WHERE로 처리 가능하면 WHERE로 (성능 ↑)
+
+### SELECT
+- 컬럼 투영
+- alias 부여
+- 표현식 평가
+- 윈도우 함수 평가
+
+### ORDER BY
+- 최종 정렬
+- SELECT alias 사용 가능
+- 결과 컬럼 위치 번호 사용 가능 (`ORDER BY 2 DESC`)
+
+## 6. SQL 연산자 우선순위 ⭐⭐
+
+| 우선순위 | 연산자 |
+|---|---|
+| 1 (높음) | **산술** (`*`, `/`, `+`, `-`) |
+| 2 | **연결** (`\|\|`) |
+| 3 | **비교** (`=`, `<>`, `<`, `>`, `<=`, `>=`) |
+| 4 | **IS NULL, LIKE, IN, BETWEEN** |
+| 5 | **NOT** |
+| 6 | **AND** |
+| 7 (낮음) | **OR** |
+
+> 🔑 **암기법: "산연비IS Not And Or"**
+
+```sql
+-- 우선순위 함정
+WHERE a = 1 OR a = 2 AND b = 3
+-- = WHERE a = 1 OR (a = 2 AND b = 3)   (AND가 OR보다 우선)
+
+-- 의도라면 괄호 명시
+WHERE (a = 1 OR a = 2) AND b = 3
+```
+
+## 7. ⚠️ 자주 틀리는 함정
+
+1. **\"WHERE 절에서 집계함수 가능\"** → ✗
+2. **\"SELECT alias는 WHERE에서 사용 가능\"** → ✗
+3. **\"실행 순서: SELECT 먼저\"** → ✗ FROM 먼저
+4. **\"HAVING은 GROUP BY 없으면 불가\"** → △ GROUP BY 없이 사용 가능 (전체를 한 그룹)
+5. **\"ORDER BY는 SELECT 이전 실행\"** → ✗ 가장 마지막
+6. **\"DISTINCT는 ORDER BY 전 실행\"** → ✗ SELECT 단계 (ORDER BY는 그 후)
+7. **\"AND가 OR보다 우선순위 낮다\"** → ✗ AND가 더 높음
+
+## 8. 📝 기출 출제 패턴
+
+### 패턴 A: 실행 순서 ⭐ 최빈출
+> \"SELECT 문의 실행 순서를 올바르게 나열한 것은?\"
+- F-W-G-H-S-O가 정답
+
+### 패턴 B: WHERE에서 집계 불가
+> \"WHERE 절에 대한 설명으로 옳지 않은 것은?\"
+- \"집계함수 사용 가능\"이 함정
+
+### 패턴 C: alias 사용 가능 절
+> \"SELECT alias를 사용할 수 있는 절은?\"
+- ORDER BY만 가능 (WHERE/GROUP BY/HAVING은 SELECT 이전)
+
+### 패턴 D: 연산자 우선순위
+> \"다음 SQL의 실행 결과는?\"
+- `OR`와 `AND`의 우선순위를 헷갈리게
+
+## 9. 🔑 암기법 종합
+
+| 항목 | 암기법 |
+|---|---|
+| 실행 순서 6단계 | **F-W-G-H-S-O** |
+| 연산자 우선순위 | **산연비IS Not And Or** |
+| 사용 가능 절 (alias) | **ORDER BY만 ○** |
+
+## 10. 📌 시험 합격 핵심 요약
+
+> **시험장 입실 5분 전 점검**
+
+✅ **실행 순서 = FWGHSO**
+   - **F**ROM → **W**HERE → **G**ROUP BY → **H**AVING → **S**ELECT → **O**RDER BY
+
+✅ **WHERE**: 집계함수 ✗, alias ✗, 행 필터
+   
+✅ **HAVING**: 집계함수 ○, 그룹 필터
+
+✅ **alias 사용 가능 절**: **ORDER BY**만
+
+✅ **연산자 우선순위**:
+   - 산술 > 연결 > 비교 > IS NULL/BETWEEN > NOT > **AND > OR**
+
+✅ **빈출 함정**:
+   - \"alias는 WHERE에서 OK\" → 거짓
+   - \"WHERE에서 SUM() 사용\" → 거짓 (HAVING 사용)

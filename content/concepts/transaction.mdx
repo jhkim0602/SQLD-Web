@@ -1,70 +1,228 @@
 ---
 slug: transaction
-title: 트랜잭션과 ACID
+title: 트랜잭션 · ACID · 격리 수준
 subject: 2
 category: 트랜잭션/PL-SQL
 order: 9
-description: 트랜잭션의 4가지 특성과 동시성 제어 개념
-relatedQuestions: [q-020]
+description: ACID 4대 특성과 동시성 제어 — Lock·MVCC·격리 수준.
+relatedQuestions: [q-020, q-040, q-086, q-087, q-088]
 ---
 
-## 트랜잭션이란?
+## 1. 트랜잭션이란?
 
-**하나의 논리적 작업 단위**. 더 이상 쪼갤 수 없으며, 전부 성공하거나 전부 실패해야 한다.
+**하나의 논리적 작업 단위**. 더 이상 쪼갤 수 없으며, **전부 성공 또는 전부 실패** (All or Nothing).
 
-> 예: 계좌 이체 = "A 출금" + "B 입금" → 둘 중 하나만 성공하면 안 됨
+> 💡 예: 계좌 이체 = \"A 출금\" + \"B 입금\". 둘 중 하나만 성공하면 시스템 붕괴.
 
-## ACID 특성
+## 2. ACID 4대 특성 ⭐⭐⭐ (가장 빈출)
 
 | 글자 | 영문 | 한글 | 의미 |
 |---|---|---|---|
-| **A** | Atomicity | 원자성 | All or Nothing |
-| **C** | Consistency | 일관성 | 무결성 제약 유지 |
-| **I** | Isolation | 고립성 | 동시 트랜잭션 분리 |
-| **D** | Durability | 지속성 | 커밋 결과 영구 보존 |
+| **A** | **A**tomicity | 원자성 | All or Nothing |
+| **C** | **C**onsistency | 일관성 | 무결성 제약 유지 |
+| **I** | **I**solation | 고립성/격리성 | 동시 트랜잭션 차단 |
+| **D** | **D**urability | 지속성 | 커밋 결과 영구 보존 |
 
-### 구현 방법
+> 🔑 **암기법: "원일고지"** (원자성·일관성·고립성·지속성)
+> 또는 **"ACID"** 그대로
 
-| 특성 | 구현 |
-|---|---|
-| 원자성·지속성 | 트랜잭션 로그 (REDO/UNDO) |
-| 일관성 | 제약조건, 트리거 |
-| 고립성 | 락(Lock), MVCC |
+## 3. 각 특성 상세
 
-## TCL 명령어
+### Atomicity (원자성)
+
+> 트랜잭션의 모든 작업이 다 성공하거나 다 실패. 부분 성공 X.
+
+**구현**: 트랜잭션 로그 (REDO/UNDO)
 
 ```sql
-BEGIN;            -- 트랜잭션 시작 (DBMS에 따라 자동)
+BEGIN;
+UPDATE account SET balance = balance - 100 WHERE id = 1;   -- A 출금
+UPDATE account SET balance = balance + 100 WHERE id = 2;   -- B 입금
+-- 둘 다 성공 → COMMIT
+-- 하나 실패 → ROLLBACK
+COMMIT;
+```
 
+### Consistency (일관성)
+
+> 트랜잭션 전후 데이터 무결성 제약이 유지됨.
+
+**구현**: 제약조건(PK, FK, CHECK), 트리거
+
+예: 이체 후에도 총 잔액 합계는 동일
+
+### Isolation (고립성/격리성)
+
+> 동시 실행되는 트랜잭션이 서로 영향을 주지 않음.
+
+**구현**: Lock(공유락/배타락), MVCC(Multi-Version Concurrency Control)
+
+### Durability (지속성)
+
+> 커밋된 결과는 시스템 장애·재시작에도 영구 보존.
+
+**구현**: REDO 로그, 백업
+
+## 4. 격리 수준 (Isolation Level) ⭐⭐
+
+| 수준 | Dirty Read | Non-repeatable Read | Phantom Read |
+|---|---|---|---|
+| **READ UNCOMMITTED** | 발생 | 발생 | 발생 |
+| **READ COMMITTED** | 차단 | 발생 | 발생 |
+| **REPEATABLE READ** | 차단 | 차단 | 발생 |
+| **SERIALIZABLE** | 차단 | 차단 | 차단 |
+
+> 🔑 **암기법**: \"읽기언리·읽기커밋·반복읽기·직렬화\" (낮음 → 높음)
+
+### 각 현상 정의
+
+| 현상 | 의미 | 예 |
+|---|---|---|
+| **Dirty Read** | 미커밋 데이터 읽음 | T1이 미커밋 변경 → T2가 그 값을 봄 |
+| **Non-repeatable Read** | 같은 행을 다시 읽었는데 값이 다름 | T1이 SELECT → T2가 UPDATE 커밋 → T1이 다시 SELECT |
+| **Phantom Read** | 같은 조건 쿼리에서 새 행 등장 | T1이 SELECT WHERE → T2가 INSERT 커밋 → T1이 다시 → 행 수 다름 |
+
+### DBMS별 기본 격리 수준
+
+| DBMS | 기본 |
+|---|---|
+| Oracle | READ COMMITTED |
+| PostgreSQL | READ COMMITTED |
+| **MySQL (InnoDB)** | **REPEATABLE READ** |
+| SQL Server | READ COMMITTED |
+
+## 5. TCL 명령어 (트랜잭션 제어) ⭐
+
+| 명령 | 동작 |
+|---|---|
+| `COMMIT` | 변경 확정 |
+| `ROLLBACK` | 변경 취소 |
+| `ROLLBACK TO sp` | 저장점까지만 취소 |
+| `SAVEPOINT sp` | 저장점 표시 |
+
+```sql
+BEGIN;
 UPDATE account SET balance = balance - 100 WHERE id = 1;
-SAVEPOINT s1;      -- 저장점
+SAVEPOINT s1;
 
 UPDATE account SET balance = balance + 100 WHERE id = 2;
 
--- 문제 발생 시
-ROLLBACK TO s1;    -- 저장점까지 되돌리기
+-- 문제 발생
+ROLLBACK TO s1;    -- s1까지 되돌리기 (id=1 변경은 유지)
 -- 또는
-ROLLBACK;          -- 트랜잭션 전체 되돌리기
+ROLLBACK;          -- 전체 취소
 
-COMMIT;            -- 변경사항 확정
+COMMIT;
 ```
 
-## 고립성 수준 (Isolation Level)
+> 📌 **시험 빈출**: SAVEPOINT 이후 변경만 ROLLBACK TO로 취소. 그 이전 변경은 유지.
 
-| Level | Dirty Read | Non-repeatable Read | Phantom Read |
-|---|---|---|---|
-| READ UNCOMMITTED | 발생 | 발생 | 발생 |
-| READ COMMITTED (기본 다수) | 차단 | 발생 | 발생 |
-| REPEATABLE READ | 차단 | 차단 | 발생 |
-| SERIALIZABLE | 차단 | 차단 | 차단 |
-
-높을수록 안전하지만 성능 ↓.
-
-## 락(Lock) 종류
+## 6. 락(Lock) 종류 ⭐
 
 | 종류 | 동작 |
 |---|---|
-| 공유락 (Shared, S) | 읽기 허용, 쓰기 차단 |
-| 배타락 (Exclusive, X) | 읽기·쓰기 모두 차단 |
+| **공유락 (S, Shared)** | 읽기 허용, 쓰기 차단 |
+| **배타락 (X, Exclusive)** | 읽기·쓰기 모두 차단 |
+| **행 락 (Row Lock)** | 특정 행만 |
+| **테이블 락 (Table Lock)** | 테이블 전체 |
 
-**데드락**: 두 트랜잭션이 서로의 락을 기다리는 상태. DBMS가 감지 후 한쪽을 강제 종료.
+### 호환성
+
+| | S | X |
+|---|---|---|
+| **S** | ○ (둘 다 읽기 OK) | ✗ |
+| **X** | ✗ | ✗ |
+
+## 7. 데드락 (Deadlock)
+
+두 트랜잭션이 서로의 락을 기다리는 교착 상태.
+
+```
+T1: emp 락 → dept 락 대기
+T2: dept 락 → emp 락 대기
+```
+
+해결: DBMS가 감지 후 **한쪽을 강제 종료** (ROLLBACK).
+
+## 8. 자동 커밋 ⚠️
+
+| 상황 | 자동 커밋 |
+|---|---|
+| DDL 실행 (Oracle) | **○** |
+| 정상 종료 (SQL*Plus, SQL Developer) | 설정 의존 |
+| 비정상 종료 | ROLLBACK |
+
+> 📌 **DDL은 자동 COMMIT**: 직전 DML 변경사항도 함께 커밋
+
+## 9. ⚠️ 자주 틀리는 함정
+
+1. **\"ACID는 5가지\"** → ✗ 4가지 (원일고지)
+2. **\"고립성은 직렬 실행과 같다\"** → △ SERIALIZABLE만
+3. **\"READ COMMITTED는 Phantom Read 차단\"** → ✗ 발생
+4. **\"REPEATABLE READ가 가장 안전\"** → ✗ SERIALIZABLE이 가장 안전
+5. **\"MySQL 기본 = READ COMMITTED\"** → ✗ **REPEATABLE READ**
+6. **\"DDL은 ROLLBACK 가능\"** → ✗ 자동 커밋
+7. **\"SAVEPOINT 후 ROLLBACK은 전체 취소\"** → ✗ `ROLLBACK TO sp`는 그곳까지만
+
+## 10. 📝 기출 출제 패턴
+
+### 패턴 A: ACID 의미 ⭐ 최빈출
+> \"트랜잭션이 성공적으로 완료되면 영구 보존되는 특성은?\"
+- **Durability (지속성)**
+
+> \"All or Nothing 특성은?\"
+- **Atomicity (원자성)**
+
+### 패턴 B: SAVEPOINT 동작 ⭐
+> \"SAVEPOINT 이후 ROLLBACK TO sp 시 어떤 데이터가 남는가?\"
+- SAVEPOINT 이전 변경은 유지
+
+### 패턴 C: 격리 수준
+> \"Dirty Read를 차단하는 최소 수준은?\"
+- READ COMMITTED
+
+### 패턴 D: DDL 자동 커밋
+> \"DDL 실행 후 ROLLBACK 가능한가?\"
+- ✗ (자동 COMMIT)
+
+## 11. 🔑 암기법 종합
+
+| 항목 | 암기법 |
+|---|---|
+| ACID | **원일고지** (원자·일관·고립·지속) |
+| 격리 4수준 | **언리(UC) → 커밋(C) → 반복(R) → 직렬(S)** |
+| 현상 3종 | **더티 → 반복불가 → 팬텀** |
+| TCL | **CRS** (Commit·Rollback·Savepoint) |
+| 락 종류 | **S(공유)·X(배타)** |
+| 데드락 | **\"서로 락 대기 → DBMS가 한쪽 종료\"** |
+
+## 12. 📌 시험 합격 핵심 요약
+
+> **시험장 입실 5분 전 점검**
+
+✅ **ACID = 원일고지**:
+   - **A**tomicity (원자성) — All or Nothing
+   - **C**onsistency (일관성) — 무결성 유지
+   - **I**solation (고립성) — 동시 차단
+   - **D**urability (지속성) — 커밋 후 영구
+
+✅ **격리 수준 4단계** (낮음→높음):
+   - READ UNCOMMITTED (모두 발생)
+   - READ COMMITTED (Dirty Read만 차단) — Oracle 기본
+   - REPEATABLE READ (Phantom만 발생) — MySQL 기본
+   - SERIALIZABLE (모두 차단)
+
+✅ **3가지 현상**:
+   - Dirty Read: 미커밋 읽기
+   - Non-repeatable Read: 같은 행 다른 값
+   - Phantom Read: 새 행 등장
+
+✅ **TCL**: COMMIT · ROLLBACK · SAVEPOINT
+
+✅ **SAVEPOINT**:
+   - `ROLLBACK TO sp`: 저장점까지만
+   - `ROLLBACK`: 전체
+
+✅ **DDL = 자동 COMMIT** (ROLLBACK 불가)
+
+✅ **빈출**: \"지속성 구현 = REDO 로그\", \"고립성 구현 = Lock·MVCC\"

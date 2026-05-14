@@ -1,16 +1,21 @@
 ---
 slug: pivot
-title: PIVOT과 UNPIVOT
+title: PIVOT · UNPIVOT
 subject: 2
 category: 그룹함수
 order: 10
-description: 행 ↔ 열을 변환하는 연산. 집계 보고서 작성에 필수.
+description: 행 ↔ 열 변환. 보고서 매트릭스의 핵심 도구.
 relatedQuestions: []
 ---
 
-## PIVOT — 행을 열로
+## 1. 정의
 
-세로로 쌓인 데이터를 가로(컬럼)로 변환한다.
+**PIVOT**: 행(Row) → 열(Column) 변환 (Long → Wide)
+**UNPIVOT**: 열(Column) → 행(Row) 변환 (Wide → Long)
+
+> 💡 보고서·대시보드·OLAP에서 매트릭스 형태로 데이터를 보여줄 때 필수.
+
+## 2. PIVOT 시각화 ⭐⭐
 
 ### 변환 전 (Long format)
 
@@ -28,82 +33,149 @@ relatedQuestions: []
 | 10 | 1000 | 1200 |
 | 20 | 2000 | 2400 |
 
-### PIVOT 구문 (Oracle 11g+)
+## 3. PIVOT 구문 (Oracle 11g+)
 
 ```sql
 SELECT * FROM (
-  SELECT deptno, year, sal FROM emp
+  SELECT deptno, year, sal FROM emp_yearly
 )
 PIVOT (
-  SUM(sal)            -- 집계 함수 필수
-  FOR year IN (2024, 2025)  -- 펼칠 값들
+  SUM(sal)                          -- 집계 함수 (필수)
+  FOR year IN (2024, 2025, 2026)    -- 펼칠 값
 );
 ```
 
-### CASE를 이용한 수동 PIVOT (모든 버전 호환)
+### 구성 요소
+
+| 요소 | 역할 |
+|---|---|
+| `SUM(sal)` | 집계 함수 (필수) |
+| `FOR year` | 펼칠 컬럼 |
+| `IN (...)` | 펼칠 값 목록 |
+| alias 가능 | `IN (2024 AS y2024)` |
+
+## 4. CASE WHEN으로 수동 PIVOT ⭐
+
+모든 DBMS 호환.
 
 ```sql
 SELECT deptno,
   SUM(CASE WHEN year = 2024 THEN sal END) AS "2024",
-  SUM(CASE WHEN year = 2025 THEN sal END) AS "2025"
-FROM emp
+  SUM(CASE WHEN year = 2025 THEN sal END) AS "2025",
+  SUM(CASE WHEN year = 2026 THEN sal END) AS "2026"
+FROM emp_yearly
 GROUP BY deptno;
 ```
 
-## UNPIVOT — 열을 행으로
+> 🔑 **암기법**: PIVOT = \"`SUM(CASE WHEN ... THEN col END)` for each value\"
 
-가로 데이터를 세로로 변환. PIVOT의 역연산.
+## 5. UNPIVOT 구문
 
-### UNPIVOT 구문
+가로 데이터를 세로로. PIVOT의 역연산.
 
 ```sql
-SELECT * FROM dept_year
+SELECT * FROM dept_yearly
 UNPIVOT (
-  sal_amount        -- 값이 들어갈 컬럼명
-  FOR year_col IN (sal_2024 AS '2024', sal_2025 AS '2025')
+  sal_amount                                      -- 값 컬럼명
+  FOR year_col IN (sal_2024 AS '2024',
+                   sal_2025 AS '2025',
+                   sal_2026 AS '2026')
 );
 ```
 
-### UNION ALL을 이용한 수동 UNPIVOT
+### UNION ALL로 수동 UNPIVOT
 
 ```sql
-SELECT deptno, '2024' AS year, sal_2024 AS sal FROM dept_year
+SELECT deptno, '2024' AS year, sal_2024 AS sal FROM dept_yearly
 UNION ALL
-SELECT deptno, '2025', sal_2025 FROM dept_year;
+SELECT deptno, '2025', sal_2025 FROM dept_yearly
+UNION ALL
+SELECT deptno, '2026', sal_2026 FROM dept_yearly;
 ```
 
-## 동적 PIVOT (XML)
+## 6. 동적 PIVOT (XML) — Oracle
 
-펼칠 값을 동적으로 결정해야 할 때:
+펼칠 값을 미리 모를 때.
 
 ```sql
 SELECT * FROM (
-  SELECT deptno, year, sal FROM emp
+  SELECT deptno, year, sal FROM emp_yearly
 )
 PIVOT XML (
   SUM(sal)
-  FOR year IN (ANY)  -- 모든 year 값을 자동으로
+  FOR year IN (ANY)
 );
 ```
 
-결과는 XML 형식. 후처리 필요.
+결과는 XML. 별도 파싱 필요.
 
-## 활용 예: 월별 매출 보고서
+## 7. 활용 예: 월별 매출 보고서
 
 ```sql
 SELECT customer_id,
-  SUM(CASE WHEN MONTH(date) = 1 THEN amount END) AS 1월,
-  SUM(CASE WHEN MONTH(date) = 2 THEN amount END) AS 2월,
-  SUM(CASE WHEN MONTH(date) = 3 THEN amount END) AS 3월
+  SUM(CASE WHEN MONTH(sale_date) = 1 THEN amount END) AS "1월",
+  SUM(CASE WHEN MONTH(sale_date) = 2 THEN amount END) AS "2월",
+  SUM(CASE WHEN MONTH(sale_date) = 3 THEN amount END) AS "3월",
+  SUM(amount) AS 합계
 FROM sales
+WHERE YEAR(sale_date) = 2026
 GROUP BY customer_id;
 ```
 
-## 시험 빈출 포인트
+## 8. ⚠️ 자주 틀리는 함정
 
-> 📌 **자주 출제**
-> - PIVOT은 행 → 열 (가로 보고서)
-> - UNPIVOT은 열 → 행 (정규화 복원)
-> - PIVOT에는 **반드시 집계함수** 필요
-> - `FOR ... IN (...)`로 펼칠 값 명시
-> - CASE WHEN으로 수동 PIVOT 가능 (호환성 ↑)
+1. **\"PIVOT에 집계함수 불필요\"** → ✗ 필수
+2. **\"UNPIVOT은 PIVOT의 일종\"** → ✗ 반대 연산
+3. **\"PIVOT은 모든 DBMS 지원\"** → ✗ Oracle 11g+, SQL Server 2005+
+4. **\"PIVOT 결과 컬럼 수는 동적\"** → △ 정적은 IN()에 명시, 동적은 XML
+5. **\"CASE WHEN으로 PIVOT 불가\"** → ✗ 호환성 위해 가능
+
+## 9. 📝 기출 출제 패턴
+
+### 패턴 A: PIVOT 정의
+> \"PIVOT 연산의 의미는?\"
+- 행 → 열 변환
+
+### 패턴 B: 필수 요소
+> \"PIVOT에 반드시 필요한 것은?\"
+- 집계 함수
+
+### 패턴 C: CASE 변환
+> \"CASE WHEN으로 PIVOT 효과를 내는 방법\"
+
+### 패턴 D: UNPIVOT
+> \"PIVOT의 역연산은?\"
+- UNPIVOT
+
+## 10. 🔑 암기법 종합
+
+| 항목 | 암기법 |
+|---|---|
+| PIVOT | \"행 → 열, 가로 보고서\" |
+| UNPIVOT | \"열 → 행, 정규화 복원\" |
+| PIVOT 필수 | \"집계 함수 + FOR + IN\" |
+| 수동 변환 | \"PIVOT = SUM(CASE WHEN...)\" |
+
+## 11. 📌 시험 합격 핵심 요약
+
+> **시험장 입실 5분 전 점검**
+
+✅ **PIVOT** = 행을 열로 (Long → Wide)
+
+✅ **UNPIVOT** = 열을 행으로 (Wide → Long)
+
+✅ **PIVOT 필수 구성**:
+   ```
+   PIVOT (집계함수 FOR 컬럼 IN (값들))
+   ```
+
+✅ **CASE WHEN 수동 PIVOT** (호환성 최고):
+   ```sql
+   SUM(CASE WHEN col = 'A' THEN val END) AS A
+   ```
+
+✅ **활용**: 월별·연도별·카테고리별 매트릭스 보고서
+
+✅ **빈출**: \"PIVOT에는 집계 함수가 **반드시** 필요\"
+
+✅ **빈출**: \"`FOR ... IN (...)` 절은 펼칠 값을 명시\"

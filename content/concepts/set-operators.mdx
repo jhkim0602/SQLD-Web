@@ -4,62 +4,181 @@ title: 집합 연산자
 subject: 2
 category: 집합연산
 order: 7
-description: UNION, INTERSECT, MINUS의 차이와 사용 시 주의사항
-relatedQuestions: [q-018]
+description: UNION · UNION ALL · INTERSECT · MINUS · EXCEPT — 4가지 집합 연산.
+relatedQuestions: [q-018, q-070, q-071, q-072]
 ---
 
-## 종류
+## 1. 정의
 
-| 연산자 | 의미 | 중복 |
+여러 SELECT 결과를 **집합 연산**으로 결합. 수학의 집합과 동일한 개념.
+
+## 2. 4가지 연산자 ⭐⭐⭐
+
+| 연산자 | 의미 | 중복 처리 |
 |---|---|---|
-| **UNION** | 합집합 | **제거** |
-| **UNION ALL** | 합집합 | **유지** |
-| **INTERSECT** | 교집합 | 제거 |
-| **MINUS / EXCEPT** | 차집합 | 제거 |
+| **UNION** | 합집합 | **중복 제거** |
+| **UNION ALL** | 합집합 | **중복 유지** |
+| **INTERSECT** | 교집합 | 중복 제거 |
+| **MINUS / EXCEPT** | 차집합 | 중복 제거 |
 
-> MINUS는 Oracle, EXCEPT는 표준/SQL Server에서 사용.
+> 🔑 **암기법: "유유인마이"** (UNION·UNION ALL·INTERSECT·MINUS/EXCEPT)
+> 또는 **"합합교차"** (UNION·UNION ALL·INTERSECT·MINUS)
 
-## 공통 규칙
+| DBMS | 차집합 키워드 |
+|---|---|
+| Oracle | `MINUS` |
+| SQL Server, PostgreSQL, ANSI | `EXCEPT` |
+| MySQL | 미지원 (LEFT JOIN + IS NULL로 대체) |
 
-1. **컬럼 수가 같아야** 한다.
-2. **각 컬럼의 데이터 타입이 호환**되어야 한다.
-3. 결과 컬럼명은 **첫 번째 쿼리의 컬럼명**을 따른다.
-4. `ORDER BY`는 **마지막 쿼리에만** 한 번.
-
-```sql
-SELECT empno, ename FROM emp WHERE deptno = 10
-UNION
-SELECT empno, ename FROM emp WHERE sal > 2000
-ORDER BY empno;
-```
-
-## UNION vs UNION ALL
+## 3. UNION vs UNION ALL ⭐⭐ (최빈출)
 
 ```
-A = {1, 2, 3}
-B = {3, 4, 5}
+A = {1, 1, 2, 3}
+B = {2, 3, 3, 4}
 
-UNION     → {1, 2, 3, 4, 5}        (정렬 필요, 성능 ↓)
-UNION ALL → {1, 2, 3, 3, 4, 5}     (정렬 없음, 성능 ↑)
+UNION (중복 제거)     → {1, 2, 3, 4}            (4건)
+UNION ALL (중복 유지) → {1, 1, 2, 3, 2, 3, 3, 4}  (8건)
 ```
 
-**실무 팁**: 중복이 없거나 중복을 유지해야 한다면 무조건 `UNION ALL` 사용.
+| | UNION | UNION ALL |
+|---|---|---|
+| 중복 제거 | ✓ | **✗** |
+| 정렬 부하 | 있음 (성능 ↓) | **없음** (성능 ↑) |
+| 사용 시점 | 중복 있고 제거 필요 | 중복 없거나 유지 OK |
 
-## INTERSECT, MINUS
+> 🔑 **실무 팁**: 중복 가능성 없으면 **UNION ALL** (성능 ↑)
+
+## 4. INTERSECT · MINUS
 
 ```
 A = {1, 2, 3, 3}
 B = {2, 3, 4}
 
-INTERSECT → {2, 3}     (양쪽 모두 등장한 것, 중복 제거)
-MINUS     → {1}        (A에만 있는 것, 중복 제거)
+INTERSECT → {2, 3}     (교집합, 중복 제거)
+MINUS     → {1}        (A - B, 차집합)
 ```
-
-## 우선순위
 
 ```sql
-A UNION B INTERSECT C
--- = A UNION (B INTERSECT C) ?
--- 아니다. 일반적으로 왼쪽부터 평가하므로 (A UNION B) INTERSECT C
--- 명확한 의도가 있으면 괄호로 묶을 것
+-- 양쪽 모두에 있는 부서
+SELECT deptno FROM emp
+INTERSECT
+SELECT deptno FROM dept;
+
+-- emp에만 있고 dept에 없는 deptno
+SELECT deptno FROM emp
+MINUS
+SELECT deptno FROM dept;
 ```
+
+## 5. 공통 규칙 ⭐⭐
+
+| 규칙 | 설명 |
+|---|---|
+| **컬럼 수 일치** | 양쪽 SELECT의 컬럼 수가 같아야 함 |
+| **데이터 타입 호환** | 각 컬럼 타입이 호환 가능해야 함 |
+| **결과 컬럼명** | **첫 번째 SELECT의 컬럼명**을 따름 |
+| **ORDER BY 위치** | 가장 **마지막**에 한 번만 |
+
+```sql
+SELECT empno AS no, ename AS name FROM emp WHERE deptno = 10
+UNION
+SELECT id, name FROM contractor
+ORDER BY no;  -- 첫 SELECT의 alias 사용
+```
+
+> 🔑 **암기법: "수타명순"** (컬럼 수·타입·이름·순서)
+
+## 6. 우선순위와 괄호
+
+집합 연산자는 **순서대로 평가** (왼쪽 → 오른쪽).
+
+```sql
+-- A UNION B INTERSECT C
+-- = (A UNION B) INTERSECT C  ← 왼쪽 우선
+-- 의도가 다르면 괄호 명시
+A UNION (B INTERSECT C)
+```
+
+## 7. 활용 예
+
+### 양쪽 데이터 비교
+
+```sql
+-- 두 테이블에서 차이 확인
+(SELECT * FROM table_old MINUS SELECT * FROM table_new)
+UNION ALL
+(SELECT * FROM table_new MINUS SELECT * FROM table_old);
+```
+
+### 합집합 + 정렬
+
+```sql
+SELECT empno, ename, '정규직' AS type FROM emp
+UNION ALL
+SELECT id, name, '계약직' FROM contractor
+ORDER BY empno;
+```
+
+## 8. ⚠️ 자주 틀리는 함정
+
+1. **\"UNION이 UNION ALL보다 빠르다\"** → ✗ UNION은 정렬 + 중복제거 부하
+2. **\"INTERSECT는 중복 유지\"** → ✗ 제거
+3. **\"각 SELECT에 ORDER BY 가능\"** → ✗ 마지막에만 1번
+4. **\"컬럼 수가 달라도 OK\"** → ✗ 일치 필수
+5. **\"MINUS와 EXCEPT는 다르다\"** → ✗ 같은 의미, DBMS만 다름
+6. **\"결과 컬럼명은 마지막 SELECT를 따름\"** → ✗ **첫 번째**
+7. **\"빈 집합 - X = X\"** → ✗ 빈 집합 - X = 빈 집합
+
+## 9. 📝 기출 출제 패턴
+
+### 패턴 A: UNION vs UNION ALL ⭐ 최빈출
+> \"중복을 제거하지 않는 것은?\"
+- UNION ALL
+
+### 패턴 B: 결과 행 수 계산 ⭐
+> \"다음 쿼리의 결과 행 수는?\"
+- 중복 여부 + 연산자 의미
+
+### 패턴 C: 공통 규칙
+> \"집합 연산자 사용 규칙으로 옳지 않은 것은?\"
+- 컬럼 수·타입·이름·순서
+
+### 패턴 D: MINUS / EXCEPT
+> \"Oracle MINUS와 동일한 표준 키워드는?\"
+- EXCEPT
+
+## 10. 🔑 암기법 종합
+
+| 항목 | 암기법 |
+|---|---|
+| 4가지 | **유유인마이** (UNION·UNION ALL·INTERSECT·MINUS/EXCEPT) |
+| UNION 중복 | "ALL은 모두 살림" |
+| 공통 규칙 | **수타명순** (수·타입·이름·순서) |
+| 결과 컬럼명 | "**첫 번째** SELECT" |
+
+## 11. 📌 시험 합격 핵심 요약
+
+> **시험장 입실 5분 전 점검**
+
+✅ **4가지 = 유유인마이**
+
+✅ **중복 처리**:
+   - UNION → 중복 제거
+   - UNION ALL → **중복 유지** (빠름)
+   - INTERSECT, MINUS → 중복 제거
+
+✅ **MINUS = EXCEPT** (DBMS만 다름)
+
+✅ **공통 규칙 = 수타명순**:
+   - 컬럼 **수** 일치
+   - 컬럼 **타입** 호환
+   - 결과 **이름**은 첫 SELECT
+   - ORDER BY는 **마지막**에 1번
+
+✅ **빈출**: \"UNION ALL이 더 빠르다\" → ○ (중복 제거 부하 없음)
+
+✅ **빈출**: \"중복을 제거하지 않는 것은?\" → **UNION ALL**
+
+✅ **수학과 동일**: 합·교·차집합
+
+✅ **MySQL은 MINUS/INTERSECT 미지원** → LEFT JOIN 등으로 대체

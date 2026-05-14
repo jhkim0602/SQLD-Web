@@ -1,51 +1,64 @@
 ---
 slug: window-functions
-title: 윈도우 함수 총정리
+title: 윈도우 함수 (분석 함수)
 subject: 2
 category: 윈도우함수
 order: 5
-description: 그룹별 순위·집계·전후 비교를 한 번에. SQLD의 핵심 도구.
+description: 행을 줄이지 않고 그룹·순위·전후 비교 — SQLD 핵심 도구.
 relatedQuestions: [q-017, q-073, q-074, q-075, q-076, q-077, q-078]
 ---
 
-## 윈도우 함수란?
+## 1. 정의
 
-행 그룹(윈도우)에 대해 함수를 적용하지만 **결과 행 수는 줄이지 않는다**. GROUP BY와 다르게 원본 행은 유지.
+**윈도우 함수(Window Function) = 분석 함수(Analytic Function)**.
+
+행 그룹(윈도우)에 함수를 적용하지만 **결과 행 수는 줄이지 않는다**.
+
+> 💡 GROUP BY와 다른 핵심: 원본 행이 그대로 보존 + 그룹 통계 추가
 
 ```sql
--- GROUP BY: 결과 행 수 감소
+-- GROUP BY: 행 수 감소
 SELECT deptno, AVG(sal) FROM emp GROUP BY deptno;
+-- 결과 3행 (부서별 1행씩)
 
--- 윈도우 함수: 행 수 유지 + 그룹별 평균 표시
-SELECT ename, sal,
-  AVG(sal) OVER (PARTITION BY deptno) AS dept_avg
-FROM emp;
+-- 윈도우 함수: 행 수 유지 + 부서 평균 추가
+SELECT ename, sal, AVG(sal) OVER (PARTITION BY deptno) FROM emp;
+-- 결과 14행 (사원 수만큼)
 ```
 
-## 기본 구조
+## 2. 기본 구조 ⭐⭐⭐
 
 ```sql
 함수() OVER (
-  [PARTITION BY 컬럼1, 컬럼2 ...]
-  [ORDER BY 컬럼 [ASC|DESC] [NULLS FIRST|LAST]]
-  [ROWS|RANGE BETWEEN ... AND ...]
+  [PARTITION BY 컬럼1, 컬럼2 ...]    -- 그룹 분할
+  [ORDER BY 컬럼 [ASC|DESC]]          -- 윈도우 내 순서
+  [ROWS|RANGE BETWEEN ... AND ...]    -- 윈도우 프레임
 )
 ```
 
 | 절 | 역할 | 생략 시 |
 |---|---|---|
-| `PARTITION BY` | 그룹 분할 | 전체를 하나의 윈도우 |
-| `ORDER BY` | 윈도우 내 순서 | (순위·LAG 등은 필수) |
+| `PARTITION BY` | 그룹 분할 | 전체를 1개 윈도우 |
+| `ORDER BY` | 윈도우 내 순서 | (순위·LAG는 필수) |
 | `ROWS/RANGE` | 윈도우 프레임 | 기본 프레임 적용 |
 
-## 1. 순위 함수
+## 3. 순위 함수 ⭐⭐⭐ (최빈출)
 
-| 함수 | 동순위 처리 | 예시 |
+### 4가지 순위 함수
+
+| 함수 | 동순위 처리 | 예시 (sal: 100, 100, 200, 300) |
 |---|---|---|
-| `RANK()` | 동순위 후 **건너뜀** | 1, 1, **3**, 4 |
-| `DENSE_RANK()` | 동순위 후 **연속** | 1, 1, **2**, 3 |
-| `ROW_NUMBER()` | 동순위 없음 | 1, 2, 3, 4 |
-| `NTILE(n)` | n개 그룹으로 균등 분할 | 1~4 (n=4) |
+| `RANK()` | 동순위 후 **건너뜀** | **1, 1, 3, 4** |
+| `DENSE_RANK()` | 동순위 후 **연속** | **1, 1, 2, 3** |
+| `ROW_NUMBER()` | 동순위 없음 | **1, 2, 3, 4** |
+| `NTILE(n)` | n개 그룹 균등 분할 | 1~4 (n=4) |
+
+> 🔑 **암기법: "랭덴로엔"** (RANK·DENSE_RANK·ROW_NUMBER·NTILE)
+
+> 🔑 **차이 암기**: 
+> - **RANK** = 건너뜀 (1, 1, **3**, 4)
+> - **DENSE_RANK** = 빽빽 = 연속 (1, 1, **2**, 3)
+> - **ROW_NUMBER** = 무조건 1씩 (1, 2, 3, 4)
 
 ```sql
 SELECT ename, sal,
@@ -56,7 +69,7 @@ SELECT ename, sal,
 FROM emp;
 ```
 
-### PARTITION BY와 함께
+### PARTITION BY와 함께 — 그룹별 순위
 
 ```sql
 -- 부서별 급여 순위
@@ -65,9 +78,17 @@ SELECT ename, deptno, sal,
 FROM emp;
 ```
 
-## 2. 행 순서 함수 (LAG/LEAD)
+## 4. 행 순서 함수 (LAG/LEAD) ⭐⭐
 
-이전·다음 행의 값을 가져옴.
+| 함수 | 동작 |
+|---|---|
+| `LAG(col, n, default)` | n행 **이전** 값 |
+| `LEAD(col, n, default)` | n행 **다음** 값 |
+| `FIRST_VALUE(col)` | 윈도우 첫 행 |
+| `LAST_VALUE(col)` | 윈도우 마지막 행 (프레임 주의) |
+| `NTH_VALUE(col, n)` | n번째 행 |
+
+> 🔑 **암기법**: \"LAG = lag(뒤처짐) = 이전\", \"LEAD = 앞장 = 다음\"
 
 ```sql
 SELECT ename, hiredate, sal,
@@ -76,34 +97,22 @@ SELECT ename, hiredate, sal,
 FROM emp;
 ```
 
-| 함수 | 동작 |
-|---|---|
-| `LAG(col, n, default)` | n행 이전 값 (없으면 default) |
-| `LEAD(col, n, default)` | n행 다음 값 |
-| `FIRST_VALUE(col)` | 윈도우 첫 행 |
-| `LAST_VALUE(col)` | 윈도우 마지막 행 (프레임 주의) |
-| `NTH_VALUE(col, n)` | n번째 행 |
-
-### LAST_VALUE 함정
+### LAST_VALUE 함정 ⭐
 
 ```sql
--- ✗ 기본 프레임이 'CURRENT ROW'까지라 항상 본인 값 반환
-SELECT ename, sal,
-  LAST_VALUE(sal) OVER (ORDER BY sal) AS last_sal
-FROM emp;
+-- ✗ 기본 프레임이 CURRENT ROW까지라 항상 본인 값
+LAST_VALUE(sal) OVER (ORDER BY sal)
 
--- ✓ 프레임을 명시
-SELECT ename, sal,
-  LAST_VALUE(sal) OVER (
-    ORDER BY sal
-    ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
-  ) AS last_sal
-FROM emp;
+-- ✓ 프레임 명시
+LAST_VALUE(sal) OVER (
+  ORDER BY sal
+  ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
+)
 ```
 
-## 3. 집계 함수의 윈도우 사용
+## 5. 집계 함수의 윈도우 사용
 
-`SUM`, `AVG`, `COUNT`, `MIN`, `MAX` 모두 OVER 절과 함께 사용 가능.
+`SUM`, `AVG`, `COUNT`, `MIN`, `MAX` 모두 OVER로 사용 가능.
 
 ```sql
 SELECT ename, deptno, sal,
@@ -114,34 +123,30 @@ SELECT ename, deptno, sal,
 FROM emp;
 ```
 
-### 누적합
+### 누적합 (Running Total)
 
 ```sql
-SELECT ename, hiredate, sal,
-  SUM(sal) OVER (
-    ORDER BY hiredate
-    ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
-  ) AS cum_sal
-FROM emp;
+SUM(sal) OVER (
+  ORDER BY hiredate
+  ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+) AS cum_sal
 ```
 
-### 이동평균 (최근 3행)
+### 이동평균 (Moving Average)
 
 ```sql
-SELECT ename, sal,
-  AVG(sal) OVER (
-    ORDER BY hiredate
-    ROWS BETWEEN 2 PRECEDING AND CURRENT ROW
-  ) AS moving_avg
-FROM emp;
+AVG(sal) OVER (
+  ORDER BY hiredate
+  ROWS BETWEEN 2 PRECEDING AND CURRENT ROW
+) AS moving_avg_3
 ```
 
-## 4. 비율 함수
+## 6. 비율 함수
 
 | 함수 | 의미 |
 |---|---|
-| `PERCENT_RANK()` | (RANK - 1) / (행수 - 1), 0~1 |
-| `CUME_DIST()` | 누적 분포 |
+| `PERCENT_RANK()` | 순위 백분율 (0~1) |
+| `CUME_DIST()` | 누적 분포 (0~1) |
 | `RATIO_TO_REPORT(col)` | 합계 대비 비율 |
 
 ```sql
@@ -152,7 +157,7 @@ SELECT ename, sal,
 FROM emp;
 ```
 
-## 윈도우 프레임 (ROWS vs RANGE)
+## 7. 윈도우 프레임 ⭐
 
 | 키워드 | 의미 |
 |---|---|
@@ -164,19 +169,20 @@ FROM emp;
 
 ### ROWS vs RANGE
 
-- **ROWS**: 행 단위 (위치 기반)
-- **RANGE**: 값 단위 (논리 기반, 동순위 그룹 묶음)
+- **ROWS**: 행 단위 (정확한 N행)
+- **RANGE**: 값 단위 (동순위 그룹 묶음)
 
 ```sql
 -- ROWS: 정확히 앞 2행
 SUM(sal) OVER (ORDER BY id ROWS BETWEEN 2 PRECEDING AND CURRENT ROW)
 
--- RANGE: 값 기준 (동일 ORDER BY 값은 한꺼번에)
+-- RANGE: 값 기준 (같은 ORDER BY 값은 한꺼번에)
 SUM(sal) OVER (ORDER BY sal RANGE BETWEEN 100 PRECEDING AND CURRENT ROW)
--- 현재 sal보다 100 작은 값까지의 합
 ```
 
-## 그룹별 Top-N
+## 8. 그룹별 Top-N ⭐
+
+윈도우 함수의 가장 강력한 활용.
 
 ```sql
 -- 부서별 급여 상위 3명
@@ -187,45 +193,96 @@ SELECT * FROM (
 ) WHERE r <= 3;
 ```
 
-> 💡 어떤 순위 함수를 쓸까?
-> - 동률 모두 포함 → `RANK`
-> - 정확히 N건만 → `ROW_NUMBER`
-> - 동률 후 연속 순위 → `DENSE_RANK`
+### 어떤 순위 함수를 쓸까?
 
-## 자주 틀리는 함정
+| 상황 | 함수 |
+|---|---|
+| **동률 모두 포함** | RANK |
+| **정확히 N건만** | ROW_NUMBER |
+| **동률 후 연속 순위** | DENSE_RANK |
 
-> 📌 **시험 빈출**
+## 9. ⚠️ 자주 틀리는 함정
 
-1. **PARTITION BY 생략 시 전체 = 하나의 윈도우**
-2. **ORDER BY 생략 시 순위 함수는 결정적이지 않음**
-3. **LAST_VALUE의 기본 프레임 함정**
-4. **WHERE 절에서 윈도우 함수 사용 불가** (SELECT 절 이후 실행)
+1. **\"WHERE에서 윈도우 함수 사용 가능\"** → ✗
    ```sql
    -- ✗ 에러
    SELECT * FROM emp WHERE RANK() OVER (...) <= 3;
    -- ✓ 인라인 뷰로 감싸기
    SELECT * FROM (SELECT *, RANK() OVER (...) r FROM emp) WHERE r <= 3;
    ```
-5. **GROUP BY 결과에 윈도우 함수**: GROUP BY 후 윈도우 함수는 그룹 결과에 대해 적용
 
-## SQL 실행 순서에서의 위치
+2. **\"RANK는 동순위 후 연속\"** → ✗ 건너뜀
+
+3. **\"LAST_VALUE는 항상 마지막\"** → ✗ 기본 프레임 함정
+
+4. **\"PARTITION BY 생략 시 에러\"** → ✗ 전체 1개 윈도우
+
+5. **\"ROW_NUMBER에서 동순위 발생 가능\"** → ✗ 무조건 고유
+
+6. **\"순위 함수는 ORDER BY 생략 가능\"** → ✗ ORDER BY 없으면 결정적이지 않음
+
+## 10. SQL 실행 순서에서의 위치
 
 ```
 FROM → WHERE → GROUP BY → HAVING → 윈도우 함수 → SELECT → ORDER BY
 ```
 
-> 윈도우 함수는 SELECT 절 직전에 평가. 그래서 WHERE/HAVING에서 사용 불가.
+윈도우 함수는 **SELECT 단계**에서 평가. 그래서:
+- WHERE/HAVING에서 사용 ✗
+- ORDER BY에서 사용 ○
+- 인라인 뷰로 감싸야 결과 필터 가능
 
-## 시험 빈출 포인트
+## 11. 📝 기출 출제 패턴
 
-> 📌 **꼭 외울 것**
->
-> 1. 3가지 순위 함수: RANK(건너뜀), DENSE_RANK(연속), ROW_NUMBER(고유)
-> 2. `LAG(col, n, default)` — 이전 행, `LEAD` — 다음 행
-> 3. `PARTITION BY` = 그룹 분할
-> 4. ROWS = 행 단위, RANGE = 값 단위
-> 5. 누적합: `ROWS UNBOUNDED PRECEDING TO CURRENT ROW`
-> 6. WHERE에서 윈도우 함수 불가 → 인라인 뷰
-> 7. `NTILE(n)` = n개 분위수 그룹
-> 8. `RATIO_TO_REPORT` = 합계 대비 비율
-> 9. 그룹별 Top-N은 윈도우 함수 + 인라인 뷰
+### 패턴 A: 순위 함수 결과 ⭐ 최빈출
+> \"RANK, DENSE_RANK, ROW_NUMBER 결과는?\"
+- 1,1,**3**,4 / 1,1,**2**,3 / 1,2,3,4
+
+### 패턴 B: LAG/LEAD
+> \"LAG(sal, 1, 0)의 의미는?\"
+- 이전 행 sal, 없으면 0
+
+### 패턴 C: 프레임
+> \"누적합 만드는 윈도우 프레임은?\"
+- ROWS UNBOUNDED PRECEDING TO CURRENT ROW
+
+### 패턴 D: WHERE에서 사용
+> \"WHERE RANK() OVER (...) <= 3 가능?\"
+- ✗ (인라인 뷰 필요)
+
+## 12. 🔑 암기법 종합
+
+| 항목 | 암기법 |
+|---|---|
+| 순위 4종 | **랭덴로엔** (RANK·DENSE·ROW·NTILE) |
+| RANK | "건너뜀 (1,1,3,4)" |
+| DENSE_RANK | "빽빽 = 연속 (1,1,2,3)" |
+| ROW_NUMBER | "무조건 +1 (1,2,3,4)" |
+| LAG/LEAD | "lag=뒤처짐=이전, lead=앞장=다음" |
+| ROWS/RANGE | "ROWS=행 단위, RANGE=값 단위" |
+| 누적합 | "UNBOUNDED PRECEDING → CURRENT" |
+
+## 13. 📌 시험 합격 핵심 요약
+
+> **시험장 입실 5분 전 점검**
+
+✅ **순위 함수 = 랭덴로엔**:
+   - RANK: 동순위 후 **건너뜀** (1,1,**3**,4)
+   - DENSE_RANK: 동순위 후 **연속** (1,1,**2**,3)
+   - ROW_NUMBER: **무조건 +1** (1,2,3,4)
+   - NTILE(n): n개 그룹
+
+✅ **LAG/LEAD**:
+   - `LAG(col, n, default)`: n행 이전
+   - `LEAD(col, n, default)`: n행 다음
+
+✅ **윈도우 프레임 = 누적합**:
+   - `ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW`
+
+✅ **ROWS vs RANGE**: 행 단위 vs 값 단위
+
+✅ **WHERE에서 윈도우 함수 ✗** → 인라인 뷰
+
+✅ **PARTITION BY 생략 = 전체 1개 윈도우**
+
+✅ **빈출**: \"RANK 결과 1,1,?,4에서 ?\" → **3** (건너뜀)

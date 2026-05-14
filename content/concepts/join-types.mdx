@@ -4,11 +4,17 @@ title: JOIN의 모든 것
 subject: 2
 category: JOIN
 order: 3
-description: INNER/OUTER/CROSS/SELF + USING/NATURAL + 옵티마이저의 NL/Hash/Sort Merge까지.
+description: INNER/OUTER/CROSS/SELF + USING/NATURAL + 옵티마이저의 NL/Hash/Sort Merge.
 relatedQuestions: [q-013, q-014, q-046, q-047, q-048, q-049, q-050, q-051, q-052, q-053]
 ---
 
-## JOIN 한눈에
+## 1. 정의
+
+**JOIN**은 두 개 이상의 테이블을 조인 조건에 따라 결합해 하나의 결과 집합으로 만드는 연산이다.
+
+> 💡 데이터를 정규화로 쪼개 두고, 필요할 때 조인으로 합치는 것이 RDBMS의 기본 패턴.
+
+## 2. JOIN 한눈에 정리 ⭐⭐⭐
 
 | 종류 | 의미 | 결과 |
 |---|---|---|
@@ -18,35 +24,40 @@ relatedQuestions: [q-013, q-014, q-046, q-047, q-048, q-049, q-050, q-051, q-052
 | **FULL OUTER JOIN** | 양쪽 보존 | 양쪽 전체 |
 | **CROSS JOIN** | 카티전 곱 | m × n |
 | **SELF JOIN** | 자기 참조 | 별칭으로 두 번 |
-| **NATURAL JOIN** | 동일 이름 자동 조인 | 공통 컬럼 1번만 |
+| **NATURAL JOIN** | 동명 컬럼 자동 조인 | 공통 컬럼 1번만 |
 | **USING (col)** | 명시적 동일 이름 조인 | 공통 컬럼 1번만 |
 
-## 시각화
+> 🔑 **암기법: "내외크자유"** (Inner·Outer·Cross·Self·Using·Natural)
+
+## 3. 시각화
 
 ```
 A: {1, 2, 3}      B: {2, 3, 4}
 
 INNER JOIN ON A.x = B.x       LEFT OUTER JOIN
-+---+---+                     +---+------+
-| A | B |                     | A | B    |
-| 2 | 2 |                     | 1 | NULL |
-| 3 | 3 |                     | 2 | 2    |
-+---+---+                     | 3 | 3    |
-                              +---+------+
+┌───┬───┐                     ┌───┬──────┐
+│ A │ B │                     │ A │ B    │
+│ 2 │ 2 │                     │ 1 │ NULL │
+│ 3 │ 3 │                     │ 2 │ 2    │
+└───┴───┘                     │ 3 │ 3    │
+                              └───┴──────┘
 
 FULL OUTER JOIN               CROSS JOIN
-+------+------+               (3 × 3 = 9 rows)
-| A    | B    |
-| 1    | NULL |
-| 2    | 2    |
-| 3    | 3    |
-| NULL | 4    |
-+------+------+
+┌──────┬──────┐               (3 × 3 = 9 rows)
+│ A    │ B    │
+│ 1    │ NULL │
+│ 2    │ 2    │
+│ 3    │ 3    │
+│ NULL │ 4    │
+└──────┴──────┘
 ```
 
-## INNER JOIN
+## 4. INNER JOIN
+
+양쪽 테이블에 **모두 존재**하는 행만.
 
 ```sql
+-- ANSI
 SELECT e.ename, d.dname
 FROM emp e INNER JOIN dept d
   ON e.deptno = d.deptno;
@@ -55,202 +66,204 @@ FROM emp e INNER JOIN dept d
 SELECT e.ename, d.dname
 FROM emp e JOIN dept d ON e.deptno = d.deptno;
 
--- WHERE로 표현 (구식)
+-- WHERE 구문 (구식)
 SELECT e.ename, d.dname
 FROM emp e, dept d
 WHERE e.deptno = d.deptno;
 ```
 
-## OUTER JOIN
+## 5. OUTER JOIN ⭐⭐⭐
 
-### LEFT OUTER JOIN
+### LEFT / RIGHT / FULL
 
 ```sql
--- 부서 없는 사원까지 모두 출력
-SELECT e.ename, d.dname
-FROM emp e LEFT OUTER JOIN dept d
-  ON e.deptno = d.deptno;
+-- LEFT: 왼쪽 전체 보존
+SELECT * FROM emp e LEFT OUTER JOIN dept d ON e.deptno = d.deptno;
 
--- OUTER 키워드 생략 가능 → LEFT JOIN
+-- RIGHT: 오른쪽 전체 보존
+SELECT * FROM emp e RIGHT OUTER JOIN dept d ON e.deptno = d.deptno;
+
+-- FULL: 양쪽 전체 보존
+SELECT * FROM emp e FULL OUTER JOIN dept d ON e.deptno = d.deptno;
 ```
 
-### Oracle (+) 구문 (구식)
+### Oracle (+) 구문 (구식) — ANSI 변환
 
 ```sql
 SELECT e.ename, d.dname
 FROM emp e, dept d
-WHERE e.deptno = d.deptno(+);   -- ANSI LEFT OUTER 와 동치
+WHERE e.deptno = d.deptno(+);   -- ANSI LEFT OUTER와 동치
 ```
 
-`(+)`는 **NULL을 채울 반대편**에 붙인다.
+**`(+)`는 NULL을 채울 반대편에 붙인다.**
 
-| Oracle (+) | ANSI |
+| Oracle (+) | ANSI 동치 |
 |---|---|
 | `WHERE A.x = B.y(+)` | `A LEFT OUTER JOIN B ON A.x = B.y` |
 | `WHERE A.x(+) = B.y` | `A RIGHT OUTER JOIN B ON A.x = B.y` |
-| 양쪽 (+) ← 불가 | `A FULL OUTER JOIN B` |
+| 양쪽 `(+)` ❌ | `A FULL OUTER JOIN B` (Oracle (+)로 불가) |
 
-> ⚠️ 신규 코드는 ANSI 구문 사용. `(+)`는 가독성·기능 모두 제약.
+> ⚠️ `(+)`는 가독성·기능 제약 → ANSI 구문 권장
 
-### FULL OUTER JOIN
+### FULL OUTER 행 수 공식
 
-```sql
-SELECT e.ename, d.dname
-FROM emp e FULL OUTER JOIN dept d
-  ON e.deptno = d.deptno;
+```
+len(FULL OUTER) = len(A) + len(B) - 매칭_수
 ```
 
-결과 행 수: `len(A) + len(B) - 매칭_수`
+예: A={1,2,3}, B={2,3,4}, 매칭=2건 → 3+3-2 = **4행**
 
-## CROSS JOIN (카티전 곱)
+## 6. CROSS JOIN (카티전 곱)
 
 ```sql
 SELECT * FROM emp CROSS JOIN dept;
 -- emp 14건 × dept 4건 = 56건
 ```
 
-### 의도치 않은 카티전 곱 함정
+### 의도치 않은 카티전 곱 함정 ⭐
 
 ```sql
--- ON 조건 누락 → 의도치 않은 카티전 곱!
-SELECT * FROM emp, dept;   -- 56건 반환
+-- ON 누락 → 카티전 곱!
+SELECT * FROM emp, dept;  -- 56건
 
 -- 잘못된 조건 → 부분 카티전 곱
 SELECT * FROM emp e, dept d, salgrade s
-WHERE e.deptno = d.deptno;   -- salgrade와 조인 조건 누락
+WHERE e.deptno = d.deptno;   -- salgrade 조건 누락
 ```
 
-> 📌 **시험 빈출**: `n` 테이블 조인 시 **`n-1`개의 조인 조건**이 필요.
+> 📌 **시험 빈출 규칙**: **n개 테이블 조인 → n-1개 조인 조건 필요**
 
-## SELF JOIN
+## 7. SELF JOIN
 
 같은 테이블을 두 번 참조. **alias 필수**.
 
 ```sql
--- 사원과 매니저 출력
+-- 사원과 매니저 (계층)
 SELECT e.ename AS 사원, m.ename AS 매니저
 FROM emp e LEFT OUTER JOIN emp m
   ON e.mgr = m.empno;
 ```
 
-계층 데이터에 자주 사용. 더 깊은 계층은 `CONNECT BY` 권장.
+깊은 계층은 `CONNECT BY` 또는 재귀 CTE 사용.
 
-## USING vs NATURAL JOIN
+## 8. USING vs NATURAL JOIN ⭐
 
 ```sql
--- ON
+-- ON: 명시적
 SELECT * FROM emp e JOIN dept d ON e.deptno = d.deptno;
--- 결과에 e.deptno와 d.deptno 둘 다 등장
+-- 결과: e.deptno와 d.deptno 둘 다 등장
 
--- USING
+-- USING: 컬럼명 명시 (양쪽 동일 이름)
 SELECT * FROM emp JOIN dept USING (deptno);
--- 결과에 deptno 한 번만 등장 (한정자 불가)
+-- 결과: deptno 한 번만, 한정자 불가
 
--- NATURAL JOIN — 같은 이름 컬럼 자동 조인
+-- NATURAL JOIN: 동명 컬럼 자동 조인
 SELECT * FROM emp NATURAL JOIN dept;
--- 결과에 deptno 한 번만
+-- 결과: deptno 한 번만, 한정자 불가
 ```
 
-### NATURAL JOIN 주의
+### NATURAL JOIN 위험
 
-> ⚠️ 양쪽 테이블에 **모든 동명 컬럼**이 자동으로 조인 조건. 의도치 않은 매칭 위험.
+> ⚠️ 양쪽 테이블에 **동명의 모든 컬럼**이 조인 조건이 됨. `updated_at` 같은 공통 컬럼이 의도치 않은 매칭 유발.
 
-```sql
--- 두 테이블에 'updated_at' 같은 공통 컬럼이 있다면
--- 자동으로 그것도 조인 조건에 포함되어 결과가 비어버림
-```
+→ 실무·시험 답안에서는 **`JOIN ... ON` 권장**.
 
-→ 실무에서는 거의 사용 안 함. `JOIN ... ON` 권장.
+## 9. 옵티마이저의 JOIN 처리 방식 ⭐⭐
 
-## 옵티마이저의 JOIN 처리 방식
+| 방식 | 동작 | 적합 |
+|---|---|---|
+| **Nested Loop (NL)** | 외부 행마다 내부 순회 | 소량 + 후행 인덱스 (OLTP) |
+| **Hash Join** | 작은 쪽 hash → 큰 쪽 probe | 등치 조인 + 대량 |
+| **Sort Merge** | 양쪽 정렬 후 병합 | 정렬된 큰 데이터, 범위 조인 |
 
-CBO(Cost-Based Optimizer)는 3가지 중 하나 선택:
-
-### 1. Nested Loop (NL Join)
-
-```
-for each row in OUTER:
-   for each row in INNER:
-      if condition: join
-```
-
-- **선행 작은 + 후행 인덱스** 조건에서 빠름
-- OLTP 환경
-
-### 2. Hash Join
-
-```
-phase 1: 작은 테이블로 hash 테이블 생성
-phase 2: 큰 테이블 순회하며 hash 조회
-```
-
-- **등치 조인 + 대용량**
-- 인덱스 불필요
-- 메모리 사용 큼
-
-### 3. Sort Merge
-
-```
-phase 1: 양쪽 정렬
-phase 2: 병합
-```
-
-- 이미 정렬된 데이터, 범위 조인
-- 등치/비등치 모두 가능
+> 🔑 **암기법**: NL=네스티드(loop), Hash=해시(=), Sort=정렬
 
 ### 비교
 
-| | NL | Hash | Sort Merge |
+|   | NL | Hash | Sort Merge |
 |---|---|---|---|
 | 등치 조인 | ✓ | ✓ | ✓ |
-| 비등치 조인 | ✓ | ✗ | ✓ |
+| 비등치 조인 | ✓ | **✗** | ✓ |
 | 인덱스 필요 | 후행에 ✓ | ✗ | ✗ |
-| 대용량 | ✗ | ✓ | ✓ |
-| 소량 | ✓ | ✗ | ✗ |
+| 대량 데이터 | ✗ | ✓ | ✓ |
+| 소량 데이터 | ✓ | ✗ | ✗ |
 
-## 자주 틀리는 함정
+## 10. ⚠️ 자주 틀리는 함정 종합
 
-> 📌 **시험 빈출 함정 모음**
-
-1. **NULL이 있는 조인 컬럼**
+1. **\"LEFT OUTER + WHERE 조건\" 함정**
    ```sql
-   -- emp.deptno가 NULL인 행은 INNER JOIN 결과에 안 나옴
-   -- LEFT OUTER JOIN이면 포함됨 (오른쪽은 NULL)
-   ```
-
-2. **LEFT OUTER JOIN의 WHERE 함정**
-   ```sql
-   -- 의도: 부서 없는 사원도 보기
-   SELECT * FROM emp e LEFT JOIN dept d ON e.deptno = d.deptno
+   -- ✗ 의도와 다름 (사실상 INNER JOIN)
+   FROM emp e LEFT JOIN dept d ON e.deptno = d.deptno
    WHERE d.loc = 'SEOUL';
-   -- ✗ WHERE가 NULL 행을 걸러내어 사실상 INNER JOIN
    
-   -- ✓ ON 조건에 추가
-   SELECT * FROM emp e LEFT JOIN dept d
+   -- ✓ ON에 조건 추가
+   FROM emp e LEFT JOIN dept d
      ON e.deptno = d.deptno AND d.loc = 'SEOUL';
    ```
 
-3. **카티전 곱 결과 수**
-   ```sql
-   -- emp 14, dept 4 → CROSS JOIN = 56
-   -- ON 조건이 모두 일치하지 않으면 INNER = 0
-   ```
+2. **\"INNER JOIN 결과는 OUTER보다 항상 적다\"** → ○ 정답
 
-4. **FULL OUTER 행 수**
-   ```sql
-   -- A = {1,2,3}, B = {2,3,4}, 매칭 2건
-   -- FULL OUTER = 3 + 3 - 2 = 4
-   ```
+3. **\"NATURAL JOIN은 안전하다\"** → ✗ 모든 동명 컬럼 자동 → 위험
 
-5. **n 테이블 조인 조건 수**: n-1개
+4. **\"CROSS JOIN은 ON이 필요\"** → ✗ 조건 없음
 
-## 시험 빈출 포인트
+5. **\"n개 테이블 조인에 n개 조건\"** → ✗ **n-1개**
 
-> 📌 **요약**
-> - INNER vs OUTER vs CROSS
-> - `(+)` 위치 = NULL 채울 쪽
-> - LEFT OUTER + WHERE 함정 (ON에 조건 둬야)
-> - NATURAL JOIN은 모든 동명 컬럼 자동
-> - USING과 NATURAL JOIN은 한정자 불가
-> - n개 테이블 → n-1개 조인 조건
-> - 옵티마이저 JOIN 방식 3가지 (NL/Hash/Sort Merge)
+6. **\"(+)는 양쪽에 가능\"** → ✗ FULL OUTER 표현 불가
+
+7. **\"USING은 한정자(e.deptno) 가능\"** → ✗ 불가
+
+## 11. 📝 기출 출제 패턴
+
+### 패턴 A: 결과 행 수 계산 ⭐ 최빈출
+> \"다음 OUTER JOIN의 결과 행 수는?\"
+- LEFT/RIGHT/FULL 행 수 공식
+- LEFT = len(A), FULL = A + B - 매칭
+
+### 패턴 B: Oracle (+) → ANSI 변환
+> \"다음 Oracle 구문을 ANSI로 변환한 것은?\"
+- (+) 위치 = NULL 채울 반대편
+
+### 패턴 C: OUTER JOIN 설명
+> \"FULL OUTER JOIN의 설명으로 옳은 것은?\"
+- \"매칭만 반환\" = INNER (함정)
+
+### 패턴 D: 조인 방식
+> \"선행 테이블의 각 행마다 후행을 조회하는 방식은?\"
+- Nested Loop
+
+## 12. 🔑 암기법 종합
+
+| 항목 | 암기법 |
+|---|---|
+| JOIN 종류 | **내외크자유** (Inner·Outer·Cross·Self·Using/Natural) |
+| OUTER 방향 | LEFT는 왼쪽 살림, RIGHT는 오른쪽 살림 |
+| (+) 위치 | **NULL이 들어갈 반대편에** |
+| n개 테이블 조인 | **n-1개 조건** |
+| 조인 방식 | NL(소량+인덱스), Hash(대량+등치), Sort Merge(정렬+범위) |
+
+## 13. 📌 시험 합격 핵심 요약
+
+> **시험장 입실 5분 전 점검**
+
+✅ **8가지 JOIN = 내외크자유 USING/NATURAL**
+
+✅ **OUTER JOIN 의미**:
+   - LEFT = 왼쪽 보존
+   - RIGHT = 오른쪽 보존
+   - FULL = 양쪽 모두
+   - 없는 쪽은 NULL
+
+✅ **FULL OUTER 행 수** = A + B - 매칭
+
+✅ **CROSS JOIN** = m × n (조건 없음)
+
+✅ **Oracle (+)** = NULL 채울 **반대편**에 붙임
+
+✅ **n개 테이블 조인** = **n-1개 조건**
+
+✅ **NATURAL JOIN**: 동명 컬럼 자동 → 실무 위험
+
+✅ **JOIN 방식 3가지**: NL · Hash · Sort Merge
+
+✅ **빈출 함정**: \"LEFT JOIN + WHERE d.X\" → ON에 넣어야 OUTER 의미 유지

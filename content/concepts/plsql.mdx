@@ -1,71 +1,78 @@
 ---
 slug: plsql
-title: PL/SQL 기본
+title: PL/SQL 기본 구조
 subject: 2
 category: 트랜잭션/PL-SQL
 order: 10
-description: Oracle의 절차형 SQL 확장. 변수·조건·반복·예외처리·프로시저·함수.
+description: Oracle 절차형 SQL — 변수·조건·반복·예외·프로시저·함수·트리거.
 relatedQuestions: [q-089, q-090]
 ---
 
-## PL/SQL이란?
+## 1. PL/SQL이란?
 
-**PL/SQL**(Procedural Language/SQL)은 Oracle이 SQL을 확장한 절차형 언어. 변수, 조건문, 반복문, 예외 처리, 프로시저, 함수 등을 지원.
+**PL/SQL** = **P**rocedural **L**anguage / **SQL**. Oracle이 SQL을 확장한 절차형 언어.
 
-타 DBMS도 유사한 절차형 언어를 제공:
+타 DBMS의 절차형 언어:
 - **PL/SQL**: Oracle
 - **T-SQL**: SQL Server
 - **PL/pgSQL**: PostgreSQL
-- **저장 프로시저**: MySQL
 
-## 블록 구조
+## 2. 블록 구조 ⭐⭐⭐ (시험 빈출)
 
 ```sql
-DECLARE          -- (선택) 변수 선언
+DECLARE          -- (선택) 변수, 커서, 예외 선언
    v_count NUMBER := 0;
-   v_name VARCHAR2(50);
 BEGIN            -- (필수) 실행부
-   SELECT COUNT(*), MAX(ename) INTO v_count, v_name FROM emp;
+   SELECT COUNT(*) INTO v_count FROM emp;
    DBMS_OUTPUT.PUT_LINE('Count: ' || v_count);
-   DBMS_OUTPUT.PUT_LINE('Name: ' || v_name);
-EXCEPTION        -- (선택) 예외 처리
+EXCEPTION        -- (선택) 예외 처리부
    WHEN NO_DATA_FOUND THEN
       DBMS_OUTPUT.PUT_LINE('데이터 없음');
    WHEN OTHERS THEN
-      DBMS_OUTPUT.PUT_LINE('에러: ' || SQLERRM);
-END;             -- (필수)
+      DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
+END;             -- (필수) 블록 종료
 /
 ```
 
-### 블록 종류
+> 🔑 **암기법: "데비익엔"** (DECLARE → BEGIN → EXCEPTION → END)
+
+| 부분 | 필수? | 역할 |
+|---|---|---|
+| DECLARE | 선택 | 변수·커서·예외 선언 |
+| **BEGIN** | **필수** | 실행 로직 |
+| EXCEPTION | 선택 | 예외 처리 |
+| **END** | **필수** | 블록 종료 |
+
+## 3. 블록 종류
 
 | 종류 | 설명 |
 |---|---|
 | **익명 블록** | 일회성 실행, 저장 안 됨 |
 | **저장 프로시저** | `CREATE PROCEDURE`, 재사용 |
 | **저장 함수** | `CREATE FUNCTION`, 값 반환 |
-| **트리거** | 이벤트 발생 시 자동 실행 |
-| **패키지** | 프로시저·함수 묶음 |
+| **트리거** | 이벤트 기반 자동 실행 |
+| **패키지** | 관련 프로시저·함수 묶음 |
 
-## 변수와 데이터 타입
+## 4. 변수 ⭐
 
 ```sql
 DECLARE
    v_id NUMBER := 100;                  -- 명시적 타입
    v_name VARCHAR2(50);
    v_emp emp%ROWTYPE;                   -- 테이블 행과 동일 구조
-   v_sal emp.sal%TYPE;                  -- 특정 컬럼 타입 참조
-   v_today DATE DEFAULT SYSDATE;        -- 기본값
+   v_sal emp.sal%TYPE;                  -- 특정 컬럼 타입
+   v_today DATE DEFAULT SYSDATE;
 BEGIN
    ...
 END;
 ```
 
-`%ROWTYPE`, `%TYPE`은 컬럼 타입 변경 시 자동 반영되어 유지보수에 좋다.
+> 🔑 **`%ROWTYPE`, `%TYPE`**: 컬럼 타입 변경 시 자동 반영 → 유지보수 ↑
 
-## 조건문
+## 5. 조건문
 
 ```sql
+-- IF / ELSIF / ELSE
 IF v_sal >= 3000 THEN
    v_grade := 'A';
 ELSIF v_sal >= 2000 THEN
@@ -82,7 +89,7 @@ v_grade := CASE
 END;
 ```
 
-## 반복문
+## 6. 반복문
 
 ### LOOP / EXIT
 
@@ -120,7 +127,7 @@ FOR rec IN (SELECT empno, ename FROM emp WHERE deptno = 10) LOOP
 END LOOP;
 ```
 
-## 예외 처리
+## 7. 예외 처리 ⭐⭐
 
 ```sql
 BEGIN
@@ -133,26 +140,22 @@ EXCEPTION
    WHEN OTHERS THEN
       DBMS_OUTPUT.PUT_LINE('SQLCODE: ' || SQLCODE);
       DBMS_OUTPUT.PUT_LINE('SQLERRM: ' || SQLERRM);
-      RAISE;  -- 다시 던지기
 END;
 ```
 
-### 사용자 정의 예외
+### 사전 정의 예외
 
-```sql
-DECLARE
-   ex_invalid_sal EXCEPTION;
-BEGIN
-   IF v_sal < 0 THEN
-      RAISE ex_invalid_sal;
-   END IF;
-EXCEPTION
-   WHEN ex_invalid_sal THEN
-      DBMS_OUTPUT.PUT_LINE('급여는 음수일 수 없습니다');
-END;
-```
+| 예외 | 발생 시점 |
+|---|---|
+| `NO_DATA_FOUND` | SELECT INTO 결과 없음 |
+| `TOO_MANY_ROWS` | SELECT INTO 다중 행 |
+| `DUP_VAL_ON_INDEX` | UNIQUE 중복 |
+| `ZERO_DIVIDE` | 0 나눗셈 |
+| `OTHERS` | 모든 예외 catch |
 
-## 프로시저와 함수
+> 🔑 **암기법**: "Not Found·Too Many·Dup·Zero·Others"
+
+## 8. 프로시저 vs 함수 ⭐⭐
 
 ### PROCEDURE — 값 반환 안 함
 
@@ -181,24 +184,33 @@ CREATE OR REPLACE FUNCTION get_annual_sal(
 IS
    v_sal NUMBER;
 BEGIN
-   SELECT sal * 12 INTO v_sal FROM emp WHERE empno = p_empno;
-   RETURN v_sal;
+   SELECT sal INTO v_sal FROM emp WHERE empno = p_empno;
+   RETURN v_sal * 12;
 END;
 /
 
--- 호출 (SQL에서도 사용 가능)
+-- 호출 (SQL에서도 가능)
 SELECT get_annual_sal(7369) FROM dual;
 ```
+
+### 차이 비교 ⭐
+
+| | PROCEDURE | FUNCTION |
+|---|---|---|
+| 값 반환 | ✗ | **○ (RETURN 필수)** |
+| SQL에서 호출 | ✗ | ○ (SELECT 등) |
+| 호출 방법 | EXEC, CALL | 표현식 안에서 |
+| OUT 파라미터 | ○ | △ (지양) |
 
 ### 파라미터 모드
 
 | 모드 | 방향 |
 |---|---|
-| **IN** (기본) | 호출자 → 프로시저 (읽기만) |
+| **IN** (기본) | 호출자 → 프로시저 |
 | **OUT** | 프로시저 → 호출자 |
 | **IN OUT** | 양방향 |
 
-## 트리거
+## 9. 트리거 (Trigger) ⭐⭐
 
 ```sql
 CREATE OR REPLACE TRIGGER trg_emp_log
@@ -213,27 +225,91 @@ BEGIN
       INSERT INTO emp_log VALUES (:OLD.empno, 'DELETE', SYSDATE);
    END IF;
 END;
-/
 ```
 
-`:NEW`/`:OLD`는 변경 전/후 행을 의미.
+> 🔑 **`:NEW`, `:OLD`**: 변경 후 / 변경 전 행
 
 ### 트리거 종류
 
 | 시점 | 단위 | 설명 |
 |---|---|---|
-| BEFORE | STATEMENT | 문장 실행 전, 한 번 |
+| **BEFORE** | STATEMENT | 문장 실행 전, 1번 |
 | BEFORE | FOR EACH ROW | 각 행 처리 전 |
-| AFTER | STATEMENT | 문장 실행 후, 한 번 |
+| **AFTER** | STATEMENT | 문장 실행 후, 1번 |
 | AFTER | FOR EACH ROW | 각 행 처리 후 |
-| INSTEAD OF | (뷰) | DML 대신 실행 |
+| **INSTEAD OF** | (뷰) | DML 대신 실행 |
 
-## 시험 빈출 포인트
+> 🔑 **암기법: "BAI × SR"** (Before·After·Instead Of × Statement·Row)
 
-> 📌 **자주 출제**
-> - 블록 구조: `DECLARE → BEGIN → EXCEPTION → END`
-> - `%TYPE`, `%ROWTYPE`의 의미
-> - 예외 처리에서 `OTHERS`는 모든 예외 catch
-> - 트리거의 BEFORE/AFTER, STATEMENT/ROW
-> - `:NEW`, `:OLD`로 변경 데이터 접근
-> - 프로시저는 값 반환 X, 함수는 RETURN 필수
+## 10. ⚠️ 자주 틀리는 함정
+
+1. **\"DECLARE는 필수\"** → ✗ 선택
+2. **\"FUNCTION은 SQL 안에서 호출 불가\"** → ✗ 가능
+3. **\"PROCEDURE도 RETURN 필수\"** → ✗ 함수만
+4. **\":NEW.col은 OLD 값\"** → ✗ NEW는 변경 후
+5. **\"FOR EACH ROW 없으면 행마다 실행\"** → ✗ 문장 단위
+6. **\"WHEN OTHERS는 모든 에러 catch\"** → ○
+7. **\"%TYPE은 변수 선언만\"** → ✗ 파라미터에도 사용
+
+## 11. 📝 기출 출제 패턴
+
+### 패턴 A: 블록 구조 순서 ⭐
+> \"PL/SQL 블록 구조를 올바르게 나열하면?\"
+- DECLARE → BEGIN → EXCEPTION → END
+
+### 패턴 B: 트리거 종류
+> \"트리거의 종류가 아닌 것은?\"
+- BEFORE, AFTER, INSTEAD OF만 (WHENEVER 같은 가짜 답)
+
+### 패턴 C: 프로시저 vs 함수
+> \"FUNCTION의 특징은?\"
+- RETURN 필수, SQL 안에서 호출 가능
+
+### 패턴 D: 예외 처리
+> \"OTHERS의 역할은?\"
+- 모든 예외 catch
+
+## 12. 🔑 암기법 종합
+
+| 항목 | 암기법 |
+|---|---|
+| 블록 구조 | **데비익엔** (DECLARE·BEGIN·EXCEPTION·END) |
+| 변수 참조 | **%TYPE = 컬럼 타입, %ROWTYPE = 행 타입** |
+| 예외 종류 | **No Data·Too Many·Dup·Zero·Others** |
+| 프로시저 vs 함수 | "프로시저=EXEC, 함수=RETURN" |
+| 트리거 6종 | **BAI × SR** (시점 3 × 단위 2) |
+| 트리거 변수 | **\":NEW=새 값, :OLD=이전 값\"** |
+
+## 13. 📌 시험 합격 핵심 요약
+
+> **시험장 입실 5분 전 점검**
+
+✅ **블록 구조 = 데비익엔**:
+   ```
+   DECLARE  → BEGIN  → EXCEPTION  → END
+   (선택)     (필수)    (선택)        (필수)
+   ```
+
+✅ **변수 타입 참조**:
+   - `%TYPE`: 컬럼 타입 가져옴
+   - `%ROWTYPE`: 행 전체 구조
+
+✅ **예외 처리**:
+   - `NO_DATA_FOUND`: SELECT INTO 0행
+   - `TOO_MANY_ROWS`: SELECT INTO 다중행
+   - `OTHERS`: 모든 예외
+
+✅ **PROCEDURE vs FUNCTION**:
+   - PROCEDURE: 값 반환 ✗, EXEC
+   - FUNCTION: **RETURN 필수**, SQL에서 호출 가능
+
+✅ **파라미터 모드**: IN(기본) · OUT · IN OUT
+
+✅ **트리거 종류**:
+   - BEFORE / AFTER / INSTEAD OF
+   - STATEMENT / FOR EACH ROW
+   - `:NEW` = 새 값, `:OLD` = 이전 값
+
+✅ **빈출**: \"트리거의 6종 조합\"
+
+✅ **빈출**: \"%ROWTYPE은 테이블 행 구조 가져옴\"

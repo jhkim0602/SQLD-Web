@@ -3,113 +3,148 @@ slug: integrity
 title: 데이터 무결성 (Data Integrity)
 subject: 1
 category: 모델링 종합
-order: 10
-description: 데이터의 정확성·일관성·신뢰성을 보장하기 위한 제약조건들.
-relatedQuestions: []
+order: 7
+description: 데이터의 정확성·일관성·신뢰성을 보장하는 5가지 무결성과 제약조건.
+relatedQuestions: [q-082]
 ---
 
-## 데이터 무결성이란?
+## 1. 정의
 
-데이터베이스에 저장된 데이터의 **정확성, 일관성, 신뢰성**을 보장하는 성질. 무결성이 깨지면 잘못된 비즈니스 판단으로 이어진다.
+**데이터 무결성(Data Integrity)**은 데이터베이스에 저장된 데이터의 **정확성·일관성·신뢰성**을 보장하는 성질이다. 무결성이 깨지면 잘못된 의사결정·시스템 오류로 이어진다.
 
-## 무결성의 5가지 종류
+> 💡 무결성 = 데이터 \"믿을 수 있음\"의 보증.
 
-### 1. 개체 무결성 (Entity Integrity)
+## 2. 5가지 무결성 ⭐⭐⭐
 
-> 모든 테이블은 PK를 가져야 하고, PK는 NULL이 될 수 없다.
+| # | 무결성 | 핵심 | 구현 |
+|---|---|---|---|
+| 1 | **개체 무결성 (Entity)** | PK는 유일 + NULL 불가 | PRIMARY KEY |
+| 2 | **참조 무결성 (Referential)** | FK는 참조 PK에 존재 또는 NULL | FOREIGN KEY |
+| 3 | **도메인 무결성 (Domain)** | 값이 정의된 범위·타입 내 | DATA TYPE, CHECK, DEFAULT |
+| 4 | **NULL 무결성** | 특정 컬럼 NULL 불허 | NOT NULL |
+| 5 | **사용자 정의 무결성 (User-defined)** | 비즈니스 규칙 | TRIGGER, 응용 로직 |
+
+> 🔑 **암기법: "개참도Null사"** (개체·참조·도메인·NULL·사용자정의)
+
+## 3. 각 무결성 상세
+
+### 3-1. 개체 무결성 (Entity Integrity)
+
+> 테이블의 PK는 **유일하고 NULL이 아니어야** 한다.
 
 ```sql
 CREATE TABLE emp (
-  empno NUMBER PRIMARY KEY,  -- NULL 불가, 중복 불가
+  empno NUMBER PRIMARY KEY,  -- 자동: UNIQUE + NOT NULL
   ename VARCHAR2(50)
 );
+
+INSERT INTO emp VALUES (NULL, '홍길동');  -- ✗ 에러
+INSERT INTO emp VALUES (1, '김철수');     -- ✓
+INSERT INTO emp VALUES (1, '이영희');     -- ✗ 중복 에러
 ```
 
-### 2. 참조 무결성 (Referential Integrity)
+### 3-2. 참조 무결성 (Referential Integrity)
 
-> FK의 값은 참조하는 PK에 존재하는 값이거나 NULL이어야 한다.
+> FK 값은 참조 테이블의 PK에 **존재하는 값** 또는 **NULL** 이어야 한다.
 
 ```sql
 CREATE TABLE emp (
   empno NUMBER PRIMARY KEY,
   deptno NUMBER,
-  CONSTRAINT fk_dept FOREIGN KEY (deptno) REFERENCES dept (deptno)
+  CONSTRAINT fk_dept FOREIGN KEY (deptno)
+    REFERENCES dept (deptno)
 );
 ```
 
-부모 행 삭제 시 자식의 처리 방식:
+#### 부모 행 삭제 시 처리 (ON DELETE) ⭐
 
 | 옵션 | 동작 |
 |---|---|
-| **NO ACTION / RESTRICT** (기본) | 자식이 있으면 부모 삭제 차단 |
-| **CASCADE** | 자식도 같이 삭제 |
+| **NO ACTION** / **RESTRICT** (기본) | 자식이 있으면 부모 삭제 차단 |
+| **CASCADE** | 자식도 함께 삭제 |
 | **SET NULL** | 자식의 FK를 NULL로 |
 | **SET DEFAULT** | 자식의 FK를 기본값으로 |
 
+> 🔑 **암기법: "노카셋셋"** (No Action · Cascade · Set Null · Set Default)
+
 ```sql
-CONSTRAINT fk_dept
-  FOREIGN KEY (deptno) REFERENCES dept (deptno)
-  ON DELETE CASCADE
+CONSTRAINT fk_dept FOREIGN KEY (deptno)
+  REFERENCES dept (deptno)
+  ON DELETE CASCADE;  -- 부서 삭제 시 사원도 함께 삭제
 ```
 
-### 3. 도메인 무결성 (Domain Integrity)
+### 3-3. 도메인 무결성 (Domain Integrity)
 
-> 컬럼 값은 정의된 도메인(데이터 타입·범위·형식) 내에 있어야 한다.
+> 컬럼 값은 정의된 **데이터 타입·길이·범위·형식** 내에 있어야 한다.
 
 ```sql
 CREATE TABLE emp (
-  empno NUMBER,
-  gender CHAR(1) CHECK (gender IN ('M', 'F')),
-  sal NUMBER CHECK (sal >= 0),
-  hiredate DATE DEFAULT SYSDATE
+  empno NUMBER(4),                                   -- 4자리 숫자
+  gender CHAR(1) CHECK (gender IN ('M', 'F')),       -- 두 값만
+  sal NUMBER CHECK (sal >= 0),                       -- 음수 불가
+  hiredate DATE DEFAULT SYSDATE,                     -- 기본값
+  email VARCHAR2(100) CHECK (email LIKE '%@%')       -- 형식
 );
 ```
 
-### 4. 사용자 정의 무결성 (User-defined Integrity)
+### 3-4. NULL 무결성
 
-비즈니스 규칙에 따른 무결성. 트리거나 어플리케이션 레벨에서 구현.
-
-```sql
--- 예: 매니저의 급여는 부하보다 항상 높아야 한다
-CREATE TRIGGER trg_check_mgr_sal
-BEFORE INSERT OR UPDATE ON emp
-FOR EACH ROW
-BEGIN
-  -- ... 검증 로직
-END;
-```
-
-### 5. NULL 무결성
-
-> 특정 컬럼은 NULL을 가질 수 없다 (NOT NULL 제약).
+> 특정 컬럼은 NULL 불허.
 
 ```sql
 ename VARCHAR2(50) NOT NULL
 ```
 
-## 제약조건 (Constraints) 정리
+### 3-5. 사용자 정의 무결성 (User-defined)
 
-| 제약 | 무결성 종류 | 설명 |
-|---|---|---|
-| **PRIMARY KEY** | 개체 | 유일성 + NOT NULL |
-| **FOREIGN KEY** | 참조 | 다른 테이블 PK 참조 |
-| **UNIQUE** | 개체 | 유일성 (NULL 허용) |
-| **NOT NULL** | NULL | NULL 불허 |
-| **CHECK** | 도메인 | 조건 만족 |
-| **DEFAULT** | 도메인 | 기본값 |
+비즈니스 규칙. 트리거나 응용 로직으로 구현.
 
 ```sql
+-- 예: 매니저 급여는 부하보다 항상 높아야 한다
+CREATE TRIGGER trg_mgr_sal_check
+BEFORE INSERT OR UPDATE OF sal ON emp
+FOR EACH ROW
+DECLARE
+  v_max_sub_sal NUMBER;
+BEGIN
+  SELECT MAX(sal) INTO v_max_sub_sal FROM emp WHERE mgr = :NEW.empno;
+  IF :NEW.sal < v_max_sub_sal THEN
+    RAISE_APPLICATION_ERROR(-20001, '매니저 급여는 부하보다 낮을 수 없음');
+  END IF;
+END;
+```
+
+## 4. 제약조건 (Constraints) 종합 ⭐⭐
+
+| 제약 | 무결성 | NULL | 중복 |
+|---|---|---|---|
+| **PRIMARY KEY** | 개체 | ✗ | ✗ |
+| **FOREIGN KEY** | 참조 | ○ | ○ |
+| **UNIQUE** | 개체 | **○** (여러 NULL 허용) | ✗ |
+| **NOT NULL** | NULL | ✗ | ○ |
+| **CHECK** | 도메인 | 조건 의존 | 조건 의존 |
+| **DEFAULT** | 도메인 | — | — |
+
+### 제약조건 정의 위치
+
+```sql
+-- 컬럼 레벨
 CREATE TABLE emp (
   empno NUMBER PRIMARY KEY,
-  ename VARCHAR2(50) NOT NULL,
-  email VARCHAR2(100) UNIQUE,
-  gender CHAR(1) CHECK (gender IN ('M', 'F')),
-  hiredate DATE DEFAULT SYSDATE,
-  deptno NUMBER REFERENCES dept(deptno)
+  ename VARCHAR2(50) NOT NULL UNIQUE
+);
+
+-- 테이블 레벨 (복합키 등)
+CREATE TABLE order_detail (
+  order_no NUMBER,
+  product_no NUMBER,
+  qty NUMBER CHECK (qty > 0),
+  PRIMARY KEY (order_no, product_no),
+  FOREIGN KEY (order_no) REFERENCES orders (order_no)
 );
 ```
 
-## 제약조건 관리
+## 5. 제약조건 관리
 
 ```sql
 -- 추가
@@ -125,11 +160,66 @@ ALTER TABLE emp ENABLE CONSTRAINT chk_sal;
 ALTER TABLE emp DROP CONSTRAINT chk_sal;
 ```
 
-## 시험 빈출 포인트
+## 6. ⚠️ 자주 틀리는 함정
 
-> 📌 **자주 출제**
-> - 5가지 무결성: 개체 / 참조 / 도메인 / 사용자 정의 / NULL
-> - PK는 NULL 불가 (개체 무결성)
-> - FK는 NULL 허용 가능 (참조 무결성)
-> - UNIQUE는 NULL 허용 (여러 NULL 공존 가능)
-> - ON DELETE 옵션: CASCADE, SET NULL, NO ACTION
+1. **\"PK는 NULL 허용\"** → ✗ 개체 무결성
+2. **\"FK는 NULL 불허\"** → ✗ 선택 관계 시 허용
+3. **\"UNIQUE는 NULL 불허\"** → ✗ 여러 NULL 공존 가능 (표준)
+4. **\"NULL 무결성 = UNIQUE\"** → ✗ NOT NULL 제약
+5. **\"ON DELETE 기본값은 CASCADE\"** → ✗ NO ACTION/RESTRICT가 기본
+6. **\"무결성은 4가지\"** → ✗ 5가지 (사용자 정의 포함)
+7. **\"트리거로 도메인 무결성 구현\"** → △ 보통 CHECK 사용
+
+## 7. 📝 기출 출제 패턴
+
+### 패턴 A: 무결성 종류
+> \"다음 중 데이터 무결성의 종류가 아닌 것은?\"
+- 5가지 외에 \"성능 무결성\" 같은 가짜 답
+
+### 패턴 B: 제약조건 NULL
+> \"NULL을 허용하면서도 중복은 허용하지 않는 제약은?\"
+- UNIQUE (정답)
+
+### 패턴 C: ON DELETE 옵션
+> \"외래키 삭제 시 자식의 FK를 NULL로 만드는 옵션은?\"
+- SET NULL
+
+### 패턴 D: PK vs UNIQUE 차이
+- PK는 NULL X, UNIQUE는 NULL O
+
+## 8. 🔑 암기법 종합
+
+| 항목 | 암기법 |
+|---|---|
+| 5가지 무결성 | **개참도Null사** |
+| ON DELETE 옵션 | **노카셋셋** (No Action·Cascade·Set Null·Set Default) |
+| 제약조건 6종 | **PFUCND** (PK·FK·Unique·Check·Not Null·Default) |
+
+## 9. 📌 시험 합격 핵심 요약
+
+> **시험장 입실 5분 전 점검**
+
+✅ **5가지 무결성 = 개참도Null사**
+   1. 개체 → PK
+   2. 참조 → FK
+   3. 도메인 → CHECK, 타입
+   4. NULL → NOT NULL
+   5. 사용자 정의 → 트리거
+
+✅ **ON DELETE = 노카셋셋**
+   - 기본: NO ACTION (자식 있으면 삭제 차단)
+   - CASCADE: 자식도 삭제
+   - SET NULL: 자식 FK = NULL
+   - SET DEFAULT: 자식 FK = 기본값
+
+✅ **NULL 허용 표**:
+   | 제약 | NULL |
+   |---|---|
+   | PK | ✗ |
+   | FK | ○ |
+   | UNIQUE | ○ (여러 NULL OK) |
+   | NOT NULL | ✗ |
+
+✅ **빈출**: \"UNIQUE는 NULL 허용\" → ○
+
+✅ **빈출**: \"PK는 자동으로 UNIQUE + NOT NULL\" → ○

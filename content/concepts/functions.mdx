@@ -4,135 +4,239 @@ title: SQL 내장 함수 종합
 subject: 2
 category: 함수
 order: 2
-description: 문자·숫자·날짜·변환·조건 함수의 핵심 정리.
+description: 단일행 함수의 모든 분류 — 문자·숫자·날짜·변환 + 함정 정리.
 relatedQuestions: [q-055, q-057, q-058]
 ---
 
-## 함수 분류
+## 1. 함수의 분류 ⭐
 
-| 분류 | 예시 |
-|---|---|
-| **단일 행 함수** (Single-Row) | UPPER, SUBSTR, ROUND, TO_CHAR |
-| **다중 행 함수** (Multi-Row, 집계) | SUM, AVG, COUNT, MAX, MIN |
-| **분석 함수** (Analytic, 윈도우) | RANK, LAG, ROW_NUMBER |
-
-## 문자 함수
-
-| 함수 | 동작 | 예 |
+| 분류 | 특징 | 예시 |
 |---|---|---|
-| `LENGTH(s)` | 문자 수 | `LENGTH('SQL') = 3` |
-| `LENGTHB(s)` | 바이트 수 | 한글 1자 = 3바이트 (UTF-8) |
-| `UPPER/LOWER(s)` | 대소문자 변환 | `UPPER('sql') = 'SQL'` |
-| `INITCAP(s)` | 첫 글자만 대문자 | `INITCAP('hello world') = 'Hello World'` |
-| `SUBSTR(s, start, len)` | 부분 추출 (1-based) | `SUBSTR('SQLD', 2, 2) = 'QL'` |
-| `INSTR(s, sub)` | 위치 검색 | `INSTR('SQLD', 'D') = 4` |
-| `REPLACE(s, old, new)` | 치환 | `REPLACE('AAA', 'A', 'B') = 'BBB'` |
-| `LPAD(s, n, c)` | 좌측 패딩 (전체 길이 n) | `LPAD('1', 3, '0') = '001'` |
-| `RPAD(s, n, c)` | 우측 패딩 | `RPAD('1', 3, '0') = '100'` |
-| `TRIM(s)` | 공백 제거 (양쪽) | `TRIM('  AB  ') = 'AB'` |
-| `LTRIM/RTRIM` | 좌/우 제거 | |
-| `CONCAT(a, b)` 또는 `\|\|` | 결합 | `'A' \|\| 'B' = 'AB'` |
+| **단일 행 함수 (Single-Row)** | 각 행마다 한 값 반환 | UPPER, ROUND, TO_CHAR |
+| **다중 행 함수 (Multi-Row, 집계)** | 여러 행 → 한 값 | SUM, COUNT, AVG |
+| **분석 함수 (Analytic, 윈도우)** | 행 그룹에 함수 + 행 보존 | RANK, LAG, ROW_NUMBER |
 
-> ⚠️ **함정**: `SUBSTR(s, start, len)`에서 start는 **1부터** 시작 (Oracle). `SUBSTR('SQLD', 0, 2)`는 'SQ' (0과 1을 같게 취급).
+> 🔑 **암기법**: 단일행(1→1), 집계(N→1), 분석(N→N)
 
-## 숫자 함수
+## 2. 문자 함수 ⭐⭐⭐
 
-| 함수 | 동작 | 예 |
-|---|---|---|
-| `ROUND(n, d)` | 반올림 | `ROUND(3.456, 1) = 3.5` |
-| `TRUNC(n, d)` | 절사 (버림) | `TRUNC(3.999, 0) = 3` |
-| `CEIL(n)` | 올림 (큰 값 방향) | `CEIL(-3.2) = -3`, `CEIL(3.2) = 4` |
-| `FLOOR(n)` | 내림 (작은 값 방향) | `FLOOR(-3.2) = -4`, `FLOOR(3.2) = 3` |
-| `MOD(a, b)` | 나머지 | `MOD(10, 3) = 1` |
-| `ABS(n)` | 절대값 | `ABS(-5) = 5` |
-| `SIGN(n)` | 부호 (-1, 0, 1) | `SIGN(-3) = -1` |
-| `POWER(n, m)` | 거듭제곱 | `POWER(2, 10) = 1024` |
-| `SQRT(n)` | 제곱근 | `SQRT(16) = 4` |
+| 함수 | 동작 | 예 | 결과 |
+|---|---|---|---|
+| `LENGTH(s)` | 문자 수 | `LENGTH('SQLD')` | `4` |
+| `LENGTHB(s)` | 바이트 수 | `LENGTHB('한글')` (UTF-8) | `6` |
+| `UPPER/LOWER(s)` | 대소문자 | `UPPER('sql')` | `'SQL'` |
+| `INITCAP(s)` | 첫 글자만 대문자 | `INITCAP('hello world')` | `'Hello World'` |
+| `SUBSTR(s, start, len)` | 부분 추출 (1-based) | `SUBSTR('SQLD', 2, 2)` | `'QL'` |
+| `INSTR(s, sub)` | 위치 검색 (없으면 0) | `INSTR('SQLD', 'D')` | `4` |
+| `REPLACE(s, old, new)` | 치환 | `REPLACE('AAA', 'A', 'B')` | `'BBB'` |
+| `LPAD(s, n, c)` | 좌측 패딩 (**전체 길이 n**) | `LPAD('1', 3, '0')` | `'001'` |
+| `RPAD(s, n, c)` | 우측 패딩 | `RPAD('1', 3, '0')` | `'100'` |
+| `LTRIM/RTRIM/TRIM` | 좌/우/양쪽 제거 | `TRIM(' AB ')` | `'AB'` |
+| `\|\| 또는 CONCAT` | 결합 | `'A' \|\| 'B'` | `'AB'` |
 
-> 💡 **CEIL vs FLOOR 음수 함정**: CEIL은 더 큰 값(0 방향), FLOOR는 더 작은 값(-∞ 방향).
+> 🚨 **SUBSTR 함정**: 1-based! `SUBSTR('SQLD', 1, 2)` = 'SQ' (0이 아닌 1부터)
 
-## 날짜 함수
+> 🚨 **LPAD/RPAD 함정**: 길이는 **결과 전체 길이** (잘림 가능)
+> `LPAD('1234', 3, '0')` = `'123'` (3자리로 잘림)
+
+## 3. 숫자 함수 ⭐⭐⭐
+
+| 함수 | 동작 | 예 | 결과 |
+|---|---|---|---|
+| `ROUND(n, d)` | 반올림 | `ROUND(3.456, 1)` | `3.5` |
+| `TRUNC(n, d)` | 절사 (버림) | `TRUNC(3.999, 0)` | `3` |
+| `CEIL(n)` | 올림 (큰 값) | `CEIL(-3.2)` | `-3` |
+| `FLOOR(n)` | 내림 (작은 값) | `FLOOR(-3.2)` | `-4` |
+| `MOD(a, b)` | 나머지 | `MOD(10, 3)` | `1` |
+| `ABS(n)` | 절대값 | `ABS(-5)` | `5` |
+| `SIGN(n)` | 부호 (-1, 0, 1) | `SIGN(-3)` | `-1` |
+| `POWER(n, m)` | 거듭제곱 | `POWER(2, 10)` | `1024` |
+| `SQRT(n)` | 제곱근 | `SQRT(16)` | `4` |
+
+> 🚨 **CEIL vs FLOOR 음수 함정** ⭐
+> - CEIL(-3.2) = **-3** (더 큰 값, 0 방향)
+> - FLOOR(-3.2) = **-4** (더 작은 값, -∞ 방향)
+
+> 🔑 **암기법: "씰이 위로"** (CEIL = Ceiling = 천장)
+
+## 4. 날짜 함수 ⭐⭐
 
 | 함수 | 동작 |
 |---|---|
-| `SYSDATE` | 현재 일시 (DB 서버) |
+| `SYSDATE` | 현재 일시 (서버) |
 | `CURRENT_DATE` | 현재 날짜 (세션 시간대) |
 | `SYSTIMESTAMP` | 현재 타임스탬프 |
 | `ADD_MONTHS(d, n)` | n개월 후 |
 | `MONTHS_BETWEEN(d1, d2)` | 월 차이 (소수 포함) |
 | `NEXT_DAY(d, '월요일')` | 다음 특정 요일 |
 | `LAST_DAY(d)` | 해당 월의 마지막 날 |
-| `TRUNC(d, 'MM')` | 해당 월의 1일 |
+| `TRUNC(d, 'MM')` | 월 첫날로 절사 |
 | `EXTRACT(YEAR FROM d)` | 연도 추출 |
 
-```sql
-SELECT
-  SYSDATE,                              -- 2026-05-14 13:00:00
-  ADD_MONTHS(SYSDATE, 3),               -- 2026-08-14
-  MONTHS_BETWEEN(DATE '2026-12-31', SYSDATE),
-  TRUNC(SYSDATE, 'MM'),                 -- 2026-05-01
-  EXTRACT(YEAR FROM SYSDATE)            -- 2026
-FROM dual;
-```
-
-### 날짜 연산
+### 날짜 연산 ⭐
 
 | 연산 | 결과 |
 |---|---|
 | `DATE + 숫자` | DATE (N일 후) |
 | `DATE - 숫자` | DATE |
 | `DATE - DATE` | **숫자 (일 차이)** |
-| `DATE + DATE` | ✗ (에러) |
+| `DATE + DATE` | ✗ **에러** |
 
-## 변환 함수
+```sql
+SELECT
+  SYSDATE,                              -- 2026-05-14 13:00:00
+  SYSDATE + 7,                          -- 7일 후
+  ADD_MONTHS(SYSDATE, 3),               -- 3개월 후
+  TO_DATE('2026-12-31') - SYSDATE,      -- 일 차이 (숫자)
+  MONTHS_BETWEEN('2026-12-31', SYSDATE),
+  TRUNC(SYSDATE, 'MM'),                 -- 2026-05-01
+  EXTRACT(YEAR FROM SYSDATE)            -- 2026
+FROM dual;
+```
+
+> 🚨 **함정**: `DATE + DATE`는 불가능. `DATE - DATE`만 가능.
+
+## 5. 변환 함수 ⭐⭐⭐
 
 | 함수 | 동작 |
 |---|---|
 | `TO_CHAR(n/d, fmt)` | 숫자/날짜 → 문자 |
-| `TO_NUMBER(s)` | 문자 → 숫자 |
+| `TO_NUMBER(s, fmt?)` | 문자 → 숫자 |
 | `TO_DATE(s, fmt)` | 문자 → 날짜 |
 
+### 변환 예시
+
 ```sql
-TO_CHAR(SYSDATE, 'YYYY-MM-DD')        -- '2026-05-14'
-TO_CHAR(1234567, '999,999,999')        -- '  1,234,567'
-TO_NUMBER('1,234', '9,999')            -- 1234
-TO_DATE('2026-05-14', 'YYYY-MM-DD')    -- DATE 값
+-- 숫자 → 문자
+TO_CHAR(1234567, '999,999,999')    -- '  1,234,567'
+TO_CHAR(1234.5, '999.99')          -- '1234.50'
+
+-- 날짜 → 문자
+TO_CHAR(SYSDATE, 'YYYY-MM-DD')     -- '2026-05-14'
+TO_CHAR(SYSDATE, 'YYYY/MM/DD HH24:MI:SS')
+
+-- 문자 → 숫자
+TO_NUMBER('1234')                  -- 1234
+TO_NUMBER('1,234', '9,999')        -- 1234
+
+-- 문자 → 날짜
+TO_DATE('2026-05-14', 'YYYY-MM-DD')
 ```
 
-날짜 포맷 코드:
+### 날짜 포맷 코드 ⭐
 
-| 코드 | 의미 | 예 |
-|---|---|---|
-| `YYYY` | 4자리 연도 | 2026 |
-| `MM` | 월 (01~12) | 05 |
-| `DD` | 일 (01~31) | 14 |
-| `HH24` | 24시간 시간 | 13 |
-| `MI` | 분 | 30 |
-| `SS` | 초 | 45 |
-| `D` | 요일 (1=일, 7=토) | 4 |
-| `DAY` | 요일명 | '수요일' |
+| 코드 | 의미 |
+|---|---|
+| `YYYY` | 4자리 연도 |
+| `YY` | 2자리 연도 |
+| `MM` | 월 (01~12) |
+| `DD` | 일 (01~31) |
+| `HH24` | 24시간 시간 |
+| `HH12` | 12시간 |
+| `MI` | 분 |
+| `SS` | 초 |
+| `D` | 요일 (1=일, 7=토) |
+| `DAY` | 요일명 (월요일) |
+| `DY` | 요일 약어 (월) |
 
-## 묵시적 형변환 함정
+> 🔑 **암기법**: **YYYY-MM-DD HH24:MI:SS** (대문자 + 시간은 HH24)
 
-> ⚠️ **시험 빈출**
+## 6. 묵시적 형변환 (Implicit Conversion) ⚠️
+
+DBMS가 자동으로 타입을 변환하는 것. **인덱스 무력화** 위험.
 
 ```sql
--- empno가 NUMBER 컬럼일 때
-WHERE empno = '7369'    -- '7369' → 7369로 묵시적 변환 (인덱스 무력화 위험)
+-- empno는 NUMBER 타입
+WHERE empno = '7369'   -- 묵시적: '7369' → 7369로 변환
 
--- 권장: 명시적 변환
+-- 권장: 명시적
 WHERE empno = TO_NUMBER('7369')
--- 또는 애초에 같은 타입으로
+
+-- 더 권장: 같은 타입으로 비교
 WHERE empno = 7369
 ```
 
-## 시험 빈출 포인트
+> 📌 **시험 빈출**: 묵시적 형변환은 **인덱스 사용을 막을 수 있다**.
 
-> 📌 **자주 출제**
-> - `SUBSTR`은 1-based
-> - `LPAD/RPAD`의 길이 = 결과 **전체** 길이
-> - `CEIL(-3.2) = -3`, `FLOOR(-3.2) = -4`
-> - `DATE - DATE`는 숫자(일)
-> - `MOD(a, b)` 나머지
-> - 묵시적 형변환은 인덱스 무력화 위험
-> - `NULL`에 함수 적용 → 보통 NULL 반환
+## 7. ⚠️ 자주 틀리는 함정 종합
+
+1. **`SUBSTR(s, 0, 2)` = ?**
+   → 'SQ' (Oracle은 0과 1을 같게 취급)
+
+2. **`LPAD('12345', 3, '0')` = ?**
+   → `'123'` (전체 길이 3이라 잘림)
+
+3. **`CEIL(-3.2)` = ?**
+   → `-3` (더 큰 값)
+
+4. **`FLOOR(-3.2)` = ?**
+   → `-4` (더 작은 값)
+
+5. **`DATE + DATE`** → ✗ 에러
+
+6. **`MOD(10, 3)` = ?**
+   → 1 (나머지)
+
+7. **`TO_DATE('14-MAY-26')`** → 포맷 미지정 시 NLS 설정 의존 (위험)
+
+8. **`NVL(컬럼, 0)`** + 인덱스 → 묵시적 함수 적용으로 인덱스 무력화 위험
+
+## 8. 📝 기출 출제 패턴
+
+### 패턴 A: 문자 함수 결과 ⭐
+> \"다음 함수 결과 중 옳지 않은 것은?\"
+- SUBSTR의 1-based, LPAD/RPAD의 길이 함정
+
+### 패턴 B: 숫자 함수 결과 ⭐
+> \"다음 결과로 옳은 것은?\"
+- CEIL/FLOOR 음수, MOD, ROUND/TRUNC
+
+### 패턴 C: 날짜 연산
+> \"두 날짜를 빼면?\"
+- 일 차이 숫자
+
+### 패턴 D: 변환 함수
+> \"TO_CHAR, TO_DATE의 포맷\"
+
+## 9. 🔑 암기법 종합
+
+| 항목 | 암기법 |
+|---|---|
+| 함수 분류 | **단일행·집계·분석** |
+| SUBSTR | **1-based** (1부터 시작) |
+| LPAD/RPAD | **전체 길이** (잘릴 수 있음) |
+| CEIL | **\"천장\" (더 큼)** |
+| FLOOR | **\"바닥\" (더 작음)** |
+| 음수에서 CEIL | **-3.2 → -3** (0 방향) |
+| 음수에서 FLOOR | **-3.2 → -4** (-∞ 방향) |
+| DATE 연산 | **DATE-DATE만 가능** (DATE+DATE ✗) |
+| 변환 함수 | **TO_CHAR, TO_NUMBER, TO_DATE** |
+
+## 10. 📌 시험 합격 핵심 요약
+
+> **시험장 입실 5분 전 점검**
+
+✅ **문자 함수 함정**:
+   - SUBSTR(s, 1, 2): 1번부터 2자
+   - LPAD('1', 5, '0'): '00001' (전체 5자)
+   - INSTR: 없으면 0
+
+✅ **숫자 함수 음수 함정**:
+   - CEIL(-3.2) = **-3** (큰 값)
+   - FLOOR(-3.2) = **-4** (작은 값)
+   - ROUND(3.456, 1) = 3.5
+   - TRUNC(3.999, 0) = 3
+   - MOD(10, 3) = 1
+
+✅ **날짜 연산**:
+   - DATE + 숫자 = DATE
+   - DATE - DATE = **숫자 (일)**
+   - DATE + DATE = **불가**
+
+✅ **묵시적 형변환**: 인덱스 무력화 위험, 명시적 변환 권장
+
+✅ **포맷 코드**: YYYY-MM-DD HH24:MI:SS (HH24 사용)
+
+✅ **NULL 처리**:
+   - 대부분 함수에 NULL 입력 → NULL 반환
+   - NVL/COALESCE로 대체값

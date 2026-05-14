@@ -4,49 +4,62 @@ title: DDL · DML · DCL · TCL
 subject: 2
 category: DDL/DML/DCL
 order: 8
-description: SQL 명령어 4분류와 DELETE vs TRUNCATE
-relatedQuestions: [q-019]
+description: SQL 명령어의 4대 분류와 DELETE vs TRUNCATE 차이.
+relatedQuestions: [q-019, q-082, q-083, q-084, q-085]
 ---
 
-## 4가지 분류
+## 1. SQL 명령어의 4대 분류 ⭐⭐⭐
 
 | 분류 | 풀네임 | 명령어 |
 |---|---|---|
-| **DDL** | Data Definition | CREATE, ALTER, DROP, **TRUNCATE**, RENAME |
-| **DML** | Data Manipulation | SELECT, INSERT, UPDATE, **DELETE**, MERGE |
-| **DCL** | Data Control | GRANT, REVOKE |
-| **TCL** | Transaction Control | COMMIT, ROLLBACK, SAVEPOINT |
+| **DDL** | **D**ata **D**efinition **L**anguage | CREATE, ALTER, DROP, **TRUNCATE**, RENAME |
+| **DML** | **D**ata **M**anipulation **L**anguage | SELECT, INSERT, UPDATE, **DELETE**, MERGE |
+| **DCL** | **D**ata **C**ontrol **L**anguage | GRANT, REVOKE |
+| **TCL** | **T**ransaction **C**ontrol **L**anguage | COMMIT, ROLLBACK, SAVEPOINT |
 
-## DDL의 자동 커밋
+> 🔑 **암기법: "DDL·DML·DCL·TCL = 정의·조작·권한·트랜잭션"**
 
-> DDL은 실행과 동시에 자동 COMMIT된다.
+> 🔑 **DDL 명령**: \"**CADRT-R**\" — Create·Alter·Drop·Rename·Truncate
 
-DDL 직전의 DML 변경사항도 함께 커밋된다는 점을 주의.
+> 🔑 **DML 명령**: \"**SIUDM**\" — Select·Insert·Update·Delete·Merge
 
-## DELETE vs TRUNCATE vs DROP
+## 2. DDL — 데이터 정의어 ⭐⭐
 
-| | DELETE | TRUNCATE | DROP |
-|---|---|---|---|
-| **분류** | DML | DDL | DDL |
-| **대상** | 행 | 행 (전체) | 객체 자체 |
-| **WHERE** | O | X | X |
-| **ROLLBACK** | 가능 | 불가 | 불가 |
-| **속도** | 느림 | 빠름 | 빠름 |
-| **저장공간** | 유지 | 해제 (HWM 리셋) | 해제 |
-| **트리거** | 발동 | 미발동 | 미발동 |
+### 주요 명령
 
-## INSERT
+| 명령 | 동작 |
+|---|---|
+| `CREATE` | 객체 생성 (테이블, 인덱스, 뷰, 시퀀스...) |
+| `ALTER` | 객체 변경 (컬럼 추가/수정, 제약 변경) |
+| `DROP` | 객체 삭제 (구조까지) |
+| `TRUNCATE` | 테이블 데이터 전체 삭제 (구조 유지) |
+| `RENAME` | 이름 변경 |
+
+### 🚨 DDL의 자동 커밋
+
+> **DDL은 실행과 동시에 자동 COMMIT** 된다. 직전 DML 변경사항도 함께 커밋된다.
+
+```sql
+UPDATE emp SET sal = 0;        -- 미커밋 DML
+CREATE TABLE backup AS SELECT * FROM emp;  -- DDL → 자동 COMMIT!
+ROLLBACK;                       -- 효과 없음 (UPDATE 이미 커밋됨)
+```
+
+> 📌 **시험 빈출**: \"DDL은 ROLLBACK 가능\" → ✗ (PostgreSQL 제외)
+
+## 3. DML — 데이터 조작어 ⭐⭐
+
+### INSERT
 
 ```sql
 -- 단일 행
 INSERT INTO emp (empno, ename) VALUES (100, '홍길동');
 
--- 다른 테이블에서
-INSERT INTO emp_archive
-SELECT * FROM emp WHERE hiredate < DATE '2020-01-01';
+-- 다중 행
+INSERT INTO emp SELECT * FROM emp_temp;
 ```
 
-## UPDATE
+### UPDATE
 
 ```sql
 UPDATE emp
@@ -54,22 +67,195 @@ SET sal = sal * 1.1, comm = NULL
 WHERE deptno = 10;
 ```
 
-## MERGE
+### DELETE
+
+```sql
+DELETE FROM emp WHERE empno = 100;
+DELETE FROM emp;  -- 전체 (WHERE 없이)
+```
+
+### MERGE (UPSERT)
 
 ```sql
 MERGE INTO target t
 USING source s ON (t.id = s.id)
-WHEN MATCHED THEN UPDATE SET t.name = s.name
-WHEN NOT MATCHED THEN INSERT (id, name) VALUES (s.id, s.name);
+WHEN MATCHED THEN
+  UPDATE SET t.name = s.name
+WHEN NOT MATCHED THEN
+  INSERT (id, name) VALUES (s.id, s.name);
 ```
 
-## 제약조건 (Constraints)
+## 4. DELETE vs TRUNCATE vs DROP ⭐⭐⭐ (시험 1순위)
 
-| 제약 | 의미 |
+| 구분 | DELETE | TRUNCATE | DROP |
+|---|---|---|---|
+| **분류** | DML | **DDL** | DDL |
+| **대상** | 행 (조건부 가능) | 행 (전체) | 객체 자체 |
+| **WHERE** | ○ | ✗ | ✗ |
+| **ROLLBACK** | ○ | **✗** (Auto Commit) | ✗ |
+| **속도** | 느림 (로그) | **빠름** | 빠름 |
+| **저장공간** | 유지 | **해제** (HWM 리셋) | 해제 |
+| **트리거** | 발동 | **미발동** | — |
+| **인덱스** | 유지 | 유지 | 삭제 |
+| **제약조건** | 유지 | 유지 | 삭제 |
+
+> 🔑 **암기법**: 
+> - **DELETE**: \"D**M**L, 조건부, 느림, ROLLBACK ○\"
+> - **TRUNCATE**: \"D**D**L, 전체, 빠름, ROLLBACK ✗\"
+> - **DROP**: \"D**D**L, 객체 삭제, 모든 것 사라짐\"
+
+## 5. DCL — 데이터 제어어 ⭐
+
+### GRANT / REVOKE
+
+```sql
+-- 권한 부여
+GRANT SELECT ON emp TO scott;
+GRANT SELECT, INSERT, UPDATE ON emp TO scott;
+GRANT ALL ON emp TO scott;
+
+-- 권한 회수
+REVOKE INSERT ON emp FROM scott;
+```
+
+### WITH GRANT OPTION ⭐
+
+권한을 받은 사용자가 **다른 사용자에게 재부여** 가능.
+
+```sql
+GRANT SELECT ON emp TO A WITH GRANT OPTION;
+-- A는 다른 사용자 B에게 SELECT 권한 재부여 가능
+```
+
+> 📌 REVOKE 시 **연쇄 회수** (A 회수 → B도 자동 회수)
+
+### 권한 종류
+
+| 종류 | 설명 |
 |---|---|
-| PRIMARY KEY | 유일 + NOT NULL |
-| UNIQUE | 유일 (NULL 허용) |
-| NOT NULL | NULL 불허 |
-| CHECK | 값 범위 제한 |
-| FOREIGN KEY | 참조 무결성 |
-| DEFAULT | 기본값 |
+| **시스템 권한** | DBA, CREATE TABLE, CREATE SESSION 등 |
+| **객체 권한** | 특정 테이블에 SELECT/INSERT 등 |
+
+### 역할 (ROLE)
+
+권한 묶음.
+
+```sql
+CREATE ROLE app_user;
+GRANT SELECT, INSERT ON emp TO app_user;
+GRANT app_user TO scott;
+```
+
+## 6. TCL — 트랜잭션 제어어 ⭐⭐
+
+| 명령 | 동작 |
+|---|---|
+| `COMMIT` | 변경 확정 |
+| `ROLLBACK` | 변경 취소 (트랜잭션 시작 또는 마지막 COMMIT까지) |
+| `ROLLBACK TO savepoint` | 저장점까지만 취소 |
+| `SAVEPOINT name` | 저장점 표시 |
+| `SET TRANSACTION` | 격리 수준 설정 등 |
+
+```sql
+BEGIN;                              -- (DBMS에 따라 자동)
+UPDATE account SET balance = balance - 100 WHERE id = 1;
+SAVEPOINT s1;
+UPDATE account SET balance = balance + 100 WHERE id = 2;
+
+-- 오류 시
+ROLLBACK TO s1;                     -- s1까지만 되돌리기
+-- 또는
+ROLLBACK;                           -- 전체 취소
+
+COMMIT;                             -- 확정
+```
+
+## 7. 제약조건 (Constraints) 종합 ⭐⭐
+
+| 제약 | 무결성 | NULL | 중복 |
+|---|---|---|---|
+| **PRIMARY KEY** | 개체 | ✗ | ✗ |
+| **FOREIGN KEY** | 참조 | ○ | ○ |
+| **UNIQUE** | 개체 | **○** (여러 NULL OK) | ✗ |
+| **NOT NULL** | NULL | ✗ | ○ |
+| **CHECK** | 도메인 | 조건 의존 | 조건 의존 |
+| **DEFAULT** | 도메인 | — | — |
+
+> 🔑 **암기법: "PFUNCD"** (PK·FK·Unique·Not Null·Check·Default)
+
+## 8. ⚠️ 자주 틀리는 함정
+
+1. **\"TRUNCATE는 DML\"** → ✗ **DDL**
+2. **\"DELETE는 ROLLBACK 불가\"** → ✗ 가능
+3. **\"TRUNCATE는 ROLLBACK 가능\"** → ✗ **불가** (자동 커밋)
+4. **\"DROP은 데이터만 삭제\"** → ✗ **객체 자체** 삭제
+5. **\"INSERT는 DDL\"** → ✗ DML
+6. **\"GRANT는 TCL\"** → ✗ **DCL**
+7. **\"COMMIT은 DCL\"** → ✗ **TCL**
+8. **\"DDL 후에도 ROLLBACK 가능\"** → ✗ DDL이 자동 COMMIT
+
+## 9. 📝 기출 출제 패턴
+
+### 패턴 A: 분류 ⭐ 최빈출
+> \"다음 중 DDL이 아닌 것은?\"
+- DELETE는 DML, TRUNCATE는 DDL
+- INSERT/UPDATE/DELETE는 DML
+
+### 패턴 B: DELETE vs TRUNCATE ⭐ 최빈출
+> \"DELETE와 TRUNCATE의 차이로 옳지 않은 것은?\"
+- WHERE, ROLLBACK, 속도, 트리거 비교
+
+### 패턴 C: 자동 커밋
+> \"DDL의 특징은?\"
+- 자동 COMMIT
+
+### 패턴 D: TCL
+> \"트랜잭션 제어 명령은?\"
+- COMMIT, ROLLBACK, SAVEPOINT
+
+### 패턴 E: WITH GRANT OPTION
+> \"권한을 받은 자가 재부여할 수 있게 하는 옵션은?\"
+
+## 10. 🔑 암기법 종합
+
+| 항목 | 암기법 |
+|---|---|
+| 4대 분류 | **DDL·DML·DCL·TCL** |
+| 풀네임 | **정의·조작·제어·트랜잭션** |
+| DDL 명령 | **CADRT-R** (Create·Alter·Drop·Rename·Truncate) |
+| DML 명령 | **SIUDM** (Select·Insert·Update·Delete·Merge) |
+| DCL 명령 | **GR** (Grant·Revoke) |
+| TCL 명령 | **CRS** (Commit·Rollback·Savepoint) |
+| 제약조건 | **PFUNCD** |
+| DELETE vs TRUNCATE | "DELETE=DML·조건·ROLL OK / TRUNCATE=DDL·전체·ROLL ✗" |
+
+## 11. 📌 시험 합격 핵심 요약
+
+> **시험장 입실 5분 전 점검**
+
+✅ **4대 분류**:
+   - **DDL** (정의): CREATE, ALTER, DROP, **TRUNCATE**, RENAME
+   - **DML** (조작): SELECT, INSERT, UPDATE, **DELETE**, MERGE
+   - **DCL** (제어): GRANT, REVOKE
+   - **TCL** (트랜잭션): COMMIT, ROLLBACK, SAVEPOINT
+
+✅ **DELETE vs TRUNCATE**:
+   | | DELETE | TRUNCATE |
+   |---|---|---|
+   | 분류 | **DML** | **DDL** |
+   | WHERE | ○ | ✗ |
+   | ROLLBACK | ○ | **✗** |
+   | 속도 | 느림 | 빠름 |
+   | 자동 커밋 | ✗ | **○** |
+
+✅ **DDL = 자동 COMMIT**:
+   - 직전 DML 변경사항도 함께 커밋
+   - ROLLBACK 불가
+
+✅ **WITH GRANT OPTION**: 재부여 가능
+
+✅ **빈출 분류 함정**:
+   - TRUNCATE → **DDL**
+   - DELETE → **DML**
+   - COMMIT → **TCL**
+   - GRANT → **DCL**
