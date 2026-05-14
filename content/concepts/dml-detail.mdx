@@ -1,0 +1,325 @@
+---
+slug: dml-detail
+title: DML 심화 (INSERT · UPDATE · DELETE · MERGE)
+subject: 2
+category: DDL/DML/DCL
+order: 11
+description: 데이터 조작어 4가지 상세. 다중행 INSERT, MERGE UPSERT, 서브쿼리 활용.
+relatedQuestions: [q-019, q-083, q-157]
+---
+
+## 1. DML이란?
+
+**DML (Data Manipulation Language, 데이터 조작어)**는 테이블의 데이터를 추가·수정·삭제·조회하는 명령어 집합.
+
+| 명령어 | 동작 |
+|---|---|
+| **SELECT** | 조회 (사실상 DQL로 분리하기도 함) |
+| **INSERT** | 행 추가 |
+| **UPDATE** | 행 수정 |
+| **DELETE** | 행 삭제 |
+| **MERGE** | UPSERT (Update + Insert) |
+
+> 🔑 **암기법: \"SIUDM\"** (Select·Insert·Update·Delete·Merge)
+
+### DML vs DDL 비교
+
+| | DML | DDL |
+|---|---|---|
+| 대상 | **데이터** | 객체 (테이블·인덱스·뷰) |
+| ROLLBACK | **가능** | 불가 (자동 커밋) |
+| 속도 | 일반적 | 빠름 (자동 커밋) |
+| 트리거 | 발동 | — |
+| 로그 | 상세 (UNDO/REDO) | 간단 |
+
+## 2. INSERT 상세 ⭐⭐
+
+### 2-1. 단일 행 INSERT
+
+```sql
+-- 모든 컬럼 명시
+INSERT INTO emp (empno, ename, deptno, sal)
+VALUES (100, '홍길동', 10, 3000);
+
+-- 일부 컬럼만 (나머지는 NULL 또는 DEFAULT)
+INSERT INTO emp (empno, ename)
+VALUES (101, '김철수');
+
+-- 모든 컬럼 (순서대로, 권장하지 않음)
+INSERT INTO emp VALUES (102, '이영희', 'CLERK', NULL, SYSDATE, 2000, NULL, 20);
+```
+
+> ⚠️ 컬럼 목록을 생략하면 **테이블 정의 순서대로** 값 입력. 컬럼 추가 시 깨질 위험.
+
+### 2-2. 다중 행 INSERT (Oracle)
+
+```sql
+-- INSERT ALL
+INSERT ALL
+   INTO emp (empno, ename) VALUES (100, '홍길동')
+   INTO emp (empno, ename) VALUES (101, '김철수')
+   INTO emp (empno, ename) VALUES (102, '이영희')
+SELECT 1 FROM dual;  -- 1번만 실행
+
+-- INSERT FIRST: 조건 분기
+INSERT FIRST
+   WHEN sal >= 3000 THEN INTO high_sal_emp VALUES (...)
+   WHEN sal >= 2000 THEN INTO mid_sal_emp VALUES (...)
+   ELSE INTO low_sal_emp VALUES (...)
+SELECT * FROM emp;
+```
+
+### 2-3. INSERT ... SELECT (복사)
+
+```sql
+-- 다른 테이블에서 복사
+INSERT INTO emp_backup
+SELECT * FROM emp WHERE deptno = 10;
+
+-- 컬럼 매핑
+INSERT INTO emp_summary (deptno, total_sal)
+SELECT deptno, SUM(sal) FROM emp GROUP BY deptno;
+```
+
+### 2-4. 시퀀스 활용
+
+```sql
+INSERT INTO emp (empno, ename)
+VALUES (emp_seq.NEXTVAL, '신규사원');
+```
+
+## 3. UPDATE 상세 ⭐⭐
+
+### 3-1. 단일 컬럼 UPDATE
+
+```sql
+UPDATE emp
+SET sal = sal * 1.1
+WHERE deptno = 10;
+```
+
+### 3-2. 다중 컬럼 UPDATE
+
+```sql
+UPDATE emp
+SET sal = sal * 1.1,
+    comm = comm + 100,
+    last_update = SYSDATE
+WHERE deptno = 10;
+```
+
+### 3-3. 서브쿼리 활용 UPDATE
+
+```sql
+-- 부서 평균 급여로 갱신
+UPDATE emp e
+SET sal = (
+   SELECT AVG(sal) FROM emp WHERE deptno = e.deptno
+)
+WHERE deptno IN (10, 20);
+
+-- 다중 컬럼을 한 번에
+UPDATE emp e
+SET (sal, comm) = (
+   SELECT AVG(sal), AVG(comm) FROM emp WHERE deptno = e.deptno
+)
+WHERE deptno IN (10, 20);
+```
+
+### 3-4. WHERE 절 누락 함정 ⚠️
+
+```sql
+-- ✗ 모든 행 갱신!
+UPDATE emp SET sal = 0;
+
+-- ✓ 조건 명시
+UPDATE emp SET sal = 0 WHERE empno = 999;
+```
+
+## 4. DELETE 상세 ⭐⭐
+
+### 4-1. 조건부 DELETE
+
+```sql
+DELETE FROM emp WHERE empno = 100;
+DELETE FROM emp WHERE deptno = 30 AND sal < 1000;
+```
+
+### 4-2. 서브쿼리 활용 DELETE
+
+```sql
+-- 부서 평균보다 낮은 사원 삭제
+DELETE FROM emp e
+WHERE sal < (
+   SELECT AVG(sal) FROM emp WHERE deptno = e.deptno
+);
+```
+
+### 4-3. 전체 DELETE vs TRUNCATE
+
+```sql
+-- DELETE: 행 단위, ROLLBACK 가능, 느림
+DELETE FROM emp;
+
+-- TRUNCATE: DDL, 자동 커밋, 빠름
+TRUNCATE TABLE emp;
+```
+
+| | DELETE | TRUNCATE |
+|---|---|---|
+| 분류 | **DML** | **DDL** |
+| WHERE | 가능 | 불가 |
+| ROLLBACK | 가능 | **불가** |
+| 속도 | 느림 (로그) | **빠름** |
+| 저장공간 | 유지 | 해제 (HWM 리셋) |
+| 트리거 | 발동 | 미발동 |
+
+### 4-4. 참조 무결성과 DELETE
+
+```sql
+-- 부모 행 삭제 시 자식 처리
+ON DELETE CASCADE     -- 자식도 함께 삭제
+ON DELETE SET NULL    -- 자식의 FK = NULL
+ON DELETE NO ACTION   -- (기본) 자식 있으면 차단
+```
+
+## 5. MERGE (UPSERT) ⭐⭐⭐
+
+**MERGE**: 조건에 따라 UPDATE 또는 INSERT를 **한 문장**에 처리. 대량 ETL의 핵심 도구.
+
+### 5-1. 기본 구문
+
+```sql
+MERGE INTO target t
+USING source s ON (t.id = s.id)
+WHEN MATCHED THEN
+   UPDATE SET t.name = s.name, t.updated_at = SYSDATE
+WHEN NOT MATCHED THEN
+   INSERT (id, name, created_at)
+   VALUES (s.id, s.name, SYSDATE);
+```
+
+### 5-2. WHEN MATCHED 안에 DELETE
+
+```sql
+MERGE INTO target t
+USING source s ON (t.id = s.id)
+WHEN MATCHED THEN
+   UPDATE SET t.name = s.name
+   DELETE WHERE t.flag = 'X'   -- UPDATE 후 조건 만족 시 삭제
+WHEN NOT MATCHED THEN
+   INSERT (id, name) VALUES (s.id, s.name);
+```
+
+### 5-3. 한쪽만 작성 가능 (Oracle 10g+)
+
+```sql
+-- UPDATE만 (NOT MATCHED 생략)
+MERGE INTO target t USING source s ON (t.id = s.id)
+WHEN MATCHED THEN UPDATE SET t.name = s.name;
+
+-- INSERT만
+MERGE INTO target t USING source s ON (t.id = s.id)
+WHEN NOT MATCHED THEN INSERT (id, name) VALUES (s.id, s.name);
+```
+
+### 5-4. MERGE의 활용
+
+- 대량 ETL (Extract-Transform-Load)
+- 데이터 동기화 (소스 → 타겟)
+- 임시 테이블에서 운영 테이블로 반영
+
+## 6. DML과 트랜잭션
+
+**모든 DML은 ROLLBACK 가능**. COMMIT 전까지 임시 변경 상태.
+
+```sql
+BEGIN;
+INSERT INTO emp VALUES (...);
+UPDATE emp SET sal = ... WHERE ...;
+DELETE FROM emp WHERE ...;
+-- ROLLBACK;  ← 모두 취소
+COMMIT;       -- 확정
+```
+
+> ⚠️ DDL 실행 시 **자동 COMMIT**되어 직전 DML이 함께 커밋됨. ROLLBACK 불가.
+
+## 7. ⚠️ 자주 틀리는 함정
+
+1. **\"WHERE 없는 UPDATE/DELETE는 자동 차단\"** → ✗ 모든 행 처리됨
+2. **\"DELETE 후 자동 COMMIT\"** → ✗ DML이라 명시적 COMMIT 필요
+3. **\"INSERT ... SELECT는 DDL\"** → ✗ DML
+4. **\"TRUNCATE는 DML\"** → ✗ DDL
+5. **\"MERGE는 INSERT/UPDATE 둘 다 작성 필수\"** → ✗ 한쪽만 가능 (10g+)
+6. **\"DELETE는 트리거 발동 안 함\"** → ✗ 발동
+7. **\"UPDATE의 SET 절에 서브쿼리 불가\"** → ✗ 가능
+8. **\"DML 실행 시 자동 시퀀스 ID 발급\"** → ✗ NEXTVAL 명시 필요
+
+## 8. 📝 기출 출제 패턴
+
+### 패턴 A: DML 분류 ⭐
+> \"다음 중 DML이 아닌 것은?\"
+- INSERT/UPDATE/DELETE/MERGE는 DML
+- TRUNCATE → DDL
+
+### 패턴 B: MERGE 동작
+> \"MERGE 문에 대한 설명으로 옳지 않은 것은?\"
+- WHEN MATCHED/NOT MATCHED 분기
+- DELETE 조건부 가능
+- 한쪽만 작성 가능
+
+### 패턴 C: DELETE vs TRUNCATE ⭐
+> \"DELETE와 TRUNCATE의 차이로 옳지 않은 것은?\"
+- 분류, WHERE, ROLLBACK, 속도, 트리거
+
+### 패턴 D: 서브쿼리 UPDATE
+> \"UPDATE에 서브쿼리를 활용한 올바른 구문은?\"
+
+## 9. 🔑 암기법 종합
+
+| 항목 | 암기법 |
+|---|---|
+| DML 5종 | **SIUDM** (Select·Insert·Update·Delete·Merge) |
+| INSERT 종류 | **단·다·복·시** (단일·다중·복사·시퀀스) |
+| MERGE | \"UPSERT = UPdate + inSERT\" |
+| DELETE vs TRUNCATE | \"DELETE=DML로그·ROLLBACK / TRUNCATE=DDL자동커밋\" |
+| WHERE 함정 | \"WHERE 없으면 전체!\" |
+
+## 10. 📌 시험 합격 핵심 요약
+
+> **시험장 입실 5분 전 점검**
+
+✅ **DML 5종 = SIUDM**:
+   - Select (조회)
+   - Insert (추가)
+   - Update (수정)
+   - Delete (삭제)
+   - **Merge** (UPSERT)
+
+✅ **INSERT**:
+   - VALUES (단일 행)
+   - INSERT ALL / FIRST (다중)
+   - INSERT ... SELECT (복사)
+
+✅ **UPDATE**:
+   - SET col = ... WHERE ...
+   - 다중 컬럼 한 번에
+   - 서브쿼리 가능
+
+✅ **DELETE**:
+   - WHERE로 조건부 삭제
+   - 트리거 발동
+   - ROLLBACK 가능
+
+✅ **MERGE**:
+   - WHEN MATCHED → UPDATE / DELETE
+   - WHEN NOT MATCHED → INSERT
+   - 한쪽만 작성 가능
+
+✅ **DML vs DDL**:
+   - DML: ROLLBACK ○, 명시적 COMMIT 필요
+   - DDL: 자동 COMMIT
+
+✅ **빈출 함정**: \"TRUNCATE는 DML\" → 거짓 (DDL)
+
+✅ **빈출**: \"MERGE는 INSERT와 UPDATE를 한 번에\"

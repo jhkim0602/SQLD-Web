@@ -1,0 +1,285 @@
+---
+slug: tcl-detail
+title: TCL 트랜잭션 제어 (COMMIT · ROLLBACK · SAVEPOINT)
+subject: 2
+category: 트랜잭션/PL-SQL
+order: 11
+description: 트랜잭션 제어 명령어 상세. ROLLBACK TO, 격리 수준 설정, 자동 커밋.
+relatedQuestions: [q-086, q-087, q-161]
+---
+
+## 1. TCL이란?
+
+**TCL (Transaction Control Language, 트랜잭션 제어어)**는 트랜잭션의 **시작·종료·복구·격리**를 제어하는 명령어.
+
+| 명령어 | 동작 |
+|---|---|
+| **COMMIT** | 변경 확정 (영구 저장) |
+| **ROLLBACK** | 변경 취소 |
+| **ROLLBACK TO** | 저장점까지 부분 취소 |
+| **SAVEPOINT** | 저장점 표시 |
+| **SET TRANSACTION** | 격리 수준 설정 |
+
+> 🔑 **암기법: \"CRS\"** (Commit·Rollback·Savepoint)
+
+## 2. 트랜잭션의 시작과 종료
+
+### 트랜잭션 시작
+
+| DBMS | 자동 시작 |
+|---|---|
+| **Oracle** | 첫 DML 실행 시 자동 |
+| **MySQL InnoDB** | 자동 시작 |
+| **SQL Server** | 명시적 `BEGIN TRANSACTION` 필요 |
+| **PostgreSQL** | `BEGIN` 또는 `START TRANSACTION` |
+
+```sql
+-- 명시적 시작 (DBMS에 따라)
+BEGIN;
+-- 또는
+BEGIN TRANSACTION;
+-- 또는
+START TRANSACTION;
+```
+
+### 트랜잭션 종료 조건 (Oracle)
+
+| 종료 원인 | 결과 |
+|---|---|
+| **COMMIT** 실행 | 영구 저장 |
+| **ROLLBACK** 실행 | 모두 취소 |
+| **DDL 실행** | **자동 COMMIT** ⚠️ |
+| **DCL 실행** | 자동 COMMIT |
+| **정상 세션 종료** | 자동 COMMIT (도구 설정 의존) |
+| **비정상 종료** (네트워크 단절, 충돌) | 자동 ROLLBACK |
+
+> ⚠️ **DDL은 자동 COMMIT** — 직전 DML 변경사항까지 함께 커밋되므로 ROLLBACK 불가.
+
+## 3. COMMIT 상세 ⭐⭐
+
+```sql
+INSERT INTO emp VALUES (100, '홍길동');
+UPDATE emp SET sal = 5000 WHERE empno = 100;
+COMMIT;   -- 변경 사항 영구 저장
+```
+
+### COMMIT 시 일어나는 일
+
+1. **모든 변경사항이 영구 저장**
+2. **REDO 로그**에 기록 (장애 복구용)
+3. **다른 트랜잭션이 볼 수 있게** 됨
+4. **락 해제**
+5. **현재 트랜잭션 종료**
+
+### 자동 커밋 vs 명시적 커밋
+
+```sql
+-- 도구 설정에 따라
+SET AUTOCOMMIT ON;   -- 각 DML이 자동 COMMIT
+SET AUTOCOMMIT OFF;  -- 명시적 COMMIT 필요
+
+-- SQL*Plus 기본: OFF
+-- SQL Developer 기본: OFF
+-- JDBC 기본: ON (주의!)
+```
+
+## 4. ROLLBACK 상세 ⭐⭐
+
+트랜잭션 시작 시점 (또는 마지막 COMMIT) 으로 모든 변경 취소.
+
+```sql
+INSERT INTO emp VALUES (100, '홍길동');
+UPDATE emp SET sal = 0;   -- 잘못된 UPDATE
+ROLLBACK;   -- 모두 취소
+```
+
+### ROLLBACK 시 일어나는 일
+
+1. **모든 변경사항 취소**
+2. **UNDO 로그**로 복구
+3. **락 해제**
+4. **현재 트랜잭션 종료**
+
+### DDL과 ROLLBACK 함정 ⚠️
+
+```sql
+UPDATE emp SET sal = 0;                -- 미커밋 DML
+CREATE TABLE backup AS SELECT * FROM emp;  -- DDL → 자동 COMMIT
+ROLLBACK;                               -- 효과 없음! UPDATE 이미 커밋됨
+```
+
+> 📌 **시험 빈출**: \"DDL은 ROLLBACK 가능\" → 거짓
+
+## 5. SAVEPOINT 상세 ⭐⭐⭐
+
+트랜잭션 내 **체크포인트**. 부분 ROLLBACK 가능.
+
+### 5-1. SAVEPOINT 생성과 사용
+
+```sql
+BEGIN;
+INSERT INTO emp VALUES (1, 'A');
+SAVEPOINT sp1;       -- 체크포인트 1
+
+INSERT INTO emp VALUES (2, 'B');
+SAVEPOINT sp2;       -- 체크포인트 2
+
+INSERT INTO emp VALUES (3, 'C');
+
+ROLLBACK TO sp1;     -- sp1까지 되돌리기 (B, C 모두 취소)
+-- 현재 상태: [A]만 남음
+
+INSERT INTO emp VALUES (4, 'D');
+COMMIT;              -- 최종: [A, D]
+```
+
+### 5-2. ROLLBACK TO의 동작
+
+> ⚠️ `ROLLBACK TO sp`: **sp 이후 변경만 취소**, sp 이전 변경(A)은 유지.
+
+```
+시간 →
+[INSERT A] → [SAVEPOINT sp1] → [INSERT B] → [INSERT C]
+                                                    ↓
+                            ROLLBACK TO sp1 ────────┘
+                            ↓
+                         A만 남음 (B, C 취소)
+```
+
+### 5-3. SAVEPOINT 동작 규칙
+
+1. **같은 이름의 SAVEPOINT 재선언** → 기존이 사라지고 새것이 활성
+2. **ROLLBACK TO 이후 SAVEPOINT**는 사라짐 (이후 SAVEPOINT 포함)
+3. **COMMIT 시 모든 SAVEPOINT 사라짐**
+4. **ROLLBACK (전체)** 시 모든 SAVEPOINT 사라짐
+
+### 5-4. RELEASE SAVEPOINT (PostgreSQL/SQL Server)
+
+```sql
+SAVEPOINT sp1;
+... 작업 ...
+RELEASE SAVEPOINT sp1;   -- SAVEPOINT 명시적 제거
+```
+
+> Oracle은 RELEASE SAVEPOINT를 지원하지 않음.
+
+## 6. SET TRANSACTION (격리 수준 설정)
+
+```sql
+-- 격리 수준 설정
+SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
+SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;
+SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+
+-- 읽기 전용 트랜잭션
+SET TRANSACTION READ ONLY;
+
+-- 읽기 쓰기 (기본)
+SET TRANSACTION READ WRITE;
+```
+
+### 격리 수준 4단계
+
+| 수준 | Dirty Read | Non-repeatable | Phantom |
+|---|---|---|---|
+| READ UNCOMMITTED | 발생 | 발생 | 발생 |
+| READ COMMITTED (Oracle 기본) | 차단 | 발생 | 발생 |
+| REPEATABLE READ (MySQL 기본) | 차단 | 차단 | 발생 |
+| SERIALIZABLE | 차단 | 차단 | 차단 |
+
+## 7. 자동 커밋이 일어나는 경우 ⭐
+
+다음 상황에서 트랜잭션이 **자동 COMMIT**됨.
+
+| 상황 | 자동 커밋 |
+|---|---|
+| DDL 실행 (CREATE, ALTER, DROP, TRUNCATE) | **○** |
+| DCL 실행 (GRANT, REVOKE) | **○** |
+| 정상 세션 종료 (도구 의존) | △ |
+| 비정상 종료 (충돌, 단절) | ✗ (자동 ROLLBACK) |
+| AUTOCOMMIT 모드 ON | ○ (각 DML마다) |
+
+> 🔑 **암기법**: \"DDL·DCL·정상종료 → 자동 COMMIT\"
+
+## 8. 트랜잭션의 4대 특성 (ACID)
+
+| 글자 | 영문 | 한글 | 의미 |
+|---|---|---|---|
+| **A** | Atomicity | 원자성 | All or Nothing |
+| **C** | Consistency | 일관성 | 무결성 유지 |
+| **I** | Isolation | 고립성 | 동시 트랜잭션 분리 |
+| **D** | Durability | 지속성 | COMMIT 후 영구 보존 |
+
+> 🔑 **암기법: \"원일고지\"**
+
+## 9. ⚠️ 자주 틀리는 함정
+
+1. **\"COMMIT은 DML\"** → ✗ **TCL**
+2. **\"DDL은 ROLLBACK 가능\"** → ✗ 자동 COMMIT
+3. **\"ROLLBACK TO sp는 sp 이전 변경도 취소\"** → ✗ sp 이후만 취소
+4. **\"SAVEPOINT는 COMMIT 후에도 유지\"** → ✗ COMMIT 시 모두 사라짐
+5. **\"AUTOCOMMIT 기본값은 OFF\"** → △ 도구마다 다름 (JDBC ON)
+6. **\"READ ONLY 트랜잭션에 UPDATE 가능\"** → ✗ 불가
+7. **\"비정상 종료 시 COMMIT 됨\"** → ✗ 자동 ROLLBACK
+8. **\"SAVEPOINT를 RELEASE로 해제\"** → △ Oracle은 미지원
+
+## 10. 📝 기출 출제 패턴
+
+### 패턴 A: TCL 분류 ⭐
+> \"다음 중 TCL 명령어로만 묶인 것은?\"
+- COMMIT, ROLLBACK, SAVEPOINT
+
+### 패턴 B: SAVEPOINT 동작 ⭐
+> \"다음 시나리오의 최종 결과는?\"
+- ROLLBACK TO sp 이후 SAVEPOINT 이전 변경 유지
+
+### 패턴 C: DDL 자동 커밋
+> \"DDL 실행 후 ROLLBACK 가능한가?\"
+- ✗ 자동 COMMIT
+
+### 패턴 D: 격리 수준
+> \"각 격리 수준에서 차단되는 현상은?\"
+
+## 11. 🔑 암기법 종합
+
+| 항목 | 암기법 |
+|---|---|
+| TCL 3종 | **CRS** (Commit·Rollback·Savepoint) |
+| SAVEPOINT 동작 | \"sp 이후만 취소, 이전은 유지\" |
+| 자동 COMMIT 케이스 | \"DDL·DCL·정상종료\" |
+| ACID | **원일고지** (원자·일관·고립·지속) |
+| 격리 4수준 | \"언리·커밋·반복·직렬\" |
+
+## 12. 📌 시험 합격 핵심 요약
+
+> **시험장 입실 5분 전 점검**
+
+✅ **TCL 3종 = CRS**: COMMIT · ROLLBACK · SAVEPOINT
+
+✅ **COMMIT**:
+   - 변경 영구 저장
+   - REDO 로그 기록
+   - 락 해제
+
+✅ **ROLLBACK**:
+   - 변경 취소 (트랜잭션 시작 또는 마지막 COMMIT까지)
+   - UNDO 로그로 복구
+
+✅ **SAVEPOINT + ROLLBACK TO**:
+   - 부분 취소 가능
+   - **sp 이후만 취소, 이전은 유지**
+
+✅ **자동 COMMIT 케이스**:
+   - DDL (CREATE, ALTER, DROP, TRUNCATE)
+   - DCL (GRANT, REVOKE)
+   - 정상 세션 종료 (도구 설정)
+
+✅ **자동 ROLLBACK**: 비정상 종료 (네트워크 단절, 시스템 충돌)
+
+✅ **ACID = 원일고지** (Atomicity, Consistency, Isolation, Durability)
+
+✅ **빈출**: \"COMMIT은 TCL\" (DCL 아님)
+
+✅ **빈출**: \"ROLLBACK TO sp1\" → sp1 이후 변경만 취소
+
+✅ **빈출**: \"DDL은 ROLLBACK 가능?\" → 거짓 (자동 COMMIT)

@@ -1,0 +1,288 @@
+---
+slug: dcl-detail
+title: DCL 권한 관리 (GRANT · REVOKE · ROLE)
+subject: 2
+category: DDL/DML/DCL
+order: 12
+description: 데이터베이스 권한 관리. 시스템/객체 권한, 역할(Role), WITH GRANT OPTION.
+relatedQuestions: [q-085, q-159]
+---
+
+## 1. DCL이란?
+
+**DCL (Data Control Language, 데이터 제어어)**는 데이터베이스 **권한**을 관리하는 명령어 집합. 누가 무엇을 할 수 있는지 통제.
+
+| 명령어 | 동작 |
+|---|---|
+| **GRANT** | 권한 부여 |
+| **REVOKE** | 권한 회수 |
+
+> 🔑 **암기법: \"GR\"** (Grant·Revoke)
+
+## 2. 권한의 종류 ⭐⭐⭐
+
+### 2-1. 시스템 권한 (System Privileges)
+
+DB 전체에 영향을 미치는 권한. **데이터 객체를 생성·관리**하는 권한.
+
+| 권한 | 설명 |
+|---|---|
+| `CREATE SESSION` | DB 접속 |
+| `CREATE TABLE` | 테이블 생성 |
+| `CREATE VIEW` | 뷰 생성 |
+| `CREATE SEQUENCE` | 시퀀스 생성 |
+| `CREATE USER` | 사용자 생성 |
+| `ALTER USER` | 사용자 변경 |
+| `DROP ANY TABLE` | 모든 테이블 삭제 |
+| `SELECT ANY TABLE` | 모든 테이블 조회 |
+
+### 2-2. 객체 권한 (Object Privileges)
+
+특정 객체(테이블·뷰·시퀀스 등)에 대한 권한.
+
+| 권한 | 설명 |
+|---|---|
+| `SELECT` | 조회 |
+| `INSERT` | 추가 |
+| `UPDATE` | 수정 |
+| `DELETE` | 삭제 |
+| `EXECUTE` | 프로시저/함수 실행 |
+| `REFERENCES` | FK 참조 가능 |
+| `INDEX` | 인덱스 생성 |
+| `ALTER` | 객체 변경 |
+| `ALL [PRIVILEGES]` | 위 모든 권한 |
+
+> 💡 **시스템 vs 객체** 구분이 중요. 시험에 자주 나옴.
+
+## 3. GRANT 구문 ⭐⭐⭐
+
+### 3-1. 시스템 권한 부여
+
+```sql
+GRANT CREATE SESSION TO scott;
+GRANT CREATE TABLE, CREATE VIEW TO scott;
+GRANT CREATE SESSION TO PUBLIC;  -- 모든 사용자
+```
+
+### 3-2. 객체 권한 부여
+
+```sql
+GRANT SELECT ON emp TO scott;
+GRANT SELECT, INSERT, UPDATE ON emp TO scott;
+GRANT ALL ON emp TO scott;
+GRANT SELECT (empno, ename) ON emp TO scott;  -- 컬럼 단위 제한
+```
+
+### 3-3. WITH GRANT OPTION (재부여 가능) ⭐
+
+객체 권한을 받은 사용자가 **다른 사용자에게 재부여** 가능.
+
+```sql
+-- A에게 SELECT + 재부여 가능
+GRANT SELECT ON emp TO A WITH GRANT OPTION;
+
+-- A는 이제 B에게 재부여 가능
+-- (A 로그인 후)
+GRANT SELECT ON emp TO B;
+```
+
+### 3-4. WITH ADMIN OPTION (시스템 권한 재부여)
+
+시스템 권한을 받은 사용자가 다른 사용자에게 재부여 가능.
+
+```sql
+GRANT CREATE TABLE TO A WITH ADMIN OPTION;
+```
+
+> 🔑 **차이**: 
+> - **WITH GRANT OPTION** → 객체 권한 재부여
+> - **WITH ADMIN OPTION** → 시스템 권한 재부여
+
+## 4. REVOKE 구문 ⭐
+
+### 4-1. 기본 회수
+
+```sql
+REVOKE SELECT ON emp FROM scott;
+REVOKE SELECT, INSERT ON emp FROM scott;
+REVOKE ALL ON emp FROM scott;
+REVOKE CREATE TABLE FROM scott;
+```
+
+### 4-2. 연쇄 회수 (CASCADE) ⭐
+
+WITH GRANT OPTION으로 부여된 권한 회수 시 **연쇄적으로** B도 회수됨.
+
+```sql
+-- A → B로 권한 재부여한 상태
+REVOKE SELECT ON emp FROM A;
+-- 자동으로 B의 권한도 회수됨!
+```
+
+> ⚠️ **WITH ADMIN OPTION**은 시스템 권한 회수 시 **연쇄 회수 없음** (Oracle 동작). 받은 사람들은 권한 유지.
+
+### 4-3. CASCADE CONSTRAINTS
+
+REFERENCES 권한을 회수할 때 관련 FK 제약도 함께 제거.
+
+```sql
+REVOKE REFERENCES ON dept FROM scott CASCADE CONSTRAINTS;
+```
+
+## 5. ROLE (역할) ⭐⭐
+
+권한들의 **묶음**. 사용자 관리 효율화.
+
+### 5-1. ROLE 생성 및 활용
+
+```sql
+-- ROLE 생성
+CREATE ROLE app_user;
+
+-- ROLE에 권한 부여
+GRANT CREATE SESSION, SELECT ON emp, INSERT ON orders TO app_user;
+
+-- ROLE을 사용자에게 부여
+GRANT app_user TO scott, mary, john;
+
+-- ROLE 회수
+REVOKE app_user FROM scott;
+
+-- ROLE 삭제
+DROP ROLE app_user;
+```
+
+### 5-2. 사전 정의된 ROLE (Oracle)
+
+| ROLE | 설명 |
+|---|---|
+| **CONNECT** | DB 접속 권한 (CREATE SESSION) |
+| **RESOURCE** | 객체 생성 권한 (CREATE TABLE 등) |
+| **DBA** | 모든 시스템 권한 |
+
+```sql
+GRANT CONNECT, RESOURCE TO scott;
+```
+
+### 5-3. ROLE의 장점
+
+- 권한 묶음 관리로 **일관성**
+- 사용자 추가 시 ROLE 하나로 끝
+- 변경 시 ROLE만 수정하면 모든 사용자에 반영
+- 관리자의 **권한 부여 부담** 감소
+
+## 6. 사용자 (USER) 관리
+
+DCL은 아니지만 권한과 함께 자주 다룸.
+
+```sql
+-- 사용자 생성
+CREATE USER scott IDENTIFIED BY tiger;
+
+-- 비밀번호 변경
+ALTER USER scott IDENTIFIED BY new_password;
+
+-- 사용자 잠금
+ALTER USER scott ACCOUNT LOCK;
+
+-- 잠금 해제
+ALTER USER scott ACCOUNT UNLOCK;
+
+-- 사용자 삭제
+DROP USER scott;
+DROP USER scott CASCADE;  -- 사용자가 만든 객체까지 함께 삭제
+```
+
+## 7. 권한 조회 (USER_*, ALL_*, DBA_*)
+
+데이터 사전 뷰로 권한 정보 조회.
+
+```sql
+-- 자신이 받은 시스템 권한
+SELECT * FROM USER_SYS_PRIVS;
+
+-- 자신이 받은 객체 권한
+SELECT * FROM USER_TAB_PRIVS;
+
+-- 자신이 부여한 객체 권한
+SELECT * FROM USER_TAB_PRIVS_MADE;
+
+-- 자신이 받은 ROLE
+SELECT * FROM USER_ROLE_PRIVS;
+
+-- ROLE에 속한 권한
+SELECT * FROM ROLE_TAB_PRIVS WHERE ROLE = 'APP_USER';
+```
+
+## 8. ⚠️ 자주 틀리는 함정
+
+1. **\"GRANT는 DDL\"** → ✗ **DCL**
+2. **\"WITH GRANT OPTION = WITH ADMIN OPTION\"** → ✗ 객체 vs 시스템
+3. **\"REVOKE는 연쇄 회수 안 됨\"** → ✗ WITH GRANT OPTION은 연쇄
+4. **\"PUBLIC은 특정 사용자\"** → ✗ \"모든 사용자\" 의미
+5. **\"ROLE은 권한 1개만 묶을 수 있다\"** → ✗ 여러 개 가능
+6. **\"사용자 생성도 DCL\"** → ✗ CREATE USER는 **DDL**
+7. **\"REVOKE 시 자동 COMMIT 안 됨\"** → ✗ DCL은 자동 COMMIT
+8. **\"DBA만 ROLE을 만들 수 있다\"** → △ CREATE ROLE 권한 있으면 가능
+
+## 9. 📝 기출 출제 패턴
+
+### 패턴 A: 권한 분류
+> \"다음 중 시스템 권한이 아닌 것은?\"
+- CREATE TABLE은 시스템, SELECT ON emp는 객체
+
+### 패턴 B: WITH GRANT OPTION ⭐
+> \"권한을 받은 사용자가 재부여할 수 있게 하는 옵션은?\"
+- 객체 권한: WITH GRANT OPTION
+- 시스템 권한: WITH ADMIN OPTION
+
+### 패턴 C: REVOKE 연쇄
+> \"WITH GRANT OPTION으로 부여한 권한을 회수하면?\"
+- 연쇄 회수됨
+
+### 패턴 D: ROLE
+> \"역할(ROLE)에 대한 설명으로 옳은 것은?\"
+- 권한 묶음, 관리 효율
+
+### 패턴 E: DCL 분류
+> \"DCL 명령어로만 묶인 것은?\"
+- GRANT, REVOKE
+
+## 10. 🔑 암기법 종합
+
+| 항목 | 암기법 |
+|---|---|
+| DCL 2종 | **GR** (Grant·Revoke) |
+| 권한 종류 | **시스템 vs 객체** |
+| 재부여 옵션 | **객체=GRANT OPT, 시스템=ADMIN OPT** |
+| 사전 ROLE | **컨리디** (CONNECT·RESOURCE·DBA) |
+| 연쇄 회수 | **WITH GRANT OPT → CASCADE** |
+
+## 11. 📌 시험 합격 핵심 요약
+
+> **시험장 입실 5분 전 점검**
+
+✅ **DCL 2종 = GR**: GRANT, REVOKE
+
+✅ **권한 2종류**:
+   - **시스템 권한**: DB 전체 (CREATE TABLE, CREATE USER ...)
+   - **객체 권한**: 특정 객체 (SELECT, INSERT, UPDATE, DELETE, EXECUTE ...)
+
+✅ **재부여 옵션**:
+   - **객체 권한**: `WITH GRANT OPTION`
+   - **시스템 권한**: `WITH ADMIN OPTION`
+
+✅ **REVOKE**:
+   - WITH GRANT OPTION 권한은 **연쇄 회수**
+   - WITH ADMIN OPTION 권한은 연쇄 회수 안 됨 (Oracle)
+
+✅ **ROLE**: 권한 묶음, 관리 효율
+   - CREATE ROLE → GRANT 권한 → GRANT ROLE TO user
+   - 사전 정의: CONNECT, RESOURCE, DBA
+
+✅ **PUBLIC**: 모든 사용자
+
+✅ **빈출**: 
+   - \"GRANT는 DCL\"
+   - \"WITH GRANT OPTION = 객체 권한 재부여\"
+   - \"WITH ADMIN OPTION = 시스템 권한 재부여\"

@@ -1,7 +1,7 @@
 {
-  "builtAt": "2026-05-14T08:50:01.222Z",
+  "builtAt": "2026-05-14T09:07:39.792Z",
   "totalQuestions": 170,
-  "totalConcepts": 25,
+  "totalConcepts": 29,
   "questions": [
     {
       "id": "q-001",
@@ -1987,15 +1987,16 @@
       "subject": 1,
       "category": "엔터티",
       "order": 1,
-      "description": "업무에서 관리해야 하는 의미 있는 정보의 집합. 데이터 모델링의 기본 단위.",
+      "description": "업무에서 관리해야 하는 의미 있는 정보의 집합. 데이터 모델링의 가장 기본 단위.",
       "relatedQuestions": [
         "q-001",
         "q-009",
         "q-021",
         "q-022",
-        "q-024"
+        "q-024",
+        "q-108"
       ],
-      "preview": "1. 정의\n\n엔터티(Entity)는 업무 활동에서 관리해야 하는 의미 있는 정보를 가지는 사람·장소·사물·사건·개념의 집합이다. RDBMS에서는 테이블로 구현되며, 한 엔터티는 다수의 인스턴스를 포함한다.\n\n 💡 "
+      "preview": "1. 엔터티란 무엇인가\n\n엔터티(Entity)는 업무 활동에서 사용되거나 관리되는 정보로서, 유일하게 구별되며 영속적으로 존재하는 사물·사람·장소·사건·개념을 의미한다. 데이터 모델링의 가장 기본 단위이며, RDBM"
     },
     {
       "slug": "attribute",
@@ -2003,14 +2004,14 @@
       "subject": 1,
       "category": "속성",
       "order": 2,
-      "description": "엔터티가 관리해야 할 더 이상 분리할 수 없는 가장 작은 정보 단위.",
+      "description": "엔터티에서 관리할 더 이상 분리할 수 없는 가장 작은 정보 단위.",
       "relatedQuestions": [
         "q-002",
         "q-025",
         "q-026",
         "q-027"
       ],
-      "preview": "1. 정의\n\n속성(Attribute)은 엔터티에서 관리할 수 있는 가장 작은 데이터의 의미 단위이다. 더 이상 분리할 수 없으며(원자성), 인스턴스의 특징을 표현한다.\n\n 💡 엔터티는 \\\"무엇\\\"을 관리, 속성은 "
+      "preview": "1. 속성이란?\n\n속성(Attribute)은 엔터티가 가지는 세부 정보 항목으로, 업무에서 필요한 가장 작은 의미의 데이터 단위이다. 더 이상 분리할 수 없는 원자값을 갖는다.\n\n 💡 엔터티가 \\\"무엇\\\"인지를 정"
     },
     {
       "slug": "relationship",
@@ -2018,15 +2019,20 @@
       "subject": 1,
       "category": "관계",
       "order": 3,
-      "description": "엔터티 사이의 연관성. 차수·선택성·식별성으로 표현.",
+      "description": "엔터티 사이의 연관성. 차수·선택성·식별성 세 축으로 표현.",
       "relatedQuestions": [
         "q-003",
         "q-010",
         "q-023",
         "q-028",
-        "q-029"
+        "q-029",
+        "q-091",
+        "q-092",
+        "q-093",
+        "q-094",
+        "q-095"
       ],
-      "preview": "1. 정의\n\n관계(Relationship)는 두 엔터티 간 인스턴스의 페어링(pairing)을 의미한다. 데이터 모델링에서 \\\"누구와 누가 어떻게 연결되는가\\\"를 표현.\n\n\n\n 2. 관계의 3가지 표기 요소 ⭐⭐⭐\n"
+      "preview": "1. 관계란?\n\n관계(Relationship)는 두 엔터티의 인스턴스 사이에서 발생하는 연관성이다. 데이터 모델링에서 \\\"누가 누구와 어떻게 연결되는가\\\"를 표현한다.\n\n 💡 데이터 모델링 = 엔터티 도출 → 속성"
     },
     {
       "slug": "identifier",
@@ -2042,9 +2048,13 @@
         "q-030",
         "q-031",
         "q-032",
-        "q-033"
+        "q-033",
+        "q-100",
+        "q-101",
+        "q-102",
+        "q-103"
       ],
-      "preview": "1. 정의\n\n식별자(Identifier)는 엔터티의 인스턴스를 유일하게 구분할 수 있는 속성 또는 속성의 집합이다. RDBMS에서는 PRIMARY KEY로 구현.\n\n 2. 식별자의 4대 특성 ⭐⭐⭐ (가장 빈출)\n\n"
+      "preview": "1. 식별자란?\n\n식별자(Identifier)는 엔터티의 인스턴스를 유일하게 구분할 수 있는 속성 또는 속성의 집합이다. RDBMS에서는 PRIMARY KEY로 구현된다.\n\n 💡 식별자 없는 엔터티는 데이터 무결성"
     },
     {
       "slug": "normalization",
@@ -2088,6 +2098,16 @@
         "q-082"
       ],
       "preview": "1. 정의\n\n데이터 무결성(Data Integrity)은 데이터베이스에 저장된 데이터의 정확성·일관성·신뢰성을 보장하는 성질이다. 무결성이 깨지면 잘못된 의사결정·시스템 오류로 이어진다.\n\n 💡 무결성 = 데이터 "
+    },
+    {
+      "slug": "rdb-overview",
+      "title": "관계형 데이터베이스 (RDB) 개요",
+      "subject": 1,
+      "category": "모델링 종합",
+      "order": 8,
+      "description": "관계형 데이터베이스의 원리. 릴레이션·튜플·도메인·코드 법칙·OLTP/OLAP.",
+      "relatedQuestions": [],
+      "preview": "1. 관계형 데이터베이스란?\n\n관계형 데이터베이스(RDB, Relational Database)는 데이터를 2차원 표(테이블) 형태로 저장하고 관리하는 데이터베이스. 1970년 IBM의 E.F. Codd 박사가 제안"
     },
     {
       "slug": "case-decode",
@@ -2339,6 +2359,20 @@
       "preview": "1. 정의\n\n뷰(View)는 하나 이상의 테이블이나 다른 뷰에서 도출되는 가상의 테이블. 실제 데이터를 저장하지 않고 SELECT 쿼리만 저장.\n\n\n\n 2. 장점 ⭐\n\n| 장점 | 설명 |\n|---|---|\n| 복잡"
     },
     {
+      "slug": "dml-detail",
+      "title": "DML 심화 (INSERT · UPDATE · DELETE · MERGE)",
+      "subject": 2,
+      "category": "DDL/DML/DCL",
+      "order": 11,
+      "description": "데이터 조작어 4가지 상세. 다중행 INSERT, MERGE UPSERT, 서브쿼리 활용.",
+      "relatedQuestions": [
+        "q-019",
+        "q-083",
+        "q-157"
+      ],
+      "preview": "1. DML이란?\n\nDML (Data Manipulation Language, 데이터 조작어)는 테이블의 데이터를 추가·수정·삭제·조회하는 명령어 집합.\n\n| 명령어 | 동작 |\n|---|---|\n| SELECT |"
+    },
+    {
       "slug": "optimizer",
       "title": "옵티마이저 · 실행계획 · JOIN 처리",
       "subject": 2,
@@ -2349,6 +2383,33 @@
         "q-052"
       ],
       "preview": "1. 옵티마이저란?\n\n옵티마이저(Optimizer)는 SQL을 가장 효율적으로 실행할 방법(실행계획)을 결정하는 DBMS 내부 모듈.\n\n 💡 옵티마이저 = \\\"이 쿼리를 어떤 순서로, 어떤 방식으로 처리할까?\\\" "
+    },
+    {
+      "slug": "tcl-detail",
+      "title": "TCL 트랜잭션 제어 (COMMIT · ROLLBACK · SAVEPOINT)",
+      "subject": 2,
+      "category": "트랜잭션/PL-SQL",
+      "order": 11,
+      "description": "트랜잭션 제어 명령어 상세. ROLLBACK TO, 격리 수준 설정, 자동 커밋.",
+      "relatedQuestions": [
+        "q-086",
+        "q-087",
+        "q-161"
+      ],
+      "preview": "1. TCL이란?\n\nTCL (Transaction Control Language, 트랜잭션 제어어)는 트랜잭션의 시작·종료·복구·격리를 제어하는 명령어.\n\n| 명령어 | 동작 |\n|---|---|\n| COMMIT |"
+    },
+    {
+      "slug": "dcl-detail",
+      "title": "DCL 권한 관리 (GRANT · REVOKE · ROLE)",
+      "subject": 2,
+      "category": "DDL/DML/DCL",
+      "order": 12,
+      "description": "데이터베이스 권한 관리. 시스템/객체 권한, 역할(Role), WITH GRANT OPTION.",
+      "relatedQuestions": [
+        "q-085",
+        "q-159"
+      ],
+      "preview": "1. DCL이란?\n\nDCL (Data Control Language, 데이터 제어어)는 데이터베이스 권한을 관리하는 명령어 집합. 누가 무엇을 할 수 있는지 통제.\n\n| 명령어 | 동작 |\n|---|---|\n| GR"
     }
   ]
 }
