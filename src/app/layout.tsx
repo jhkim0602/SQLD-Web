@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { Nanum_Myeongjo } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/Header";
 import { Sidebar } from "@/components/Sidebar";
@@ -11,6 +12,13 @@ const pretendard = localFont({
   variable: "--font-pretendard",
   display: "swap",
   weight: "45 920",
+});
+
+const nanumMyeongjo = Nanum_Myeongjo({
+  subsets: ["latin"],
+  weight: ["400", "700", "800"],
+  variable: "--font-nanum-myeongjo",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -35,7 +43,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ko" className={pretendard.variable}>
+    <html
+      lang="ko"
+      className={`${pretendard.variable} ${nanumMyeongjo.variable}`}
+    >
       <body className="min-h-screen bg-white text-zinc-900 antialiased">
         <StoreHydration />
         <Header />

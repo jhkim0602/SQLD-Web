@@ -53,15 +53,19 @@ export default async function ArticlePage({
       .filter((q): q is NonNullable<typeof q> => q !== null) ?? [];
 
   return (
-    <article className="prose-ko">
+    <article className="article-page prose-ko">
       <Link
         href="/articles"
-        className="mb-4 inline-block text-xs text-zinc-500 hover:text-zinc-700"
+        className="mb-6 inline-block font-sans text-xs text-zinc-500 hover:text-zinc-700"
+        style={{ fontFamily: "var(--font-sans)" }}
       >
         ← 칼럼 목록
       </Link>
 
-      <div className="mb-4 flex flex-wrap items-center gap-2 text-xs">
+      <div
+        className="mb-6 flex flex-wrap items-center gap-2 text-xs"
+        style={{ fontFamily: "var(--font-sans)" }}
+      >
         <LevelBadge level={article.level} />
         <span className="rounded border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 text-zinc-600">
           {article.topic}
@@ -70,13 +74,9 @@ export default async function ArticlePage({
         <span className="text-zinc-500">{article.readingMinutes}분 읽기</span>
       </div>
 
-      <h1 className="mb-2 text-[2rem] font-bold leading-tight tracking-tight text-zinc-900">
-        {article.title}
-      </h1>
+      <h1 className="article-title mb-3">{article.title}</h1>
       {article.subtitle && (
-        <p className="mb-6 text-[17px] leading-relaxed text-zinc-600">
-          {article.subtitle}
-        </p>
+        <p className="article-subtitle mb-10">{article.subtitle}</p>
       )}
 
       <div className="article-body">
@@ -84,7 +84,10 @@ export default async function ArticlePage({
       </div>
 
       {(relatedConcepts.length > 0 || relatedQuestions.length > 0) && (
-        <section className="mt-12 grid gap-4 border-t border-zinc-200 pt-8 md:grid-cols-2">
+        <section
+          className="mt-16 grid gap-4 border-t border-zinc-200 pt-8 md:grid-cols-2"
+          style={{ fontFamily: "var(--font-sans)" }}
+        >
           {relatedConcepts.length > 0 && (
             <div className="rounded-md border border-zinc-200 bg-zinc-50/50 p-5">
               <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-zinc-500">
@@ -137,7 +140,10 @@ export default async function ArticlePage({
         </section>
       )}
 
-      <nav className="mt-10 flex items-center justify-between border-t border-zinc-200 pt-6 text-sm">
+      <nav
+        className="mt-12 flex items-center justify-between border-t border-zinc-200 pt-6 text-sm"
+        style={{ fontFamily: "var(--font-sans)" }}
+      >
         {prev ? (
           <Link
             href={`/articles/${prev.slug}`}

@@ -2,6 +2,7 @@
 
 @theme {
   --font-sans: var(--font-pretendard), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-serif: var(--font-nanum-myeongjo), "Nanum Myeongjo", "Noto Serif KR", "Apple SD Gothic Neo", Georgia, "Times New Roman", serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
   --color-accent: #2563eb;
@@ -279,4 +280,205 @@ kbd {
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;
   border-radius: 4px;
+}
+
+/* ============================================
+   Articles — 나눔명조 기반 \"논문체\" 칼럼 레이아웃
+   ============================================ */
+.article-page {
+  font-family: var(--font-serif);
+  color: #1f1f1f;
+}
+
+.article-page h1,
+.article-page h2,
+.article-page h3,
+.article-page h4 {
+  font-family: var(--font-serif);
+  letter-spacing: -0.005em;
+}
+
+.article-page .article-title {
+  font-family: var(--font-serif);
+  font-weight: 800;
+  font-size: 2.25rem;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  color: #18181b;
+}
+
+.article-page .article-subtitle {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-style: italic;
+  color: #4b4b52;
+  font-size: 1.125rem;
+  line-height: 1.6;
+}
+
+/* 칼럼 본문 — 길게 읽는 글에 맞춘 가독성 튜닝 */
+.article-body {
+  max-width: 68ch;
+  font-family: var(--font-serif);
+  font-size: 1.0625rem;  /* 17px */
+  line-height: 1.95;
+  color: #232326;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  letter-spacing: 0.005em;
+}
+
+/* article-body 내부의 rendered-md 재정의 */
+.article-body .rendered-md {
+  font-family: var(--font-serif);
+  font-size: 1.0625rem;
+  line-height: 1.95;
+  color: #232326;
+}
+
+.article-body .rendered-md > * + * {
+  margin-top: 1rem;
+}
+
+.article-body .rendered-md p {
+  margin: 1rem 0;
+  text-indent: 0;
+}
+
+/* 단락 첫 자 들여쓰기 — 논문/책 느낌 (h 다음의 첫 p에는 적용 안 함) */
+.article-body .rendered-md h2 + p,
+.article-body .rendered-md h3 + p,
+.article-body .rendered-md blockquote + p,
+.article-body .rendered-md ul + p,
+.article-body .rendered-md ol + p,
+.article-body .rendered-md table + p,
+.article-body .rendered-md pre + p {
+  text-indent: 0;
+}
+.article-body .rendered-md p + p {
+  text-indent: 1.25em;
+}
+
+.article-body .rendered-md h1 {
+  font-family: var(--font-serif);
+  font-size: 1.875rem;
+  font-weight: 800;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  letter-spacing: -0.01em;
+}
+.article-body .rendered-md h2 {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin-top: 2.5rem;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid #e7e5e0;
+  letter-spacing: -0.005em;
+}
+.article-body .rendered-md h3 {
+  font-family: var(--font-serif);
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-top: 1.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.article-body .rendered-md strong {
+  font-weight: 800;
+  color: #18181b;
+}
+
+.article-body .rendered-md em {
+  font-style: italic;
+  color: #3f3f46;
+}
+
+.article-body .rendered-md blockquote {
+  border-left: 3px solid #c6c2b4;
+  background: #faf8f3;
+  padding: 0.9rem 1.25rem;
+  margin: 1.5rem 0;
+  color: #3a3a3a;
+  font-family: var(--font-serif);
+  font-style: italic;
+  border-radius: 0 4px 4px 0;
+}
+.article-body .rendered-md blockquote p {
+  text-indent: 0;
+  margin: 0.4rem 0;
+}
+.article-body .rendered-md blockquote strong {
+  font-style: normal;
+}
+
+.article-body .rendered-md ul,
+.article-body .rendered-md ol {
+  margin: 1rem 0;
+  padding-left: 1.75rem;
+}
+.article-body .rendered-md li {
+  margin: 0.4rem 0;
+  line-height: 1.9;
+}
+.article-body .rendered-md li > p {
+  text-indent: 0;
+  margin: 0.25rem 0;
+}
+
+/* 코드·표는 본문과 톤을 다르게 — 산세리프/모노 유지 */
+.article-body .rendered-md code:not(pre code) {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  background: #f4f1ea;
+  border: 1px solid #e5e0d3;
+  border-radius: 4px;
+  padding: 0.1rem 0.4rem;
+  font-style: normal;
+}
+
+.article-body .rendered-md pre {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  line-height: 1.6;
+  background: #faf8f3 !important;
+  border: 1px solid #e5e0d3;
+  border-radius: 6px;
+  padding: 1rem 1.1rem;
+  margin: 1.5rem 0;
+}
+
+.article-body .rendered-md table {
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  margin: 1.5rem 0;
+  border: 1px solid #e5e0d3;
+}
+.article-body .rendered-md thead {
+  background: #faf8f3;
+}
+.article-body .rendered-md th {
+  font-weight: 700;
+  border: 1px solid #e5e0d3;
+}
+.article-body .rendered-md td {
+  border: 1px solid #e5e0d3;
+}
+.article-body .rendered-md tr:nth-child(even) td {
+  background: #fbfaf6;
+}
+
+.article-body .rendered-md hr {
+  border: 0;
+  border-top: 1px solid #d9d5c8;
+  margin: 2.5rem auto;
+  width: 30%;
+}
+
+/* 칼럼 목록 페이지 — 카드는 산세리프 유지, 제목만 명조 */
+.article-card-title {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  letter-spacing: -0.005em;
 }
