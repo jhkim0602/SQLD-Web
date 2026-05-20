@@ -219,7 +219,7 @@ DBMS는 주기적으로 락 대기 그래프를 검사해 사이클이 있으면
 
 그래서 또 다른 발상이 등장했다. \"각 트랜잭션은 **자기만의 스냅샷**을 본다.\" 데이터를 직접 잠그지 않고, 행마다 \"버전\"을 두어 트랜잭션이 시작한 시점의 버전을 보여준다.
 
-이 방식을 **MVCC(Multi-Version Concurrency Control)** 라 부른다. Oracle·PostgreSQL이 기본 채택했고, MySQL InnoDB·SQL Server도 옵션으로 지원한다.
+이 방식을 **MVCC(Multi-Version Concurrency Control)** 라 부른다. Oracle·PostgreSQL·MySQL InnoDB가 기본 채택했고(MySQL InnoDB는 모든 격리 수준에서 MVCC 기반), SQL Server는 \"Read Committed Snapshot Isolation\" 옵션을 켜야 MVCC가 동작한다.
 
 **MVCC의 동작 예**:
 
