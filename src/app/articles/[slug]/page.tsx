@@ -56,7 +56,7 @@ export default async function ArticlePage({
     <article className="article-page prose-ko">
       <Link
         href="/articles"
-        className="mb-6 inline-block font-sans text-xs text-zinc-500 hover:text-zinc-700"
+        className="mb-6 inline-block font-sans text-xs text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300"
         style={{ fontFamily: "var(--font-sans)" }}
       >
         ← 칼럼 목록
@@ -67,11 +67,11 @@ export default async function ArticlePage({
         style={{ fontFamily: "var(--font-sans)" }}
       >
         <LevelBadge level={article.level} />
-        <span className="rounded border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 text-zinc-600">
+        <span className="rounded border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 px-1.5 py-0.5 text-zinc-600 dark:text-zinc-400">
           {article.topic}
         </span>
-        <span className="text-zinc-400">·</span>
-        <span className="text-zinc-500">{article.readingMinutes}분 읽기</span>
+        <span className="text-zinc-400 dark:text-zinc-500">·</span>
+        <span className="text-zinc-500 dark:text-zinc-400">{article.readingMinutes}분 읽기</span>
       </div>
 
       <h1 className="article-title mb-3">{article.title}</h1>
@@ -85,12 +85,12 @@ export default async function ArticlePage({
 
       {(relatedConcepts.length > 0 || relatedQuestions.length > 0) && (
         <section
-          className="mt-16 grid gap-4 border-t border-zinc-200 pt-8 md:grid-cols-2"
+          className="mt-16 grid gap-4 border-t border-zinc-200 dark:border-zinc-800 pt-8 md:grid-cols-2"
           style={{ fontFamily: "var(--font-sans)" }}
         >
           {relatedConcepts.length > 0 && (
-            <div className="rounded-md border border-zinc-200 bg-zinc-50/50 p-5">
-              <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-zinc-500">
+            <div className="rounded-md border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 p-5">
+              <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
                 함께 보면 좋은 개념
               </h2>
               <ul className="space-y-1">
@@ -98,7 +98,7 @@ export default async function ArticlePage({
                   <li key={c.slug}>
                     <Link
                       href={`/concepts/${c.slug}`}
-                      className="block rounded px-2 py-1 text-sm text-zinc-800 hover:bg-white"
+                      className="block rounded px-2 py-1 text-sm text-zinc-800 dark:text-zinc-200 hover:bg-white"
                     >
                       → {c.title}
                     </Link>
@@ -108,8 +108,8 @@ export default async function ArticlePage({
             </div>
           )}
           {relatedQuestions.length > 0 && (
-            <div className="rounded-md border border-zinc-200 bg-zinc-50/50 p-5">
-              <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-zinc-500">
+            <div className="rounded-md border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 p-5">
+              <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
                 관련 문제 ({relatedQuestions.length})
               </h2>
               <ul className="space-y-1">
@@ -119,10 +119,10 @@ export default async function ArticlePage({
                       href={`/practice/${q.id}`}
                       className="flex items-baseline gap-2 rounded px-2 py-1 text-sm hover:bg-white"
                     >
-                      <span className="font-mono text-xs text-zinc-400">
+                      <span className="font-mono text-xs text-zinc-400 dark:text-zinc-500">
                         {q.id}
                       </span>
-                      <span className="truncate text-zinc-800">
+                      <span className="truncate text-zinc-800 dark:text-zinc-200">
                         {q.question.slice(0, 60)}
                         {q.question.length > 60 ? "…" : ""}
                       </span>
@@ -130,7 +130,7 @@ export default async function ArticlePage({
                   </li>
                 ))}
                 {relatedQuestions.length > 8 && (
-                  <li className="px-2 text-xs text-zinc-500">
+                  <li className="px-2 text-xs text-zinc-500 dark:text-zinc-400">
                     외 {relatedQuestions.length - 8}문제
                   </li>
                 )}
@@ -141,15 +141,15 @@ export default async function ArticlePage({
       )}
 
       <nav
-        className="mt-12 flex items-center justify-between border-t border-zinc-200 pt-6 text-sm"
+        className="mt-12 flex items-center justify-between border-t border-zinc-200 dark:border-zinc-800 pt-6 text-sm"
         style={{ fontFamily: "var(--font-sans)" }}
       >
         {prev ? (
           <Link
             href={`/articles/${prev.slug}`}
-            className="max-w-[45%] text-zinc-600 hover:text-zinc-900"
+            className="max-w-[45%] text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50"
           >
-            <span className="text-xs text-zinc-400">← 이전 칼럼</span>
+            <span className="text-xs text-zinc-400 dark:text-zinc-500">← 이전 칼럼</span>
             <span className="block truncate">{prev.title}</span>
           </Link>
         ) : (
@@ -158,9 +158,9 @@ export default async function ArticlePage({
         {next ? (
           <Link
             href={`/articles/${next.slug}`}
-            className="max-w-[45%] text-right text-zinc-600 hover:text-zinc-900"
+            className="max-w-[45%] text-right text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50"
           >
-            <span className="text-xs text-zinc-400">다음 칼럼 →</span>
+            <span className="text-xs text-zinc-400 dark:text-zinc-500">다음 칼럼 →</span>
             <span className="block truncate">{next.title}</span>
           </Link>
         ) : (

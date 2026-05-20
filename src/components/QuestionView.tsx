@@ -129,7 +129,7 @@ export function QuestionView({
   return (
     <article className="prose-ko pb-32">
       {progressPercent !== null && (
-        <div className="fixed left-0 right-0 top-16 z-20 h-1 bg-zinc-100">
+        <div className="fixed left-0 right-0 top-16 z-20 h-1 bg-zinc-100 dark:bg-zinc-800">
           <div
             className="h-full bg-zinc-900 transition-all"
             style={{ width: `${progressPercent}%` }}
@@ -139,14 +139,14 @@ export function QuestionView({
 
       <div className="mb-3 mt-2 flex flex-wrap items-center gap-2 text-xs">
         {randomMode ? (
-          <span className="rounded-md border border-purple-200 bg-purple-50 px-2 py-0.5 font-mono font-semibold text-purple-700">
+          <span className="rounded-md border border-purple-200 dark:border-purple-800 bg-purple-50 dark:bg-purple-950/40 px-2 py-0.5 font-mono font-semibold text-purple-700 dark:text-purple-300">
             🎲 랜덤{randomModeKind ? ` · ${randomModeKindLabel(randomModeKind)}` : ""}
           </span>
         ) : (
           typeof index === "number" && typeof total === "number" && (
-            <span className="font-mono font-semibold text-zinc-900">
-              {index} <span className="text-zinc-300">/</span>{" "}
-              <span className="text-zinc-400">{total}</span>
+            <span className="font-mono font-semibold text-zinc-900 dark:text-zinc-50">
+              {index} <span className="text-zinc-300 dark:text-zinc-600">/</span>{" "}
+              <span className="text-zinc-400 dark:text-zinc-500">{total}</span>
             </span>
           )
         )}
@@ -166,8 +166,8 @@ export function QuestionView({
             className={cn(
               "ml-auto rounded-md border px-2.5 py-1 text-xs font-medium transition",
               attempt?.bookmarked
-                ? "border-amber-300 bg-amber-50 text-amber-700"
-                : "border-zinc-200 bg-white text-zinc-500 hover:text-zinc-700"
+                ? "border-amber-300 bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300"
+                : "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300"
             )}
             title="단축키 B"
           >
@@ -177,7 +177,7 @@ export function QuestionView({
       </div>
 
       <div className="mb-7 mt-3">
-        <div className="text-[18px] font-medium leading-[1.7] text-zinc-900 md:text-[19px]">
+        <div className="text-[18px] font-medium leading-[1.7] text-zinc-900 dark:text-zinc-50 md:text-[19px]">
           <MarkdownView
             html={question.questionHtml}
             source={question.question}
@@ -211,8 +211,8 @@ export function QuestionView({
                     "flex w-full items-start gap-3.5 rounded-lg border px-4 py-4 text-left text-[16px] leading-relaxed transition active:scale-[0.99]",
                     submitted
                       ? "cursor-default"
-                      : "hover:border-zinc-400 hover:bg-zinc-50",
-                    !submitted && "border-zinc-200 bg-white",
+                      : "hover:border-zinc-400 dark:hover:border-zinc-600 hover:bg-zinc-50 dark:hover:bg-zinc-800/50",
+                    !submitted && "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900",
                     isThisCorrect && "!border-emerald-500 !bg-emerald-50",
                     isThisSelectedWrong && "!border-rose-500 !bg-rose-50",
                     submitted &&
@@ -228,17 +228,17 @@ export function QuestionView({
                         ? "border-emerald-500 bg-emerald-500 text-white"
                         : isThisSelectedWrong
                           ? "border-rose-500 bg-rose-500 text-white"
-                          : "border-zinc-300 bg-white text-zinc-500"
+                          : "border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-500 dark:text-zinc-400"
                     )}
                   >
                     {i + 1}
                   </span>
                   <span className="flex-1 pt-0.5">{choice}</span>
                   {isThisCorrect && (
-                    <span className="pt-0.5 text-emerald-600">✓</span>
+                    <span className="pt-0.5 text-emerald-600 dark:text-emerald-400">✓</span>
                   )}
                   {isThisSelectedWrong && (
-                    <span className="pt-0.5 text-rose-600">✗</span>
+                    <span className="pt-0.5 text-rose-600 dark:text-rose-400">✗</span>
                   )}
                 </button>
               </li>
@@ -262,8 +262,8 @@ export function QuestionView({
                   "rounded-lg border py-10 text-3xl font-bold transition active:scale-[0.98]",
                   submitted
                     ? "cursor-default"
-                    : "hover:border-zinc-400 hover:bg-zinc-50",
-                  !submitted && "border-zinc-200 bg-white text-zinc-700",
+                    : "hover:border-zinc-400 dark:hover:border-zinc-600 hover:bg-zinc-50 dark:hover:bg-zinc-800/50",
+                  !submitted && "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300",
                   isThisCorrect &&
                     "!border-emerald-500 !bg-emerald-50 !text-emerald-700",
                   isThisSelectedWrong &&
@@ -275,7 +275,7 @@ export function QuestionView({
                 )}
               >
                 {v ? "O" : "X"}
-                <div className="mt-1 text-xs font-normal text-zinc-500">
+                <div className="mt-1 text-xs font-normal text-zinc-500 dark:text-zinc-400">
                   {v ? "참" : "거짓"} <kbd>{v ? "O" : "X"}</kbd>
                 </div>
               </button>
@@ -289,20 +289,20 @@ export function QuestionView({
           ref={(el) => {
             explanationRef.current = el;
           }}
-          className="mt-8 rounded-lg border border-zinc-200 bg-white p-5"
+          className="mt-8 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5"
         >
           <div className="mb-3 flex items-center gap-2">
             <div
               className={cn(
                 "rounded-md px-2.5 py-1 text-xs font-bold",
                 isCorrect
-                  ? "bg-emerald-50 text-emerald-700"
-                  : "bg-rose-50 text-rose-700"
+                  ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300"
+                  : "bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300"
               )}
             >
               {isCorrect ? "✓ 정답" : "✗ 오답"}
             </div>
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-zinc-500">
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
               해설
             </h2>
           </div>
@@ -312,13 +312,13 @@ export function QuestionView({
           />
 
           {question.concepts.length > 0 && (
-            <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-zinc-200 pt-4">
-              <span className="text-xs text-zinc-500">관련 개념:</span>
+            <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-zinc-200 dark:border-zinc-800 pt-4">
+              <span className="text-xs text-zinc-500 dark:text-zinc-400">관련 개념:</span>
               {question.concepts.map((c) => (
                 <Link
                   key={c}
                   href={`/concepts/${c}`}
-                  className="rounded border border-zinc-200 bg-white px-2 py-0.5 text-xs text-blue-600 hover:border-blue-300"
+                  className="rounded border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-2 py-0.5 text-xs text-blue-600 dark:text-blue-400 hover:border-blue-300"
                 >
                   {c}
                 </Link>
@@ -330,7 +330,7 @@ export function QuestionView({
 
       {submitted && !isCorrect && hydrated && (
         <section className="mt-3">
-          <label className="mb-1 block text-xs font-medium text-zinc-500">
+          <label className="mb-1 block text-xs font-medium text-zinc-500 dark:text-zinc-400">
             오답 메모 (자동 저장)
           </label>
           <textarea
@@ -341,17 +341,17 @@ export function QuestionView({
             }}
             placeholder="왜 틀렸는지 짧게 적어두면 나중에 다시 볼 때 도움됩니다."
             rows={2}
-            className="w-full rounded-md border border-zinc-200 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+            className="w-full rounded-md border border-zinc-200 dark:border-zinc-800 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
           />
         </section>
       )}
 
-      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-zinc-200 bg-white/95 px-4 py-3 backdrop-blur-md md:px-6">
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-zinc-200 dark:border-zinc-800 bg-white/95 px-4 py-3 backdrop-blur-md md:px-6">
         <div className="mx-auto flex max-w-[720px] items-center justify-between gap-2">
           <button
             onClick={goPrev}
             disabled={!prevId}
-            className="flex items-center gap-1 rounded-md px-3 py-2 text-sm text-zinc-600 transition hover:text-zinc-900 disabled:opacity-30"
+            className="flex items-center gap-1 rounded-md px-3 py-2 text-sm text-zinc-600 dark:text-zinc-400 transition hover:text-zinc-900 dark:hover:text-zinc-50 disabled:opacity-30"
             aria-label="이전 문제"
             title="K / ←"
           >
@@ -360,7 +360,7 @@ export function QuestionView({
           </button>
 
           {!submitted ? (
-            <div className="flex items-center gap-2 text-xs text-zinc-400">
+            <div className="flex items-center gap-2 text-xs text-zinc-400 dark:text-zinc-500">
               {question.type === "mc" ? (
                 <>
                   선택지를 누르거나 <kbd>1</kbd>~<kbd>{question.choices?.length}</kbd>
@@ -386,7 +386,7 @@ export function QuestionView({
             <div className="flex items-center gap-1">
               <button
                 onClick={goRandom}
-                className="flex items-center gap-1 rounded-md border border-zinc-200 bg-white px-2.5 py-1.5 text-xs text-zinc-600 transition hover:border-purple-300 hover:text-purple-700"
+                className="flex items-center gap-1 rounded-md border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-2.5 py-1.5 text-xs text-zinc-600 dark:text-zinc-400 transition hover:border-purple-300 hover:text-purple-700"
                 aria-label="랜덤 문제로"
                 title="랜덤 문제로 (R)"
               >
@@ -395,7 +395,7 @@ export function QuestionView({
               <button
                 onClick={goNext}
                 disabled={!nextId}
-                className="flex items-center gap-1 rounded-md px-3 py-2 text-sm text-zinc-600 transition hover:text-zinc-900 disabled:opacity-30"
+                className="flex items-center gap-1 rounded-md px-3 py-2 text-sm text-zinc-600 dark:text-zinc-400 transition hover:text-zinc-900 dark:hover:text-zinc-50 disabled:opacity-30"
                 aria-label="다음 문제"
                 title="J / →"
               >
@@ -412,7 +412,7 @@ export function QuestionView({
 
 function Tag({ children }: { children: React.ReactNode }) {
   return (
-    <span className="rounded border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 text-zinc-600">
+    <span className="rounded border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 px-1.5 py-0.5 text-zinc-600 dark:text-zinc-400">
       {children}
     </span>
   );

@@ -50,7 +50,7 @@ export function Sidebar() {
     <>
       <button
         onClick={() => setOpenMobile(true)}
-        className="fixed left-3 top-3 z-40 grid h-10 w-10 place-items-center rounded-md border border-zinc-200 bg-white text-zinc-700 md:hidden"
+        className="fixed left-3 top-3 z-40 grid h-10 w-10 place-items-center rounded-md border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 md:hidden"
         aria-label="메뉴 열기"
       >
         ☰
@@ -65,13 +65,13 @@ export function Sidebar() {
 
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-50 w-[260px] shrink-0 border-r border-zinc-200 bg-white px-4 py-6 transition-transform md:sticky md:top-16 md:z-auto md:block md:translate-x-0 md:self-start md:border-r-0 md:px-0 md:py-8",
+          "fixed inset-y-0 left-0 z-50 w-[260px] shrink-0 border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-6 transition-transform md:sticky md:top-16 md:z-auto md:block md:translate-x-0 md:self-start md:border-r-0 md:px-0 md:py-8",
           openMobile ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         )}
       >
         <button
           onClick={() => setOpenMobile(false)}
-          className="absolute right-3 top-3 grid h-8 w-8 place-items-center rounded-md text-zinc-500 hover:bg-zinc-100 md:hidden"
+          className="absolute right-3 top-3 grid h-8 w-8 place-items-center rounded-md text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 md:hidden"
           aria-label="메뉴 닫기"
         >
           ✕
@@ -80,7 +80,7 @@ export function Sidebar() {
         <nav className="md:sticky md:top-24">
           {NAV.map((group) => (
             <div key={group.title} className="mb-6 last:mb-0">
-              <h3 className="mb-2 px-2 text-[11px] font-semibold uppercase tracking-wider text-zinc-500">
+              <h3 className="mb-2 px-2 text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
                 {group.title}
               </h3>
               <ul className="space-y-0.5">
@@ -96,8 +96,8 @@ export function Sidebar() {
                         className={cn(
                           "block rounded-md px-2 py-1.5 text-sm transition-colors",
                           active
-                            ? "bg-zinc-100 font-medium text-zinc-900"
-                            : "text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900"
+                            ? "bg-zinc-100 dark:bg-zinc-800 font-medium text-zinc-900 dark:text-zinc-50"
+                            : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 hover:text-zinc-900 dark:hover:text-zinc-50"
                         )}
                       >
                         {item.label}

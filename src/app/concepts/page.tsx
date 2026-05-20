@@ -14,10 +14,10 @@ export default function ConceptsPage() {
   return (
     <div className="prose-ko">
       <header className="mb-8">
-        <h1 className="text-[1.875rem] font-bold tracking-tight text-zinc-900">
+        <h1 className="text-[1.875rem] font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
           개념 정리
         </h1>
-        <p className="mt-1 text-sm text-zinc-600">
+        <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
           시험 범위의 핵심 개념을 카테고리별로 정리했습니다. 문제와 양방향
           링크되어 있습니다.
         </p>
@@ -29,11 +29,11 @@ export default function ConceptsPage() {
         if (sortedCategories.length === 0) return null;
         return (
           <section key={subject} className="mb-12">
-            <div className="mb-3 flex items-baseline gap-3 border-b border-zinc-200 pb-2">
-              <span className="font-mono text-xs text-zinc-400">
+            <div className="mb-3 flex items-baseline gap-3 border-b border-zinc-200 dark:border-zinc-800 pb-2">
+              <span className="font-mono text-xs text-zinc-400 dark:text-zinc-500">
                 {subject.toString().padStart(2, "0")}
               </span>
-              <h2 className="text-base font-semibold text-zinc-900">
+              <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-50">
                 {subject}과목 · {SUBJECT_LABELS[subject]}
               </h2>
             </div>
@@ -50,23 +50,23 @@ export default function ConceptsPage() {
                 <li key={c.slug} className="group">
                   <Link
                     href={`/concepts/${c.slug}`}
-                    className="flex items-baseline gap-4 py-2.5 transition hover:bg-zinc-50"
+                    className="flex items-baseline gap-4 py-2.5 transition hover:bg-zinc-50 dark:hover:bg-zinc-800/50"
                   >
-                    <span className="w-10 shrink-0 text-right font-mono text-xs text-zinc-400">
+                    <span className="w-10 shrink-0 text-right font-mono text-xs text-zinc-400 dark:text-zinc-500">
                       {String(idx + 1).padStart(2, "0")}
                     </span>
-                    <span className="w-24 shrink-0 text-xs text-zinc-500">
+                    <span className="w-24 shrink-0 text-xs text-zinc-500 dark:text-zinc-400">
                       {isFirstInCategory ? category : ""}
                     </span>
-                    <span className="flex-1 truncate text-[15px] text-zinc-900 group-hover:underline">
+                    <span className="flex-1 truncate text-[15px] text-zinc-900 dark:text-zinc-50 group-hover:underline">
                       {c.title}
                     </span>
                     {c.description && (
-                      <span className="hidden truncate text-xs text-zinc-500 md:block md:max-w-[40%]">
+                      <span className="hidden truncate text-xs text-zinc-500 dark:text-zinc-400 md:block md:max-w-[40%]">
                         {c.description}
                       </span>
                     )}
-                    <span className="text-xs text-zinc-300 group-hover:text-zinc-500">
+                    <span className="text-xs text-zinc-300 dark:text-zinc-600 group-hover:text-zinc-500">
                       →
                     </span>
                   </Link>

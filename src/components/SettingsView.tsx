@@ -50,24 +50,24 @@ export function SettingsView() {
   return (
     <div className="prose-ko">
       <header className="mb-6">
-        <h1 className="text-[1.875rem] font-bold tracking-tight text-zinc-900">
+        <h1 className="text-[1.875rem] font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
           설정 · 백업
         </h1>
-        <p className="mt-1 text-sm text-zinc-600">
+        <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
           진도 데이터는 브라우저에 저장됩니다. 기기 이동 또는 백업을 위해
           내보내기/불러오기를 사용하세요.
         </p>
       </header>
 
       {message && (
-        <div className="mb-4 rounded-md border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-700">
+        <div className="mb-4 rounded-md border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/40 px-4 py-3 text-sm text-blue-700 dark:text-blue-300">
           {message}
         </div>
       )}
 
-      <section className="mt-6 rounded-md border border-zinc-200 p-5">
-        <h2 className="text-base font-semibold text-zinc-900">진도 백업</h2>
-        <p className="mt-1 text-sm text-zinc-600">
+      <section className="mt-6 rounded-md border border-zinc-200 dark:border-zinc-800 p-5">
+        <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-50">진도 백업</h2>
+        <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
           JSON 파일로 저장하거나 복원합니다.
         </p>
         <div className="mt-4 flex gap-2">
@@ -81,7 +81,7 @@ export function SettingsView() {
           <button
             onClick={() => fileInputRef.current?.click()}
             disabled={!hydrated}
-            className="rounded-md border border-zinc-200 bg-white px-4 py-2 text-sm text-zinc-700 hover:bg-zinc-50 disabled:opacity-50"
+            className="rounded-md border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 disabled:opacity-50"
           >
             불러오기
           </button>
@@ -96,8 +96,8 @@ export function SettingsView() {
       </section>
 
       {hydrated && (
-        <section className="mt-6 rounded-md border border-zinc-200 p-5">
-          <h2 className="text-base font-semibold text-zinc-900">기본 동작</h2>
+        <section className="mt-6 rounded-md border border-zinc-200 dark:border-zinc-800 p-5">
+          <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-50">기본 동작</h2>
           <div className="mt-4 space-y-3">
             <label className="flex items-start gap-3">
               <input
@@ -111,10 +111,10 @@ export function SettingsView() {
                 className="mt-1"
               />
               <div>
-                <div className="text-sm font-medium text-zinc-900">
+                <div className="text-sm font-medium text-zinc-900 dark:text-zinc-50">
                   제출 후 해설 즉시 표시
                 </div>
-                <div className="text-xs text-zinc-600">
+                <div className="text-xs text-zinc-600 dark:text-zinc-400">
                   체크 해제 시 해설을 별도 버튼으로 토글합니다.
                 </div>
               </div>
@@ -129,10 +129,10 @@ export function SettingsView() {
                 className="mt-1"
               />
               <div>
-                <div className="text-sm font-medium text-zinc-900">
+                <div className="text-sm font-medium text-zinc-900 dark:text-zinc-50">
                   선택지 무작위 배열
                 </div>
-                <div className="text-xs text-zinc-600">
+                <div className="text-xs text-zinc-600 dark:text-zinc-400">
                   객관식 문제의 선택지 순서를 매번 섞습니다.
                 </div>
               </div>
@@ -141,9 +141,9 @@ export function SettingsView() {
         </section>
       )}
 
-      <section className="mt-6 rounded-md border border-rose-200 bg-rose-50/30 p-5">
+      <section className="mt-6 rounded-md border border-rose-200 dark:border-rose-800 bg-rose-50/30 p-5">
         <h2 className="text-base font-semibold text-rose-900">데이터 초기화</h2>
-        <p className="mt-1 text-sm text-zinc-700">
+        <p className="mt-1 text-sm text-zinc-700 dark:text-zinc-300">
           모든 진도, 오답노트, 즐겨찾기, 시험 이력을 삭제합니다. 되돌릴 수
           없습니다.
         </p>
@@ -151,7 +151,7 @@ export function SettingsView() {
           <button
             onClick={() => setConfirmReset(true)}
             disabled={!hydrated}
-            className="mt-4 rounded-md border border-rose-300 bg-white px-4 py-2 text-sm font-medium text-rose-700 hover:bg-rose-50 disabled:opacity-50"
+            className="mt-4 rounded-md border border-rose-300 bg-white dark:bg-zinc-900 px-4 py-2 text-sm font-medium text-rose-700 dark:text-rose-300 hover:bg-rose-50 disabled:opacity-50"
           >
             모든 데이터 초기화
           </button>
@@ -169,7 +169,7 @@ export function SettingsView() {
             </button>
             <button
               onClick={() => setConfirmReset(false)}
-              className="rounded-md border border-zinc-200 bg-white px-4 py-2 text-sm"
+              className="rounded-md border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-2 text-sm"
             >
               취소
             </button>
@@ -177,8 +177,8 @@ export function SettingsView() {
         )}
       </section>
 
-      <section className="mt-6 rounded-md border border-zinc-200 bg-zinc-50/50 p-5 text-sm text-zinc-600">
-        <h3 className="font-semibold text-zinc-900">키보드 단축키</h3>
+      <section className="mt-6 rounded-md border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 p-5 text-sm text-zinc-600 dark:text-zinc-400">
+        <h3 className="font-semibold text-zinc-900 dark:text-zinc-50">키보드 단축키</h3>
         <ul className="mt-2 grid gap-1.5 md:grid-cols-2">
           <li>
             <kbd>⌘</kbd>/<kbd>Ctrl</kbd>+<kbd>K</kbd> 검색

@@ -56,7 +56,7 @@ export function RandomRedirect({ ids }: Props) {
   return (
     <div className="prose-ko flex min-h-[50vh] flex-col items-center justify-center text-center">
       <div className="text-4xl">🎲</div>
-      <p className="mt-3 text-sm text-zinc-500">랜덤 문제로 이동 중...</p>
+      <p className="mt-3 text-sm text-zinc-500 dark:text-zinc-400">랜덤 문제로 이동 중...</p>
     </div>
   );
 }

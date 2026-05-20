@@ -44,26 +44,26 @@ export default async function ConceptPage({
   return (
     <article className="prose-ko">
       <div className="mb-4 flex flex-wrap items-center gap-2 text-xs">
-        <span className="rounded border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 text-zinc-600">
+        <span className="rounded border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 px-1.5 py-0.5 text-zinc-600 dark:text-zinc-400">
           {SUBJECT_LABELS[concept.subject]}
         </span>
-        <span className="rounded border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 text-zinc-600">
+        <span className="rounded border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 px-1.5 py-0.5 text-zinc-600 dark:text-zinc-400">
           {concept.category}
         </span>
       </div>
 
-      <h1 className="mb-2 text-[2rem] font-bold tracking-tight text-zinc-900">
+      <h1 className="mb-2 text-[2rem] font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
         {concept.title}
       </h1>
       {concept.description && (
-        <p className="mb-6 text-zinc-600">{concept.description}</p>
+        <p className="mb-6 text-zinc-600 dark:text-zinc-400">{concept.description}</p>
       )}
 
       <MarkdownView html={concept.bodyHtml} source={concept.body} />
 
       {related.length > 0 && (
-        <section className="mt-12 rounded-md border border-zinc-200 bg-zinc-50/50 p-5">
-          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-zinc-500">
+        <section className="mt-12 rounded-md border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 p-5">
+          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
             관련 문제 ({related.length})
           </h2>
           <ul className="space-y-2">
@@ -71,12 +71,12 @@ export default async function ConceptPage({
               <li key={q.id}>
                 <Link
                   href={`/practice/${q.id}`}
-                  className="flex items-baseline gap-3 rounded-md border border-zinc-200 bg-white p-3 hover:border-zinc-400"
+                  className="flex items-baseline gap-3 rounded-md border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-3 hover:border-zinc-400 dark:hover:border-zinc-600"
                 >
-                  <span className="font-mono text-xs text-zinc-400">
+                  <span className="font-mono text-xs text-zinc-400 dark:text-zinc-500">
                     {q.id}
                   </span>
-                  <span className="text-sm text-zinc-800">
+                  <span className="text-sm text-zinc-800 dark:text-zinc-200">
                     {q.question.slice(0, 80)}
                     {q.question.length > 80 ? "…" : ""}
                   </span>
@@ -87,11 +87,11 @@ export default async function ConceptPage({
         </section>
       )}
 
-      <nav className="mt-10 flex items-center justify-between border-t border-zinc-200 pt-6 text-sm">
+      <nav className="mt-10 flex items-center justify-between border-t border-zinc-200 dark:border-zinc-800 pt-6 text-sm">
         {prev ? (
           <Link
             href={`/concepts/${prev.slug}`}
-            className="text-zinc-600 hover:text-zinc-900"
+            className="text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50"
           >
             ← {prev.title}
           </Link>
@@ -101,7 +101,7 @@ export default async function ConceptPage({
         {next ? (
           <Link
             href={`/concepts/${next.slug}`}
-            className="text-zinc-600 hover:text-zinc-900"
+            className="text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50"
           >
             {next.title} →
           </Link>

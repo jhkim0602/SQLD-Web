@@ -53,13 +53,13 @@ export function PracticeFilters({
   const hasAny = activeCount > 0;
 
   return (
-    <div className="rounded-md border border-zinc-200 bg-white">
+    <div className="rounded-md border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900">
       {/* 항상 보이는 상단 바: 과목 선택 + 모바일 토글 */}
-      <div className="border-b border-zinc-100 px-3 py-2.5 md:px-4">
+      <div className="border-b border-zinc-100 dark:border-zinc-800 px-3 py-2.5 md:px-4">
         <div className="flex items-center justify-between gap-2 md:hidden">
           <button
             onClick={() => setExpandedMobile((v) => !v)}
-            className="flex items-center gap-2 text-sm font-medium text-zinc-900"
+            className="flex items-center gap-2 text-sm font-medium text-zinc-900 dark:text-zinc-50"
           >
             <span>필터</span>
             {hasAny && (
@@ -69,7 +69,7 @@ export function PracticeFilters({
             )}
             <span
               className={cn(
-                "text-xs text-zinc-400 transition-transform",
+                "text-xs text-zinc-400 dark:text-zinc-500 transition-transform",
                 expandedMobile && "rotate-180"
               )}
             >
@@ -79,7 +79,7 @@ export function PracticeFilters({
           {hasAny && (
             <button
               onClick={clear}
-              className="text-xs text-zinc-500 hover:text-zinc-700"
+              className="text-xs text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300"
             >
               초기화
             </button>
@@ -153,10 +153,10 @@ export function PracticeFilters({
       </div>
 
       {hasAny && (
-        <div className="hidden border-t border-zinc-100 px-4 py-2 md:block">
+        <div className="hidden border-t border-zinc-100 dark:border-zinc-800 px-4 py-2 md:block">
           <button
             onClick={clear}
-            className="text-xs text-zinc-500 underline-offset-2 hover:text-zinc-700 hover:underline"
+            className="text-xs text-zinc-500 dark:text-zinc-400 underline-offset-2 hover:text-zinc-700 dark:hover:text-zinc-300 hover:underline"
           >
             필터 초기화
           </button>
@@ -177,7 +177,7 @@ function FilterRow({
 }) {
   return (
     <div className={cn(last ? "" : "mb-3")}>
-      <div className="mb-1.5 text-[11px] font-semibold uppercase tracking-wider text-zinc-500">
+      <div className="mb-1.5 text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
         {label}
       </div>
       <div className="flex flex-wrap gap-1.5">{children}</div>
@@ -201,7 +201,7 @@ function Chip({
         "rounded-md border px-2.5 py-1 text-xs transition whitespace-nowrap",
         active
           ? "border-zinc-900 bg-zinc-900 text-white"
-          : "border-zinc-200 bg-white text-zinc-700 hover:border-zinc-400"
+          : "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:border-zinc-400 dark:hover:border-zinc-600"
       )}
     >
       {children}

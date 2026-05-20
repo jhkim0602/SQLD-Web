@@ -6,6 +6,7 @@ import { Header } from "@/components/Header";
 import { Sidebar } from "@/components/Sidebar";
 import { CommandMenu } from "@/components/CommandMenu";
 import { StoreHydration } from "@/components/StoreHydration";
+import { ThemeProvider } from "@/components/ThemeProvider";
 
 const pretendard = localFont({
   src: "../../public/fonts/PretendardVariable.woff2",
@@ -46,15 +47,18 @@ export default function RootLayout({
     <html
       lang="ko"
       className={`${pretendard.variable} ${nanumMyeongjo.variable}`}
+      suppressHydrationWarning
     >
-      <body className="min-h-screen bg-white text-zinc-900 antialiased">
-        <StoreHydration />
-        <Header />
-        <div className="mx-auto flex w-full max-w-[1200px] gap-8 px-4 pt-16 md:px-6">
-          <Sidebar />
-          <main className="min-w-0 flex-1 py-8 md:py-12">{children}</main>
-        </div>
-        <CommandMenu />
+      <body className="min-h-screen bg-white text-zinc-900 antialiased dark:bg-zinc-950 dark:text-zinc-100">
+        <ThemeProvider>
+          <StoreHydration />
+          <Header />
+          <div className="mx-auto flex w-full max-w-[1200px] gap-8 px-4 pt-16 md:px-6">
+            <Sidebar />
+            <main className="min-w-0 flex-1 py-8 md:py-12">{children}</main>
+          </div>
+          <CommandMenu />
+        </ThemeProvider>
       </body>
     </html>
   );

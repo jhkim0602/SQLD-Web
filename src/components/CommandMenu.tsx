@@ -150,10 +150,10 @@ export function CommandMenu() {
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-[640px] overflow-hidden rounded-lg border border-zinc-200 bg-white shadow-2xl"
+        className="w-full max-w-[640px] overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-2xl"
       >
-        <div className="flex items-center gap-3 border-b border-zinc-200 px-4">
-          <span className="text-zinc-400">⌕</span>
+        <div className="flex items-center gap-3 border-b border-zinc-200 dark:border-zinc-800 px-4">
+          <span className="text-zinc-400 dark:text-zinc-500">⌕</span>
           <input
             ref={inputRef}
             value={query}
@@ -170,7 +170,7 @@ export function CommandMenu() {
         </div>
         <ul className="max-h-[400px] overflow-y-auto py-1">
           {results.length === 0 && (
-            <li className="px-4 py-8 text-center text-sm text-zinc-500">
+            <li className="px-4 py-8 text-center text-sm text-zinc-500 dark:text-zinc-400">
               일치 결과 없음
             </li>
           )}
@@ -185,9 +185,9 @@ export function CommandMenu() {
               >
                 <Badge type={item.type} />
                 <div className="min-w-0 flex-1">
-                  <div className="truncate text-zinc-900">{item.title}</div>
+                  <div className="truncate text-zinc-900 dark:text-zinc-50">{item.title}</div>
                   {(item.subject || item.category || item.hint) && (
-                    <div className="mt-0.5 truncate text-xs text-zinc-500">
+                    <div className="mt-0.5 truncate text-xs text-zinc-500 dark:text-zinc-400">
                       {item.subject && (
                         <span>{SUBJECT_LABELS[item.subject]}</span>
                       )}
@@ -210,7 +210,7 @@ export function CommandMenu() {
             </li>
           ))}
         </ul>
-        <div className="flex items-center gap-3 border-t border-zinc-200 bg-zinc-50 px-4 py-2 text-[11px] text-zinc-500">
+        <div className="flex items-center gap-3 border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 px-4 py-2 text-[11px] text-zinc-500 dark:text-zinc-400">
           <span>
             <kbd>↑</kbd> <kbd>↓</kbd> 이동
           </span>

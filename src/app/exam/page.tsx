@@ -16,10 +16,10 @@ export default function ExamPage() {
   return (
     <div className="prose-ko">
       <header className="mb-6">
-        <h1 className="text-[1.875rem] font-bold tracking-tight text-zinc-900">
+        <h1 className="text-[1.875rem] font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
           모의고사
         </h1>
-        <p className="mt-1 text-sm text-zinc-600">
+        <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
           실전 SQLD는 1과목 10문제(20점) + 2과목 40문제(80점) = 50문제 90분,
           60점 이상 + 과목별 40% 이상이면 합격입니다.
         </p>

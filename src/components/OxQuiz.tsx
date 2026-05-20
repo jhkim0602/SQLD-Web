@@ -43,10 +43,10 @@ export function OxQuiz({ questions }: Props) {
   if (order.length === 0) {
     return (
       <div className="prose-ko">
-        <h1 className="text-[1.875rem] font-bold tracking-tight text-zinc-900">
+        <h1 className="text-[1.875rem] font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
           OX 빠른 복습
         </h1>
-        <p className="mt-4 text-zinc-600">아직 OX 문제가 없습니다.</p>
+        <p className="mt-4 text-zinc-600 dark:text-zinc-400">아직 OX 문제가 없습니다.</p>
       </div>
     );
   }
@@ -55,10 +55,10 @@ export function OxQuiz({ questions }: Props) {
     const total = stats.correct + stats.wrong;
     return (
       <div className="prose-ko text-center">
-        <h1 className="text-[1.875rem] font-bold tracking-tight text-zinc-900">
+        <h1 className="text-[1.875rem] font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
           완료!
         </h1>
-        <p className="mt-4 text-zinc-600">
+        <p className="mt-4 text-zinc-600 dark:text-zinc-400">
           {total}문제 중 {stats.correct}문제 맞춤
         </p>
         <button
@@ -100,28 +100,28 @@ export function OxQuiz({ questions }: Props) {
 
   return (
     <div className="prose-ko">
-      <div className="mb-6 flex items-center justify-between text-sm text-zinc-500">
+      <div className="mb-6 flex items-center justify-between text-sm text-zinc-500 dark:text-zinc-400">
         <div>
           {idx + 1} / {order.length}
         </div>
         <div className="flex gap-3 font-mono">
-          <span className="text-emerald-600">✓ {stats.correct}</span>
-          <span className="text-rose-600">✗ {stats.wrong}</span>
+          <span className="text-emerald-600 dark:text-emerald-400">✓ {stats.correct}</span>
+          <span className="text-rose-600 dark:text-rose-400">✗ {stats.wrong}</span>
         </div>
       </div>
 
-      <div className="h-1 overflow-hidden rounded-full bg-zinc-100">
+      <div className="h-1 overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-800">
         <div
           className="h-full bg-zinc-900 transition-all"
           style={{ width: `${(idx / order.length) * 100}%` }}
         />
       </div>
 
-      <div className="mt-8 rounded-md border border-zinc-200 bg-white p-6">
-        <div className="text-xs text-zinc-500">
+      <div className="mt-8 rounded-md border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6">
+        <div className="text-xs text-zinc-500 dark:text-zinc-400">
           {current.subject}과목 · {current.category}
         </div>
-        <h2 className="mt-3 text-lg font-bold leading-relaxed text-zinc-900">
+        <h2 className="mt-3 text-lg font-bold leading-relaxed text-zinc-900 dark:text-zinc-50">
           {current.question}
         </h2>
       </div>
@@ -137,15 +137,15 @@ export function OxQuiz({ questions }: Props) {
               disabled={revealed}
               className={cn(
                 "rounded-md border px-4 py-8 text-2xl font-bold transition",
-                !revealed && "hover:border-zinc-400 hover:bg-zinc-50",
+                !revealed && "hover:border-zinc-400 dark:hover:border-zinc-600 hover:bg-zinc-50 dark:hover:bg-zinc-800/50",
                 isThisCorrect &&
-                  "border-emerald-500 bg-emerald-50 text-emerald-700",
-                isThisWrong && "border-rose-500 bg-rose-50 text-rose-700",
-                !revealed && "border-zinc-200 bg-white text-zinc-700"
+                  "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300",
+                isThisWrong && "border-rose-500 bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300",
+                !revealed && "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300"
               )}
             >
               {v ? "O" : "X"}
-              <div className="mt-1 text-xs font-normal text-zinc-500">
+              <div className="mt-1 text-xs font-normal text-zinc-500 dark:text-zinc-400">
                 <kbd>{v ? "O" : "X"}</kbd>
               </div>
             </button>
@@ -154,11 +154,11 @@ export function OxQuiz({ questions }: Props) {
       </div>
 
       {revealed && (
-        <div className="mt-6 rounded-md border border-zinc-200 bg-zinc-50/50 p-5">
+        <div className="mt-6 rounded-md border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 p-5">
           <div
             className={cn(
               "mb-3 text-sm font-semibold",
-              isCorrect ? "text-emerald-700" : "text-rose-700"
+              isCorrect ? "text-emerald-700 dark:text-emerald-300" : "text-rose-700 dark:text-rose-300"
             )}
           >
             {isCorrect ? "✓ 정답" : "✗ 오답"} — 정답은{" "}
@@ -177,7 +177,7 @@ export function OxQuiz({ questions }: Props) {
             </button>
             <Link
               href={`/practice/${current.id}`}
-              className="rounded-md border border-zinc-200 bg-white px-4 py-2 text-sm text-zinc-700"
+              className="rounded-md border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300"
             >
               상세 풀이
             </Link>

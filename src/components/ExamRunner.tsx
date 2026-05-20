@@ -115,22 +115,22 @@ export function ExamRunner({ allQuestions }: Props) {
 
   return (
     <div className="prose-ko">
-      <div className="sticky top-16 z-20 -mx-4 mb-6 border-b border-zinc-200 bg-white/95 px-4 py-3 backdrop-blur">
+      <div className="sticky top-16 z-20 -mx-4 mb-6 border-b border-zinc-200 dark:border-zinc-800 bg-white/95 px-4 py-3 backdrop-blur">
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <div
               className={cn(
                 "rounded-md border px-3 py-1.5 font-mono text-sm font-bold",
                 isCritical
-                  ? "border-rose-300 bg-rose-50 text-rose-700"
+                  ? "border-rose-300 bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300"
                   : isWarning
-                    ? "border-amber-300 bg-amber-50 text-amber-700"
-                    : "border-zinc-200 bg-white text-zinc-900"
+                    ? "border-amber-300 bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300"
+                    : "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50"
               )}
             >
               ⏱ {formatDuration(remaining)}
             </div>
-            <div className="text-xs text-zinc-600">
+            <div className="text-xs text-zinc-600 dark:text-zinc-400">
               {currentIdx + 1} / {activeExam.qids.length} · 답변{" "}
               {answeredCount}개
             </div>
@@ -150,7 +150,7 @@ export function ExamRunner({ allQuestions }: Props) {
                   router.push("/exam");
                 }
               }}
-              className="rounded-md border border-zinc-200 bg-white px-3 py-1.5 text-xs text-zinc-600 hover:bg-zinc-50"
+              className="rounded-md border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-1.5 text-xs text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800/50"
             >
               취소
             </button>
@@ -158,7 +158,7 @@ export function ExamRunner({ allQuestions }: Props) {
         </div>
       </div>
 
-      <div className="mb-2 text-xs text-zinc-500">
+      <div className="mb-2 text-xs text-zinc-500 dark:text-zinc-400">
         문제 {currentIdx + 1} · {currentQuestion.category} ·{" "}
         {currentQuestion.subject}과목
       </div>
@@ -190,8 +190,8 @@ export function ExamRunner({ allQuestions }: Props) {
                 className={cn(
                   "flex w-full items-start gap-3 rounded-md border px-4 py-3 text-left text-[15px]",
                   currentAnswer === i
-                    ? "border-blue-500 bg-blue-50"
-                    : "border-zinc-200 bg-white hover:border-zinc-400"
+                    ? "border-blue-500 bg-blue-50 dark:bg-blue-950/40"
+                    : "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:border-zinc-400 dark:hover:border-zinc-600"
                 )}
               >
                 <span
@@ -199,7 +199,7 @@ export function ExamRunner({ allQuestions }: Props) {
                     "grid h-6 w-6 shrink-0 place-items-center rounded-full border text-xs font-bold",
                     currentAnswer === i
                       ? "border-blue-500 bg-blue-500 text-white"
-                      : "border-zinc-300 text-zinc-500"
+                      : "border-zinc-300 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400"
                   )}
                 >
                   {i + 1}
@@ -220,8 +220,8 @@ export function ExamRunner({ allQuestions }: Props) {
               className={cn(
                 "rounded-md border px-4 py-6 text-lg font-bold",
                 currentAnswer === v
-                  ? "border-blue-500 bg-blue-50 text-blue-700"
-                  : "border-zinc-200 bg-white text-zinc-700 hover:border-zinc-400"
+                  ? "border-blue-500 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300"
+                  : "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:border-zinc-400 dark:hover:border-zinc-600"
               )}
             >
               {v ? "O (참)" : "X (거짓)"}
@@ -235,7 +235,7 @@ export function ExamRunner({ allQuestions }: Props) {
         <button
           onClick={() => setCurrentIdx((i) => Math.max(0, i - 1))}
           disabled={currentIdx === 0}
-          className="rounded-md border border-zinc-200 bg-white px-4 py-2 text-sm text-zinc-700 disabled:opacity-50"
+          className="rounded-md border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 disabled:opacity-50"
         >
           ← 이전
         </button>
@@ -244,14 +244,14 @@ export function ExamRunner({ allQuestions }: Props) {
             setCurrentIdx((i) => Math.min(activeExam.qids.length - 1, i + 1))
           }
           disabled={currentIdx === activeExam.qids.length - 1}
-          className="rounded-md border border-zinc-200 bg-white px-4 py-2 text-sm text-zinc-700 disabled:opacity-50"
+          className="rounded-md border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 disabled:opacity-50"
         >
           다음 →
         </button>
       </div>
 
-      <div className="mt-8 rounded-md border border-zinc-200 bg-zinc-50/50 p-4">
-        <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-500">
+      <div className="mt-8 rounded-md border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 p-4">
+        <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
           문제 이동
         </h3>
         <div className="grid grid-cols-10 gap-1.5">
@@ -268,8 +268,8 @@ export function ExamRunner({ allQuestions }: Props) {
                   i === currentIdx
                     ? "border-zinc-900 bg-zinc-900 text-white"
                     : answered
-                      ? "border-blue-200 bg-blue-50 text-blue-700 hover:border-blue-400"
-                      : "border-zinc-200 bg-white text-zinc-500 hover:border-zinc-400"
+                      ? "border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 hover:border-blue-400"
+                      : "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-500 dark:text-zinc-400 hover:border-zinc-400 dark:hover:border-zinc-600"
                 )}
               >
                 {i + 1}
@@ -286,17 +286,17 @@ export function ExamRunner({ allQuestions }: Props) {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md rounded-lg bg-white p-6 shadow-2xl"
+            className="w-full max-w-md rounded-lg bg-white dark:bg-zinc-900 p-6 shadow-2xl"
           >
-            <h3 className="text-lg font-bold text-zinc-900">시험을 제출할까요?</h3>
-            <p className="mt-2 text-sm text-zinc-600">
+            <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-50">시험을 제출할까요?</h3>
+            <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
               답변한 문제 {answeredCount}개 / 전체 {activeExam.qids.length}개.
               미답 문제는 오답 처리됩니다.
             </p>
             <div className="mt-5 flex justify-end gap-2">
               <button
                 onClick={() => setShowFinishConfirm(false)}
-                className="rounded-md border border-zinc-200 bg-white px-4 py-2 text-sm"
+                className="rounded-md border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-2 text-sm"
               >
                 계속 풀기
               </button>

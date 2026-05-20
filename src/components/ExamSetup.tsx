@@ -57,18 +57,18 @@ export function ExamSetup({ totalCount, subject1Count, subject2Count }: Props) {
 
   if (!hydrated) {
     return (
-      <div className="mt-8 h-[400px] animate-pulse rounded-md border border-zinc-200 bg-zinc-50" />
+      <div className="mt-8 h-[400px] animate-pulse rounded-md border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900" />
     );
   }
 
   return (
     <div className="space-y-6">
       {activeExam && (
-        <div className="rounded-md border border-amber-200 bg-amber-50 p-4">
+        <div className="rounded-md border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/40 p-4">
           <div className="text-sm font-semibold text-amber-900">
             진행 중인 모의고사가 있습니다.
           </div>
-          <p className="mt-1 text-xs text-amber-700">
+          <p className="mt-1 text-xs text-amber-700 dark:text-amber-300">
             새 시험을 시작하면 현재 진행 중인 시험은 취소됩니다.
           </p>
           <Link
@@ -80,8 +80,8 @@ export function ExamSetup({ totalCount, subject1Count, subject2Count }: Props) {
         </div>
       )}
 
-      <div className="rounded-md border border-zinc-200 p-5">
-        <h2 className="mb-4 text-base font-semibold text-zinc-900">설정</h2>
+      <div className="rounded-md border border-zinc-200 dark:border-zinc-800 p-5">
+        <h2 className="mb-4 text-base font-semibold text-zinc-900 dark:text-zinc-50">설정</h2>
 
         <Field label="과목 범위">
           <RadioRow
@@ -109,7 +109,7 @@ export function ExamSetup({ totalCount, subject1Count, subject2Count }: Props) {
               {Math.min(count, availableCount)}문제
             </span>
           </div>
-          <p className="mt-1 text-xs text-zinc-500">
+          <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
             보유 문제 {availableCount}개. 실전과 같이 50문제로 설정 권장.
           </p>
         </Field>
@@ -142,21 +142,21 @@ export function ExamSetup({ totalCount, subject1Count, subject2Count }: Props) {
       </div>
 
       {examHistory.length > 0 && (
-        <div className="rounded-md border border-zinc-200 p-5">
-          <h2 className="mb-3 text-base font-semibold text-zinc-900">
+        <div className="rounded-md border border-zinc-200 dark:border-zinc-800 p-5">
+          <h2 className="mb-3 text-base font-semibold text-zinc-900 dark:text-zinc-50">
             최근 응시 기록
           </h2>
           <ul className="space-y-2">
             {examHistory.slice(0, 5).map((session) => (
               <li
                 key={session.sessionId}
-                className="flex items-center justify-between rounded-md border border-zinc-100 bg-zinc-50/50 px-3 py-2 text-sm"
+                className="flex items-center justify-between rounded-md border border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 px-3 py-2 text-sm"
               >
                 <div>
-                  <span className="font-mono text-zinc-500">
+                  <span className="font-mono text-zinc-500 dark:text-zinc-400">
                     {formatDate(session.startedAt)}
                   </span>
-                  <span className="ml-3 text-zinc-700">
+                  <span className="ml-3 text-zinc-700 dark:text-zinc-300">
                     {session.qids.length}문제 ·{" "}
                     {Math.round(session.durationSec / 60)}분
                   </span>
@@ -188,7 +188,7 @@ function Field({
 }) {
   return (
     <div className="mb-5 last:mb-0">
-      <label className="mb-2 block text-sm font-medium text-zinc-700">
+      <label className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
         {label}
       </label>
       {children}
