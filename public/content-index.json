@@ -1,7 +1,8 @@
 {
-  "builtAt": "2026-05-20T11:37:34.586Z",
+  "builtAt": "2026-05-20T11:53:18.794Z",
   "totalQuestions": 170,
   "totalConcepts": 29,
+  "totalArticles": 5,
   "questions": [
     {
       "id": "q-001",
@@ -2410,6 +2411,128 @@
         "q-159"
       ],
       "preview": "1. DCL이란?\n\nDCL (Data Control Language, 데이터 제어어)는 데이터베이스 권한을 관리하는 명령어 집합. 누가 무엇을 할 수 있는지 통제.\n\n| 명령어 | 동작 |\n|---|---|\n| GR"
+    }
+  ],
+  "articles": [
+    {
+      "slug": "why-rdb",
+      "title": "관계형 데이터베이스는 왜 생겼는가",
+      "subtitle": "1970년 코드 박사의 논문 한 편이 산업 표준이 되기까지",
+      "topic": "데이터베이스 역사",
+      "level": "beginner",
+      "readingMinutes": 8,
+      "description": "파일·계층형·네트워크형을 거쳐 관계형 모델이 표준이 된 이유. 이 흐름을 알면 정규화·관계·SQL이 왜 그렇게 생겼는지 한 번에 이해된다.",
+      "relatedConcepts": [
+        "rdb-overview",
+        "modeling-basics"
+      ],
+      "relatedQuestions": [],
+      "preview": "💡 이 글에서 답하는 질문  \n \"왜 데이터를 그냥 파일에 저장하지 않고, 굳이 행과 열로 나눠 테이블에 넣을까?\"  \n \"왜 한 회사에서 만든 RDBMS와 다른 회사 RDBMS가 거의 같은 SQL을 쓸까?\"  \n \"왜 SQLD 시험 1과목 첫 장이 '엔터티'일까?\"\n\n 1. 데이터를 저장한다는 행위의 역사\n\n처음 컴퓨터로 데이터를 저장하던 시절에는 그냥"
+    },
+    {
+      "slug": "why-normalization",
+      "title": "한 테이블의 비극 — 정규화는 왜 필요한가",
+      "subtitle": "삽입·갱신·삭제 이상이 보여주는 \\\"못 쪼갠 데이터\\\"의 대가",
+      "topic": "정규화",
+      "level": "intermediate",
+      "readingMinutes": 12,
+      "description": "1NF부터 BCNF까지를 외우기 전에, \"왜 쪼개야 하는가\"를 먼저 보자. 한 테이블에 모든 걸 넣었을 때 어떤 일이 벌어지는지 따라가면 정규형의 의미가 자연스럽게 따라온다.",
+      "relatedConcepts": [
+        "normalization",
+        "identifier",
+        "integrity"
+      ],
+      "relatedQuestions": [
+        "q-005",
+        "q-034",
+        "q-035",
+        "q-036",
+        "q-037",
+        "q-104",
+        "q-106"
+      ],
+      "preview": "💡 이 글에서 답하는 질문  \n \"1NF·2NF·3NF·BCNF — 왜 이렇게 단계가 많을까?\"  \n \"반정규화는 정규화의 반대인데, 왜 정규화를 먼저 하는 걸까?\"  \n \"결정자가 후보키여야 한다는 BCNF의 정의가 왜 그렇게 쓰여 있을까?\"\n\n 1. 시작은 항상 한 테이블이다\n\n여러분이 작은 회사의 신입 개발자라고 해보자. 인사 담당자가 \\\"엑셀로만 "
+    },
+    {
+      "slug": "acid-and-concurrency",
+      "title": "트랜잭션이 깨질 때 — ACID는 무엇을 지키는가",
+      "subtitle": "1만 원 이체 한 번에 숨어 있는 네 가지 약속",
+      "topic": "트랜잭션·동시성",
+      "level": "advanced",
+      "readingMinutes": 14,
+      "description": "ACID는 외울 단어가 아니라 \\\"데이터가 깨지는 4가지 시나리오\\\"에 대한 답이다. 계좌 이체 한 번을 천천히 따라가면 원자성·일관성·고립성·지속성이 왜 모두 필요한지 보인다.",
+      "relatedConcepts": [
+        "transaction",
+        "integrity"
+      ],
+      "relatedQuestions": [
+        "q-020",
+        "q-040",
+        "q-086",
+        "q-087",
+        "q-088",
+        "q-096",
+        "q-097",
+        "q-098",
+        "q-099"
+      ],
+      "preview": "💡 이 글에서 답하는 질문  \n \"ACID는 왜 4개일까? 셋이면 안 되나?\"  \n \"Dirty Read, Phantom Read는 왜 \\\"읽기\\\" 문제인가? 쓰기가 아니라?\"  \n \"락(Lock)과 MVCC는 결국 같은 일을 하는 건가?\"\n\n 1. 평범한 이체 한 줄\n\n은행 시스템에서 A씨가 B씨에게 1만 원을 보낸다. 코드 수준에서는 이 \\\"하나의 일"
+    },
+    {
+      "slug": "window-functions-intuition",
+      "title": "윈도우 함수의 직관 — GROUP BY가 못 풀던 것들",
+      "subtitle": "순위·누적합·이전 행 비교 — 분석 쿼리의 새로운 언어",
+      "topic": "윈도우 함수",
+      "level": "advanced",
+      "readingMinutes": 12,
+      "description": "윈도우 함수는 문법이 복잡해 보이지만, \"행을 합치지 않고 옆에 새로운 컬럼을 붙인다\"는 단 하나의 발상에서 출발한다. 이 발상을 잡으면 RANK·LAG·SUM OVER가 한 줄로 보인다.",
+      "relatedConcepts": [
+        "window-functions",
+        "group-by",
+        "top-n"
+      ],
+      "relatedQuestions": [
+        "q-017",
+        "q-073",
+        "q-074",
+        "q-075",
+        "q-076",
+        "q-143",
+        "q-144",
+        "q-145",
+        "q-146",
+        "q-147"
+      ],
+      "preview": "💡 이 글에서 답하는 질문  \n \"GROUP BY로 평균은 구해지는데, '각 사원의 급여가 부서 평균에서 얼마나 차이 나는지'는 왜 GROUP BY로 못 풀까?\"  \n \"RANK·DENSERANK·ROWNUMBER는 왜 셋이나 있을까?\"  \n \"ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW라는 외계어는 무엇인가?\""
+    },
+    {
+      "slug": "null-and-outer-join",
+      "title": "NULL과 외부 조인의 위험한 동거",
+      "subtitle": "SQL이 만든 \\\"세 번째 진리값\\\"이 일으키는 모든 사고",
+      "topic": "NULL · OUTER JOIN",
+      "level": "intermediate",
+      "readingMinutes": 11,
+      "description": "NULL은 \\\"값이 없다\\\"가 아니다. \\\"값이 무엇인지 알 수 없다\\\"는 의미다. 이 한 글자 차이가 NOT IN, OUTER JOIN, 집계 함수, 정렬에서 모든 함정의 뿌리가 된다.",
+      "relatedConcepts": [
+        "null-handling",
+        "join-types",
+        "functions"
+      ],
+      "relatedQuestions": [
+        "q-012",
+        "q-042",
+        "q-045",
+        "q-066",
+        "q-107",
+        "q-111",
+        "q-112",
+        "q-113",
+        "q-118",
+        "q-122",
+        "q-124",
+        "q-138"
+      ],
+      "preview": "💡 이 글에서 답하는 질문  \n \"왜 WHERE comm = NULL이 안 되고 IS NULL을 써야 할까?\"  \n \"왜 NOT IN (10, 20, NULL)은 결과가 항상 비는가?\"  \n \"LEFT OUTER JOIN을 했는데 WHERE 조건을 추가하니 결과가 INNER JOIN과 같아지는 이유는?\"\n\n 1. NULL은 \\\"없음\\\"이 아니다\n\n많은 사"
     }
   ]
 }

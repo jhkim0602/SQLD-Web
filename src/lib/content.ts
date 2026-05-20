@@ -1,6 +1,8 @@
 import fs from "node:fs";
 import path from "node:path";
 import type {
+  Article,
+  ArticleMeta,
   Concept,
   ConceptMeta,
   Question,
@@ -14,6 +16,7 @@ type ContentData = {
   builtAt: string;
   questions: Question[];
   concepts: Concept[];
+  articles: Article[];
 };
 
 let _data: ContentData | null = null;
@@ -24,7 +27,7 @@ function loadData(): ContentData {
     console.error(
       "[content] public/content-data.json not found. Run `npm run content` first."
     );
-    _data = { builtAt: "", questions: [], concepts: [] };
+    _data = { builtAt: "", questions: [], concepts: [], articles: [] };
     return _data;
   }
   const raw = fs.readFileSync(DATA_FILE, "utf-8");
@@ -105,4 +108,27 @@ export function groupConceptsByCategory(): Record<
 export function getCategories(subject: Subject): string[] {
   const meta = getQuestionMeta().filter((q) => q.subject === subject);
   return Array.from(new Set(meta.map((q) => q.category))).sort();
+}
+
+export function getAllArticles(): Article[] {
+  return loadData().articles ?? [];
+}
+
+export function getArticle(slug: string): Article | null {
+  return getAllArticles().find((a) => a.slug === slug) ?? null;
+}
+
+export function getArticleMeta(): ArticleMeta[] {
+  return getAllArticles().map((a) => {
+    const { body, bodyHtml: _bodyHtml, ...rest } = a;
+    void _bodyHtml;
+    return {
+      ...rest,
+      preview: body
+        .replace(/```[\s\S]*?```/g, "")
+        .replace(/[#>*_`]/g, "")
+        .trim()
+        .slice(0, 200),
+    };
+  });
 }

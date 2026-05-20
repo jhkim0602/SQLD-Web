@@ -51,6 +51,32 @@ export type Concept = {
 
 export type ConceptMeta = Omit<Concept, "body" | "bodyHtml">;
 
+export type ArticleLevel = "beginner" | "intermediate" | "advanced";
+
+export type Article = {
+  slug: string;
+  title: string;
+  subtitle?: string;
+  topic: string;
+  level: ArticleLevel;
+  readingMinutes: number;
+  description?: string;
+  relatedConcepts?: string[];
+  relatedQuestions?: string[];
+  body: string;
+  bodyHtml?: string;
+};
+
+export type ArticleMeta = Omit<Article, "body" | "bodyHtml"> & {
+  preview: string;
+};
+
+export const ARTICLE_LEVEL_LABELS: Record<ArticleLevel, string> = {
+  beginner: "입문",
+  intermediate: "중급",
+  advanced: "심화",
+};
+
 export const SUBJECT_LABELS: Record<Subject, string> = {
   1: "데이터 모델링의 이해",
   2: "SQL 기본 및 활용",

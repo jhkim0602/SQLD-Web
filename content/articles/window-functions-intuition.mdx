@@ -1,0 +1,300 @@
+---
+slug: window-functions-intuition
+title: 윈도우 함수의 직관 — GROUP BY가 못 풀던 것들
+subtitle: 순위·누적합·이전 행 비교 — 분석 쿼리의 새로운 언어
+topic: 윈도우 함수
+level: advanced
+readingMinutes: 12
+order: 4
+description: 윈도우 함수는 문법이 복잡해 보이지만, "행을 합치지 않고 옆에 새로운 컬럼을 붙인다"는 단 하나의 발상에서 출발한다. 이 발상을 잡으면 RANK·LAG·SUM OVER가 한 줄로 보인다.
+relatedConcepts: [window-functions, group-by, top-n]
+relatedQuestions: [q-017, q-073, q-074, q-075, q-076, q-143, q-144, q-145, q-146, q-147]
+---
+
+> 💡 **이 글에서 답하는 질문**  
+> "GROUP BY로 평균은 구해지는데, '각 사원의 급여가 부서 평균에서 얼마나 차이 나는지'는 왜 GROUP BY로 못 풀까?"  
+> "RANK·DENSE_RANK·ROW_NUMBER는 왜 셋이나 있을까?"  
+> "`ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW`라는 외계어는 무엇인가?"
+
+## 1. GROUP BY의 한계를 만나는 순간
+
+\"부서별 평균 급여\"를 구하라고 하면 누구나 안다.
+
+```sql
+SELECT deptno, AVG(sal) FROM emp GROUP BY deptno;
+```
+
+| deptno | avg_sal |
+|---|---|
+| 10 | 2900 |
+| 20 | 2200 |
+| 30 | 1500 |
+
+여기서 한 단계 깊은 요청이 들어온다.
+
+> \"각 사원의 이름·급여·부서 평균을 한 줄로 보여주세요.\"
+
+당황한다. GROUP BY를 하면 사원 단위 행이 사라지고 부서 단위로 묶여버린다. **\"사원도 보이고, 그 사원이 속한 부서의 평균도 같이 보고 싶다\"** 는 요청은 GROUP BY로는 표현이 안 된다.
+
+자연스러운 첫 시도는 두 가지다.
+
+### 시도 1: 셀프 조인
+
+```sql
+SELECT e.ename, e.sal, d.avg_sal
+FROM emp e
+JOIN (SELECT deptno, AVG(sal) AS avg_sal FROM emp GROUP BY deptno) d
+  ON e.deptno = d.deptno;
+```
+
+된다. 그러나 **인라인 뷰**를 만들고 다시 조인해야 한다. 비싼 방법이고 복잡하다.
+
+### 시도 2: 스칼라 서브쿼리
+
+```sql
+SELECT e.ename, e.sal,
+  (SELECT AVG(sal) FROM emp WHERE deptno = e.deptno) AS avg_sal
+FROM emp e;
+```
+
+된다. 그러나 **각 행마다 서브쿼리를 다시 실행**해서 비용이 크다.
+
+## 2. 발상의 전환: \"옆에 컬럼 하나 더\"
+
+윈도우 함수는 이 문제를 정면으로 푼다.
+
+```sql
+SELECT ename, sal,
+  AVG(sal) OVER (PARTITION BY deptno) AS avg_sal
+FROM emp;
+```
+
+이 한 줄을 천천히 읽어보자.
+
+- `AVG(sal)` : 평균을 구해라.
+- `OVER (...)` : 단, **GROUP BY로 행을 합치지 마라**. 행은 그대로 두고, 옆에 평균이라는 새 컬럼을 추가하라.
+- `PARTITION BY deptno` : 부서별로 \"창문\"을 만들어라. 각 사원의 평균은 자기 부서의 평균이다.
+
+결과:
+
+| ename | sal | avg_sal |
+|---|---|---|
+| KING | 5000 | 2900 |
+| JONES | 2975 | 2900 |
+| SCOTT | 3000 | 2200 |
+| ADAMS | 1100 | 2200 |
+| WARD | 1250 | 1500 |
+
+**행 수는 그대로**, 새 컬럼 하나가 생겼다. 한 SQL로, 추가 조인 없이.
+
+> 💡 **윈도우 함수의 핵심 발상**:  
+> GROUP BY가 \"세로로 압축\"한다면, 윈도우 함수는 \"가로로 펼친다\". 행은 그대로 유지하면서, 각 행 옆에 \"이 행이 속한 그룹의 집계값\"을 붙인다.
+
+## 3. PARTITION BY와 ORDER BY — 윈도우의 두 축
+
+윈도우 함수의 `OVER(...)` 절은 두 가지를 받는다.
+
+### 3-1. PARTITION BY — 그룹의 정의
+
+\"이 행이 속한 창문은 무엇인가\"를 정한다. 생략하면 **전체 데이터가 하나의 창문**.
+
+```sql
+RANK() OVER (PARTITION BY deptno ORDER BY sal DESC)
+```
+→ 부서마다 따로 순위를 매긴다. 부서가 5개면 \"1위가 5명\".
+
+```sql
+RANK() OVER (ORDER BY sal DESC)
+```
+→ 회사 전체에서 한 줄 줄 세운다. \"1위는 한 명\".
+
+### 3-2. ORDER BY — 행의 순서
+
+\"창문 안에서 행을 어떻게 정렬하는가\"를 정한다. **순위·누적·이전/다음 행 함수**는 ORDER BY가 필수다 (없으면 의미가 없다).
+
+```sql
+SUM(sal) OVER (ORDER BY hiredate)     -- 입사일 순으로 누적합
+RANK() OVER (ORDER BY sal DESC)        -- 급여 내림차순 순위
+LAG(sal) OVER (ORDER BY hiredate)      -- 이전 입사자의 급여
+```
+
+## 4. 윈도우 함수의 네 가지 종류
+
+### 4-1. 순위 함수 — RANK / DENSE_RANK / ROW_NUMBER
+
+\"동률을 어떻게 처리할 것이냐\"가 이 셋의 유일한 차이다.
+
+| sal | RANK | DENSE_RANK | ROW_NUMBER |
+|---|---|---|---|
+| 100 | 1 | 1 | 1 |
+| 100 | 1 | 1 | 2 |
+| 200 | **3** | **2** | 3 |
+| 300 | 4 | 3 | 4 |
+
+- **RANK**: 동률은 같은 순위. 다음은 **건너뜀** (1, 1, 3).
+- **DENSE_RANK**: 동률은 같은 순위. 다음은 **연속** (1, 1, 2).
+- **ROW_NUMBER**: 동률 무시. 무조건 **다른 번호** (1, 2, 3).
+
+### 4-2. 집계 함수 위에 OVER
+
+평소에 쓰던 SUM·COUNT·AVG·MAX·MIN을 OVER와 함께 쓰면 \"창문 안의 집계\"가 된다.
+
+```sql
+SUM(sal) OVER (PARTITION BY deptno)   -- 부서별 총 급여 (모든 행에 같은 값)
+COUNT(*) OVER (PARTITION BY deptno)   -- 부서별 인원 수
+```
+
+### 4-3. 행 위치 함수 — LAG / LEAD / FIRST_VALUE / LAST_VALUE
+
+\"같은 창문의 다른 행을 참조\"한다.
+
+```sql
+LAG(sal, 1, 0) OVER (ORDER BY hiredate)
+```
+
+- `1`: 한 행 **이전**의 sal
+- `0`: 이전 행이 없을 때의 기본값
+
+| ename | sal | LAG(sal, 1, 0) |
+|---|---|---|
+| A | 1000 | **0** (이전 없음) |
+| B | 2000 | 1000 |
+| C | 1500 | 2000 |
+
+이게 왜 강력한가? **\"전월 대비 매출 증감\", \"이전 입사자와의 급여 차\"** 같은 시계열 분석을 한 SQL로 끝낸다.
+
+### 4-4. 분포 함수 — NTILE / PERCENT_RANK / CUME_DIST
+
+- **NTILE(n)**: 결과를 n개 그룹으로 균등 분할 (1~n 그룹 번호 부여).
+- **PERCENT_RANK**: 백분율 순위.
+- **CUME_DIST**: 누적 분포.
+
+## 5. 누적합과 \"프레임\"의 비밀
+
+윈도우 함수의 가장 강력한 기능 중 하나가 **누적합·이동평균** 이다.
+
+```sql
+SUM(sal) OVER (
+  ORDER BY hiredate
+  ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+) AS cum_sal
+```
+
+이 외계어 같은 마지막 줄이 **프레임(Frame)** 정의다. \"창문 안에서 어떤 행들을 합칠지\"를 더 세밀하게 지정한다.
+
+### 프레임 키워드
+
+| 키워드 | 뜻 |
+|---|---|
+| `UNBOUNDED PRECEDING` | 처음부터 |
+| `N PRECEDING` | N행 이전부터 |
+| `CURRENT ROW` | 현재 행 |
+| `N FOLLOWING` | N행 이후까지 |
+| `UNBOUNDED FOLLOWING` | 끝까지 |
+
+### 자주 쓰는 4가지 패턴
+
+```sql
+-- 누적합 (첫 행부터 현재까지)
+ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+
+-- 이동평균 (앞 2 + 현재 + 뒤 2 = 5행)
+ROWS BETWEEN 2 PRECEDING AND 2 FOLLOWING
+
+-- 미래 합 (현재부터 끝까지)
+ROWS BETWEEN CURRENT ROW AND UNBOUNDED FOLLOWING
+
+-- 전체 합 (창문 전체 — PARTITION BY 안의 모든 행)
+ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
+```
+
+### ROWS vs RANGE 함정 ⭐ 시험·실무 모두 빈출
+
+- **ROWS**: 행 단위. \"앞 2행\".
+- **RANGE**: 값 단위. \"ORDER BY 컬럼 값이 현재 값과 같거나 가까운 행\".
+
+```sql
+-- 같은 sal이 여러 행이면 다르게 동작
+SUM(sal) OVER (ORDER BY sal ROWS BETWEEN 1 PRECEDING AND CURRENT ROW)
+SUM(sal) OVER (ORDER BY sal RANGE BETWEEN 1 PRECEDING AND CURRENT ROW)
+```
+
+`ORDER BY` 컬럼에 동률이 있으면 ROWS와 RANGE는 다른 결과를 낸다. ROWS는 \"바로 앞 1행\", RANGE는 \"sal 값이 1 이내인 모든 행\".
+
+> 💡 잘 모르겠으면 **ROWS**를 쓴다. 더 직관적이고 행 단위로 동작한다.
+
+## 6. 옵티마이저 입장에서 보는 윈도우 함수
+
+윈도우 함수가 \"공짜\"는 아니다. 옵티마이저는 다음 작업을 한다.
+
+1. **PARTITION BY 컬럼으로 정렬** (이미 인덱스가 있으면 생략)
+2. **각 파티션 안에서 ORDER BY 컬럼으로 정렬**
+3. **프레임 정의에 따라 행마다 집계**
+
+대용량 데이터에서 PARTITION BY가 잘못 잡히면 정렬 비용이 폭발한다. 가능하면 **PARTITION BY 컬럼에 인덱스가 있도록** 설계하자.
+
+> 📌 자주 쓰는 윈도우 함수 쿼리는 **Materialized View**로 캐싱하기도 한다 (특히 OLAP/대시보드).
+
+## 7. \"WHERE 절에 윈도우 함수 못 씀\" 함정
+
+```sql
+-- ✗ 에러: WHERE에서 윈도우 함수 참조 불가
+SELECT * FROM emp WHERE RANK() OVER (ORDER BY sal) <= 3;
+```
+
+이유는 **SQL 실행 순서**다. WHERE는 윈도우 함수보다 먼저 실행된다.
+
+```
+FROM → WHERE → GROUP BY → HAVING → [윈도우 함수] → SELECT → ORDER BY
+```
+
+WHERE가 실행될 때는 아직 RANK가 매겨지지 않았다. 해결은 **인라인 뷰**.
+
+```sql
+-- ✓ 정답
+SELECT * FROM (
+  SELECT e.*, RANK() OVER (ORDER BY sal DESC) AS r
+  FROM emp e
+) WHERE r <= 3;
+```
+
+\"부서별 상위 3명\" 같은 그룹별 Top-N도 같은 패턴이다.
+
+```sql
+SELECT * FROM (
+  SELECT e.*,
+    RANK() OVER (PARTITION BY deptno ORDER BY sal DESC) AS r
+  FROM emp e
+) WHERE r <= 3;
+```
+
+## 8. RANK 선택 가이드 — \"동률 어떻게 처리할지\"가 핵심
+
+\"부서별 급여 상위 3명\"이라는 한 요구사항도, **동률**을 어떻게 보느냐에 따라 셋 중 하나를 골라야 한다.
+
+| 요구 | 함수 |
+|---|---|
+| \"동률 모두 포함\" (3명일 때 동률이 있으면 4명 이상 가능) | **RANK** |
+| \"정확히 3명만\" (동률은 임의 한 명만) | **ROW_NUMBER** |
+| \"동률은 같은 등수, 4등은 다음 사람\" (연속 순위) | **DENSE_RANK** |
+
+실무에서 가장 사고가 잘 나는 케이스가 **\"상위 N명을 정확히 N명으로 잡았는데 동률이 N+1명이라 일부가 빠져버린\"** 상황. 요구사항을 들을 때 **\"동률은 어떻게 처리할까요?\"** 라고 물어보면 좋다.
+
+## 9. 윈도우 함수는 어디서 빛나는가
+
+- **랭킹**: 부서별 매출 상위, 상품별 판매 순위
+- **누적 분석**: 일별 누적 매출, 누적 가입자
+- **변화량**: 전일 대비 증감, 전월 대비 증감
+- **이동평균**: 주가의 5일 이동평균, 트래픽의 1시간 이동평균
+- **그룹별 비율**: 부서 내 본인 급여 비중(`RATIO_TO_REPORT`)
+- **상위/하위 분포**: NTILE(4)로 \"내 점수가 상위 25%인가\"
+
+이 모두를 윈도우 함수 없이 풀려면 셀프 조인·스칼라 서브쿼리·반복 쿼리를 써야 한다. 윈도우 함수는 분석 SQL의 **새로운 언어**다.
+
+## 10. 한 줄 요약
+
+> **GROUP BY가 행을 \"세로로 압축\"한다면, 윈도우 함수는 \"가로로 펼친다\"**.  
+> `OVER(...)` 안의 `PARTITION BY`는 창문의 범위, `ORDER BY`는 그 안의 순서, `ROWS/RANGE BETWEEN`은 어떤 행들을 합칠지.  
+> RANK·LAG·SUM OVER는 모두 같은 발상의 변주다.
+
+다음 글에서는 SQL에서 가장 함정이 많은 단 하나의 값 — **NULL**과 외부 조인의 위험한 동거를 다룬다.

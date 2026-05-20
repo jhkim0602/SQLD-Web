@@ -1,11 +1,16 @@
 import Link from "next/link";
-import { getAllQuestions, getAllConcepts } from "@/lib/content";
+import {
+  getAllQuestions,
+  getAllConcepts,
+  getArticleMeta,
+} from "@/lib/content";
 import { SUBJECT_LABELS, SUBJECT_QUESTION_COUNTS, SUBJECT_POINTS } from "@/lib/types";
 import { HomeProgress } from "@/components/HomeProgress";
 
 export default function HomePage() {
   const questions = getAllQuestions();
   const concepts = getAllConcepts();
+  const articles = getArticleMeta();
 
   const bySubject = {
     1: questions.filter((q) => q.subject === 1).length,
@@ -127,6 +132,46 @@ export default function HomePage() {
           ))}
         </div>
       </section>
+
+      {articles.length > 0 && (
+        <section className="mt-10">
+          <div className="mb-3 flex items-baseline justify-between">
+            <h2 className="text-xl font-bold text-zinc-900">📖 칼럼</h2>
+            <Link
+              href="/articles"
+              className="text-xs text-zinc-500 hover:text-zinc-900"
+            >
+              전체 보기 →
+            </Link>
+          </div>
+          <p className="mb-4 text-sm text-zinc-500">
+            위키처럼 쭉 읽는 긴 글. 어려운 개념의 배경부터 풀어줍니다.
+          </p>
+          <div className="grid gap-3 md:grid-cols-2">
+            {articles.slice(0, 4).map((a) => (
+              <Link
+                key={a.slug}
+                href={`/articles/${a.slug}`}
+                className="block rounded-md border border-zinc-200 bg-white p-4 transition hover:border-zinc-400 hover:bg-zinc-50/40"
+              >
+                <div className="mb-1 flex items-center gap-2 text-[10px] text-zinc-500">
+                  <span className="rounded border border-zinc-200 bg-zinc-50 px-1.5 py-0.5">
+                    {a.topic}
+                  </span>
+                  <span>·</span>
+                  <span>{a.readingMinutes}분</span>
+                </div>
+                <h3 className="text-[15px] font-semibold text-zinc-900">
+                  {a.title}
+                </h3>
+                {a.subtitle && (
+                  <p className="mt-0.5 text-xs text-zinc-600">{a.subtitle}</p>
+                )}
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       <section className="mt-10 rounded-md border border-zinc-200 bg-zinc-50/50 p-5">
         <h3 className="text-sm font-semibold text-zinc-900">단축키</h3>

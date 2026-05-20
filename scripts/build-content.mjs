@@ -15,6 +15,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
 const QUESTIONS_DIR = path.join(ROOT, "content/questions");
 const CONCEPTS_DIR = path.join(ROOT, "content/concepts");
+const ARTICLES_DIR = path.join(ROOT, "content/articles");
 const OUT_INDEX = path.join(ROOT, "public/content-index.json");
 const OUT_DATA = path.join(ROOT, "public/content-data.json");
 
@@ -70,6 +71,28 @@ const conceptsRaw = readDir(CONCEPTS_DIR)
   })
   .sort((a, b) => a.subject - b.subject || a.order - b.order);
 
+const articlesRaw = readDir(ARTICLES_DIR)
+  .filter((f) => f.endsWith(".mdx"))
+  .map((f) => {
+    const { data, content } = matter(
+      fs.readFileSync(path.join(ARTICLES_DIR, f), "utf-8")
+    );
+    return {
+      slug: data.slug,
+      title: data.title,
+      subtitle: data.subtitle,
+      topic: data.topic,
+      level: data.level ?? "intermediate",
+      readingMinutes: data.readingMinutes ?? 10,
+      description: data.description,
+      relatedConcepts: data.relatedConcepts ?? [],
+      relatedQuestions: data.relatedQuestions ?? [],
+      order: data.order ?? 999,
+      body: content,
+    };
+  })
+  .sort((a, b) => a.order - b.order);
+
 const questions = await Promise.all(
   questionsRaw.map(async (q) => ({
     ...q,
@@ -85,6 +108,13 @@ const concepts = await Promise.all(
   conceptsRaw.map(async (c) => ({
     ...c,
     bodyHtml: await md2html(c.body),
+  }))
+);
+
+const articles = await Promise.all(
+  articlesRaw.map(async (a) => ({
+    ...a,
+    bodyHtml: await md2html(a.body),
   }))
 );
 
@@ -112,18 +142,38 @@ const conceptMeta = concepts.map((c) => ({
     .slice(0, 120),
 }));
 
+const articleMeta = articles.map((a) => ({
+  slug: a.slug,
+  title: a.title,
+  subtitle: a.subtitle,
+  topic: a.topic,
+  level: a.level,
+  readingMinutes: a.readingMinutes,
+  description: a.description,
+  relatedConcepts: a.relatedConcepts,
+  relatedQuestions: a.relatedQuestions,
+  preview: a.body
+    .replace(/```[\s\S]*?```/g, "")
+    .replace(/[#>*_`]/g, "")
+    .trim()
+    .slice(0, 200),
+}));
+
 const index = {
   builtAt: new Date().toISOString(),
   totalQuestions: questions.length,
   totalConcepts: concepts.length,
+  totalArticles: articles.length,
   questions: questionMeta,
   concepts: conceptMeta,
+  articles: articleMeta,
 };
 
 const data = {
   builtAt: new Date().toISOString(),
   questions,
   concepts,
+  articles,
 };
 
 fs.mkdirSync(path.dirname(OUT_INDEX), { recursive: true });
@@ -131,5 +181,5 @@ fs.writeFileSync(OUT_INDEX, JSON.stringify(index, null, 2));
 fs.writeFileSync(OUT_DATA, JSON.stringify(data));
 
 console.log(
-  `[content] ${questions.length} questions, ${concepts.length} concepts → public/content-index.json + content-data.json`
+  `[content] ${questions.length} questions, ${concepts.length} concepts, ${articles.length} articles → public/content-index.json + content-data.json`
 );

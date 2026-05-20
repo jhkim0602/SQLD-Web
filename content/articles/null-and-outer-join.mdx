@@ -1,0 +1,318 @@
+---
+slug: null-and-outer-join
+title: NULL과 외부 조인의 위험한 동거
+subtitle: SQL이 만든 \"세 번째 진리값\"이 일으키는 모든 사고
+topic: NULL · OUTER JOIN
+level: intermediate
+readingMinutes: 11
+order: 5
+description: NULL은 \"값이 없다\"가 아니다. \"값이 무엇인지 알 수 없다\"는 의미다. 이 한 글자 차이가 NOT IN, OUTER JOIN, 집계 함수, 정렬에서 모든 함정의 뿌리가 된다.
+relatedConcepts: [null-handling, join-types, functions]
+relatedQuestions: [q-012, q-042, q-045, q-066, q-107, q-111, q-112, q-113, q-118, q-122, q-124, q-138]
+---
+
+> 💡 **이 글에서 답하는 질문**  
+> "왜 `WHERE comm = NULL`이 안 되고 `IS NULL`을 써야 할까?"  
+> "왜 `NOT IN (10, 20, NULL)`은 결과가 항상 비는가?"  
+> "LEFT OUTER JOIN을 했는데 WHERE 조건을 추가하니 결과가 INNER JOIN과 같아지는 이유는?"
+
+## 1. NULL은 \"없음\"이 아니다
+
+많은 사람이 NULL을 \"빈 값\" 또는 \"0\"으로 오해한다. 사실은 다르다.
+
+> **NULL의 정의**: \"이 값이 무엇인지 **알 수 없다**(Unknown)\".
+
+다음 두 경우는 의미가 다르다.
+
+- `comm = 0` : 커미션이 \"0원\"이라고 **확정**됨.
+- `comm = NULL` : 커미션이 0원인지 1만 원인지 \"**모름**\".
+
+이 차이가 시험과 실무 모두에서 함정의 뿌리다. NULL은 \"존재하지 않음\"이 아니라 \"**알 수 없는 무언가가 거기 있다**\".
+
+## 2. 3치 논리 — SQL은 거짓말을 하지 않는다
+
+대부분 프로그래밍 언어는 **2치 논리** (TRUE / FALSE). SQL은 **3치 논리** (TRUE / FALSE / **UNKNOWN**).
+
+```sql
+NULL = NULL       -- UNKNOWN
+NULL = 100        -- UNKNOWN
+NULL <> 100       -- UNKNOWN
+NULL > 0          -- UNKNOWN
+```
+
+\"모름과 모름이 같은가?\" 라고 물으면 \"모른다\"가 정확한 답이다. SQL은 솔직하다.
+
+문제는 **WHERE 절은 TRUE인 행만 통과**시킨다는 점.
+
+```sql
+WHERE comm = NULL
+-- 모든 행이 UNKNOWN → 통과 0건
+```
+
+그래서 \"NULL이 있는 행을 찾아라\"는 별도 연산자가 필요하다.
+
+```sql
+WHERE comm IS NULL       -- ✓
+WHERE comm IS NOT NULL   -- ✓
+```
+
+> 📌 `IS NULL`은 \"NULL인지\"를 묻는 **유일한 합법적 비교**.
+
+### 3치 논리의 진리표 (AND, OR)
+
+| AND | TRUE | FALSE | UNKNOWN |
+|---|---|---|---|
+| TRUE | TRUE | FALSE | UNKNOWN |
+| FALSE | FALSE | FALSE | FALSE |
+| UNKNOWN | UNKNOWN | FALSE | UNKNOWN |
+
+| OR | TRUE | FALSE | UNKNOWN |
+|---|---|---|---|
+| TRUE | TRUE | TRUE | TRUE |
+| FALSE | TRUE | FALSE | UNKNOWN |
+| UNKNOWN | TRUE | UNKNOWN | UNKNOWN |
+
+핵심은 **\"UNKNOWN AND ...\"** 결과. \"NULL AND TRUE = UNKNOWN\". 거의 모든 NULL 사고가 이 한 줄에서 시작된다.
+
+## 3. NULL과 산술 연산
+
+```sql
+NULL + 100   -- NULL
+NULL * 0     -- NULL
+NULL || 'A'  -- 'A'      (Oracle 특수: 빈 문자열처럼 처리)
+CONCAT(NULL, 'A')  -- 'A' (DBMS마다 차이)
+```
+
+**규칙**: 한쪽이 NULL이면 결과도 NULL (전파). 단, **연결(`||`)** 과 일부 **함수**는 NULL을 빈 문자열처럼 다루는 예외가 있다.
+
+\"왜 NULL × 0이 NULL일까?\" — 모르는 수에 0을 곱했다고 답이 0이 보장될까? 아니다. 모르는 수는 여전히 모른다. SQL은 일관되게 \"모른다\"고 답한다.
+
+## 4. 집계 함수는 NULL을 \"건너뛴다\"
+
+이 부분이 묘하게 일관성이 깨지는 지점이다.
+
+```sql
+-- sal: 1000, 2000, NULL, 3000
+SELECT COUNT(*), COUNT(sal), SUM(sal), AVG(sal) FROM emp;
+```
+
+| 함수 | 결과 | 설명 |
+|---|---|---|
+| `COUNT(*)` | **4** | 전체 행 (NULL 행 포함) |
+| `COUNT(sal)` | **3** | NULL 제외 |
+| `SUM(sal)` | **6000** | NULL 제외하고 합산 |
+| `AVG(sal)` | **2000** | 6000 / 3 (NULL 제외 평균) |
+
+여기서 함정 두 개.
+
+1. **AVG는 6000/4가 아니다**. NULL을 평균 분모에 넣지 않는다. \"평균 sal\"이라는 의미상 자연스럽지만, 실무에서 \"NULL을 0으로 봐서 평균을 내야 하는 경우\"를 만나면 `AVG(NVL(sal, 0))`을 명시해야 한다.
+2. **`SUM(NULL_컬럼)`은 NULL** (모든 행이 NULL이면). 0이 아니다.
+
+> 📌 GROUP BY는 NULL을 **하나의 그룹**으로 모은다. \"NULL 부서 인원 = 3명\"이 가능. 단 WHERE는 NULL 행을 제외하니, GROUP BY가 보는 데이터에는 NULL이 못 들어올 수도.
+
+## 5. NOT IN의 함정 — 가장 유명한 사고
+
+```sql
+-- dept 테이블에 deptno = NULL인 행이 하나 있다고 하자
+SELECT * FROM emp
+WHERE deptno NOT IN (SELECT deptno FROM dept);
+```
+
+직관: \"부서에 존재하지 않는 부서번호를 가진 사원\"을 가져올 거 같다.
+
+실제: **항상 빈 결과**.
+
+이유를 풀어보자. `NOT IN (10, 20, NULL)`은 다음과 같이 풀린다.
+
+```
+deptno <> 10 AND deptno <> 20 AND deptno <> NULL
+                                  ^^^^^^^^^^^^^^^^
+                                  UNKNOWN
+```
+
+AND 결합이라 한 칸이 UNKNOWN이면 전체 결과는 \"TRUE\"가 되지 못한다. **모든 행이 UNKNOWN으로 떨어져 통과 0건**.
+
+해결책 세 가지.
+
+```sql
+-- 방법 1: 서브쿼리에서 NULL 제거
+WHERE deptno NOT IN (SELECT deptno FROM dept WHERE deptno IS NOT NULL)
+
+-- 방법 2: NOT EXISTS 사용 (NULL 영향 안 받음)
+WHERE NOT EXISTS (
+  SELECT 1 FROM dept d WHERE d.deptno = e.deptno
+)
+
+-- 방법 3: LEFT OUTER JOIN + IS NULL
+SELECT e.* FROM emp e
+LEFT OUTER JOIN dept d ON e.deptno = d.deptno
+WHERE d.deptno IS NULL
+```
+
+\"왜 NOT EXISTS는 안전한가?\" — EXISTS는 \"매칭되는 행이 있는가\"를 묻는다. NULL은 매칭에 사용되지 않으므로 영향이 없다. SQL이 \"3치 논리를 회피하는 길\"이다.
+
+## 6. OUTER JOIN — NULL을 \"만들어내는\" 도구
+
+INNER JOIN은 양쪽에 매칭되는 행만 결과에 넣는다. OUTER JOIN은 그 반대 — **매칭되지 않는 쪽도 결과에 포함**시킨다. 빈 자리는 **NULL로 채운다**.
+
+```
+emp: (1, 10), (2, 20), (3, NULL)
+dept: (10, 'A'), (30, 'C')
+
+SELECT * FROM emp e LEFT OUTER JOIN dept d ON e.deptno = d.deptno;
+```
+
+| emp.empno | emp.deptno | dept.deptno | dept.dname |
+|---|---|---|---|
+| 1 | 10 | 10 | A |
+| 2 | 20 | NULL | NULL | ← B에 매칭 없음
+| 3 | NULL | NULL | NULL | ← NULL은 매칭 안 됨
+
+여기서 \"emp.deptno=NULL\"인 사원도 결과에 들어왔다. NULL = 어떤 값도 매칭 안 되지만, LEFT OUTER JOIN 규칙이 \"왼쪽은 보존\"이므로 살아남는다.
+
+## 7. LEFT OUTER JOIN + WHERE의 가장 흔한 사고
+
+\"모든 사원, 그리고 만약 부서가 있다면 서울 부서인 사람만\"을 원한다.
+
+```sql
+-- ✗ 의도와 다름
+SELECT e.ename, d.loc
+FROM emp e LEFT OUTER JOIN dept d ON e.deptno = d.deptno
+WHERE d.loc = 'SEOUL';
+```
+
+뭐가 잘못됐을까? **WHERE는 ON보다 나중에 평가**된다.
+
+흐름:
+
+1. `LEFT OUTER JOIN ON ...` : 모든 사원 + 매칭된 부서. 매칭 없으면 `d.loc` = NULL.
+2. `WHERE d.loc = 'SEOUL'` : NULL은 비교에서 UNKNOWN. NULL인 행 다 탈락. **INNER JOIN과 같은 결과**.
+
+해결책: 조건을 **ON 절로 옮겨라**.
+
+```sql
+-- ✓ 의도대로 동작
+SELECT e.ename, d.loc
+FROM emp e LEFT OUTER JOIN dept d
+  ON e.deptno = d.deptno AND d.loc = 'SEOUL';
+```
+
+이렇게 하면:
+
+- 조인 단계에서 `d.loc = 'SEOUL'`인 부서만 매칭.
+- 매칭 안 된 사원은 d.loc이 NULL인 채로 결과에 남음.
+- 모든 사원이 살아남는다.
+
+> 💡 **규칙**: OUTER JOIN에서 \"오른쪽(없을 수 있는 쪽)\"의 컬럼에 조건을 걸 거면, 그 조건은 **반드시 ON에**. WHERE에 넣으면 OUTER가 무력화된다.
+
+## 8. Oracle (+)의 위치 함정
+
+옛 Oracle은 ANSI 표준이 없던 시절 자체 외부 조인 표기를 썼다.
+
+```sql
+SELECT * FROM emp e, dept d
+WHERE e.deptno = d.deptno(+);
+```
+
+`(+)`의 위치를 외우는 가장 쉬운 방법: **\"NULL을 채울 쪽에 (+)를 붙인다\"**.
+
+`d.deptno(+)` → d 쪽이 NULL이 될 수 있음 → e가 기준 → **LEFT OUTER JOIN (왼쪽 = emp)**.
+
+| Oracle 구문 | ANSI 동치 |
+|---|---|
+| `WHERE A.x = B.y(+)` | `A LEFT OUTER JOIN B ON A.x = B.y` |
+| `WHERE A.x(+) = B.y` | `A RIGHT OUTER JOIN B ON A.x = B.y` |
+| 양쪽 `(+)` 동시에 | **불가능** (FULL OUTER는 ANSI로만) |
+
+실무에서는 ANSI 구문이 권장된다. (+)는 가독성도 떨어지고 FULL OUTER도 안 되며, 옵티마이저가 잘못 해석하는 경우도 있다.
+
+## 9. 정렬 시 NULL의 위치
+
+```sql
+SELECT * FROM emp ORDER BY comm;
+```
+
+NULL은 어디로 갈까? **DBMS마다 다르다**.
+
+| DBMS | ASC 기본 | DESC 기본 |
+|---|---|---|
+| **Oracle** | NULL이 **마지막** | NULL이 **처음** |
+| **PostgreSQL** | NULL이 마지막 | NULL이 처음 |
+| **MySQL** | NULL이 **처음** | NULL이 마지막 |
+| **SQL Server** | NULL이 처음 | NULL이 마지막 |
+
+명시적으로 지정하려면:
+
+```sql
+ORDER BY comm ASC NULLS LAST     -- Oracle, PostgreSQL
+ORDER BY comm DESC NULLS FIRST
+```
+
+> 📌 시험에서 \"Oracle ORDER BY ASC에서 NULL은 어디?\" → **마지막**.
+
+## 10. NULL 함수 카탈로그
+
+NULL을 다루는 주요 함수들.
+
+| 함수 | 동작 |
+|---|---|
+| `NVL(a, b)` | a가 NULL이면 b, 아니면 a |
+| `NVL2(a, b, c)` | a가 NOT NULL이면 b, NULL이면 c |
+| `COALESCE(a, b, c, ...)` | 첫 번째 NOT NULL 값 (ANSI 표준) |
+| `NULLIF(a, b)` | a = b면 NULL, 아니면 a |
+| `IS NULL` / `IS NOT NULL` | NULL 여부 |
+
+\"NVL\"은 Oracle 방언이고 \"COALESCE\"는 표준이다. 호환성을 위해 COALESCE 권장.
+
+```sql
+SELECT
+  NVL(comm, 0),                     -- comm이 NULL이면 0
+  COALESCE(phone1, phone2, '없음'),  -- 첫 NOT NULL
+  NULLIF(status, 'N/A')             -- 'N/A'면 NULL로 변환
+FROM emp;
+```
+
+## 11. DECODE의 특수 동작
+
+Oracle의 `DECODE` 함수는 **NULL = NULL을 TRUE로 처리**하는 유일한 케이스다.
+
+```sql
+SELECT DECODE(NULL, NULL, '같음', '다름') FROM dual;  -- '같음'
+```
+
+일반 SQL의 NULL 비교 원칙(UNKNOWN)과 정반대. 실무에서 헷갈리는 함정이다. CASE는 일반 원칙을 따른다.
+
+```sql
+CASE WHEN NULL = NULL THEN '같음' ELSE '다름' END  -- '다름' (UNKNOWN → ELSE)
+```
+
+## 12. NULL 사용의 실무 원칙
+
+**NULL을 의미적으로 구분해서 쓰라.**
+
+- 미정/모름 → NULL OK
+- \"빈 문자열\"이나 \"0\"으로 표현해야 할 의미 → NULL 대신 명시적 값
+- FK의 \"선택 관계\" → NULL OK (선택성)
+
+**제약 조건으로 NULL을 통제하라.**
+
+- PK는 자동 `NOT NULL`
+- 필수 컬럼은 명시적 `NOT NULL`
+- UNIQUE는 NULL을 여러 개 허용 (Oracle, ANSI 기본)
+
+**조회 SQL에서는 NULL을 항상 \"세 번째 가능성\"으로 두고 생각하라.**
+
+- \"이 조건이 NULL을 만나면 어떻게 평가될까?\"
+- WHERE는 TRUE만 통과 → NULL은 자동 탈락 (의도 확인)
+- COUNT, SUM, AVG는 NULL을 무시 → 의도 확인
+
+## 13. 한 줄 요약
+
+> **NULL = \"값을 알 수 없음\"**.  
+> 비교는 `IS NULL`만 가능. 산술·논리는 NULL 전파. WHERE는 TRUE만 통과 → NULL 행 자동 탈락.  
+> 가장 큰 함정 두 가지:  
+> - `NOT IN` 서브쿼리에 NULL이 있으면 **결과 0건**  
+> - `LEFT OUTER JOIN`의 WHERE에 오른쪽 컬럼 조건을 걸면 **INNER JOIN으로 변질**.  
+> 둘 다 \"3치 논리\" 한 줄에서 출발한 사고다.
+
+NULL은 SQL의 가장 작은 단어이고, 가장 큰 함정이다. 이걸 \"의식적으로\" 다룰 수 있게 되면 실무에서 만나는 사고의 절반은 막을 수 있다.
