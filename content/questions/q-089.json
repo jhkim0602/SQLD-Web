@@ -13,6 +13,12 @@
   "answer": 0,
   "explanation": "**PL/SQL 블록 구조**:\n\n```\nDECLARE          -- (선택) 변수, 커서, 예외 선언\n   v_sal NUMBER;\nBEGIN            -- (필수) 실행부\n   SELECT sal INTO v_sal FROM emp WHERE empno = 100;\n   DBMS_OUTPUT.PUT_LINE(v_sal);\nEXCEPTION        -- (선택) 예외 처리부\n   WHEN NO_DATA_FOUND THEN\n      DBMS_OUTPUT.PUT_LINE('사원 없음');\n   WHEN OTHERS THEN\n      DBMS_OUTPUT.PUT_LINE(SQLERRM);\nEND;             -- (필수) 블록 종료\n/\n```\n\n블록 종류:\n- **익명 블록**: 일회성 실행\n- **저장 프로시저**: `CREATE PROCEDURE`로 저장\n- **함수**: `CREATE FUNCTION`으로 저장, 값 반환\n- **트리거**: 이벤트 기반 자동 실행\n- **패키지**: 관련 프로시저·함수 묶음",
   "concepts": [],
-  "tags": ["PL/SQL", "블록 구조"],
-  "source": "self"
+  "tags": [
+    "PL/SQL",
+    "블록 구조"
+  ],
+  "source": "self",
+  "difficulty": 3,
+  "frequency": "medium",
+  "frequencyNote": "회당 2~3문제 — COMMIT/ROLLBACK/SAVEPOINT·트리거·프로시저"
 }

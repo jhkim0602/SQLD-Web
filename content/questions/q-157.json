@@ -12,7 +12,16 @@
   ],
   "answer": 3,
   "explanation": "**MERGE는 DML**입니다 (DDL 아님). 데이터를 INSERT/UPDATE/DELETE하는 명령이므로.\n\n**MERGE 구문**:\n```sql\nMERGE INTO target t\nUSING source s ON (t.id = s.id)\nWHEN MATCHED THEN\n  UPDATE SET t.name = s.name\n  DELETE WHERE t.flag = 'X'   -- 선택적\nWHEN NOT MATCHED THEN\n  INSERT (id, name) VALUES (s.id, s.name);\n```\n\n**MERGE 특징**:\n- **UPSERT** (Update + Insert) 한 번에\n- WHEN MATCHED 안에 DELETE 가능\n- 대용량 ETL에 자주 사용\n- 두 절(MATCHED/NOT MATCHED) 중 **하나만 작성 가능** (Oracle 10g+)\n\n**SQL 4분류 재확인**:\n- DDL: CREATE, ALTER, DROP, TRUNCATE\n- DML: SELECT, INSERT, UPDATE, DELETE, **MERGE**\n- DCL: GRANT, REVOKE\n- TCL: COMMIT, ROLLBACK, SAVEPOINT",
-  "concepts": ["ddl-dml-dcl"],
-  "tags": ["MERGE", "UPSERT", "DML"],
-  "source": "self"
+  "concepts": [
+    "ddl-dml-dcl"
+  ],
+  "tags": [
+    "MERGE",
+    "UPSERT",
+    "DML"
+  ],
+  "source": "self",
+  "difficulty": 4,
+  "frequency": "high",
+  "frequencyNote": "회당 3~5문제 — CREATE/ALTER/MERGE·GRANT/REVOKE·제약조건"
 }

@@ -13,7 +13,16 @@
   ],
   "answer": 3,
   "explanation": "**GROUP BY는 NULL을 하나의 그룹**으로 처리해 결과에 포함시킵니다.\n\n```\nemp의 deptno: 10, 10, 20, NULL\nGROUP BY deptno → (10), (20), (NULL)  ← 3 그룹\n```\n\nGROUP BY 규칙:\n- 집계함수가 아닌 SELECT 컬럼은 **반드시 GROUP BY에 포함**\n- 집계함수는 **WHERE 절에서 불가, HAVING에서 가능**\n- NULL도 별도 그룹 (DISTINCT와 동일)",
-  "concepts": ["group-by", "null-handling"],
-  "tags": ["GROUP BY", "NULL"],
-  "source": "self"
+  "concepts": [
+    "group-by",
+    "null-handling"
+  ],
+  "tags": [
+    "GROUP BY",
+    "NULL"
+  ],
+  "source": "self",
+  "difficulty": 3,
+  "frequency": "high",
+  "frequencyNote": "회당 3~4문제 — GROUP BY·HAVING·ROLLUP·CUBE·GROUPING SETS"
 }

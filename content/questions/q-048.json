@@ -12,7 +12,15 @@
   ],
   "answer": 2,
   "explanation": "NATURAL JOIN은 **자동으로 동일 이름 컬럼**을 조인 조건으로 사용하므로 **ON 절을 쓸 수 없습니다**.\n\n```sql\nSELECT * FROM emp NATURAL JOIN dept;\n-- 자동: emp.deptno = dept.deptno (동일 이름 컬럼 사용)\n```\n\n특징:\n- 공통 컬럼은 결과에서 **한 번만** 출력 (USING과 유사)\n- 한정자 (`e.deptno`) 사용 불가\n- **공통 컬럼이 없으면 CROSS JOIN(카티전 곱)** 발생 → 위험!\n\n실무에서는 의도치 않은 매칭 위험으로 **잘 사용하지 않습니다**. 명시적 `JOIN ... ON` 권장.",
-  "concepts": ["join-types"],
-  "tags": ["NATURAL JOIN", "JOIN"],
-  "source": "self"
+  "concepts": [
+    "join-types"
+  ],
+  "tags": [
+    "NATURAL JOIN",
+    "JOIN"
+  ],
+  "source": "self",
+  "difficulty": 3,
+  "frequency": "high",
+  "frequencyNote": "회당 5~7문제 (최빈출) — INNER/OUTER/CROSS/(+)/USING"
 }

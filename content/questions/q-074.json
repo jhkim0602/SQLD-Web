@@ -13,7 +13,16 @@
   ],
   "answer": 0,
   "explanation": "**LAG(컬럼, n, default)**: 이전 n번째 행의 값, 없으면 default.\n\n| ename | sal | prev_sal |\n|---|---|---|\n| A | 1000 | **0** (이전 없음 → default) |\n| B | 2000 | **1000** (A의 sal) |\n| C | 1500 | **2000** (B의 sal) |\n\n관련 함수:\n- `LAG(col, n, default)`: 이전 n번째 행\n- `LEAD(col, n, default)`: 다음 n번째 행\n- `FIRST_VALUE(col)`: 윈도우 첫 행\n- `LAST_VALUE(col)`: 윈도우 마지막 행\n\n시계열 분석(전일 대비 증감 등)에 자주 활용.",
-  "concepts": ["window-functions"],
-  "tags": ["LAG", "LEAD", "윈도우 함수"],
-  "source": "self"
+  "concepts": [
+    "window-functions"
+  ],
+  "tags": [
+    "LAG",
+    "LEAD",
+    "윈도우 함수"
+  ],
+  "source": "self",
+  "difficulty": 5,
+  "frequency": "high",
+  "frequencyNote": "회당 3~4문제 — RANK·LAG/LEAD·SUM OVER·ROWS/RANGE 차이"
 }

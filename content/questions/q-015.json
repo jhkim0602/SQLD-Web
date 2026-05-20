@@ -20,5 +20,8 @@
     "CUBE",
     "GROUPING SETS"
   ],
-  "source": "self"
+  "source": "self",
+  "difficulty": 5,
+  "frequency": "high",
+  "frequencyNote": "회당 3~4문제 — GROUP BY·HAVING·ROLLUP·CUBE·GROUPING SETS"
 }

@@ -13,7 +13,15 @@
   ],
   "answer": 1,
   "explanation": "**인라인 뷰(Inline View)**는 **FROM 절에서 사용되는 서브쿼리**입니다. 임시 결과 집합처럼 동작합니다.\n\n특징:\n- **임시적** (쿼리 종료 시 사라짐)\n- 별칭(alias)으로 참조\n- 외부에서 컬럼·집계 결과 등 사용 가능\n- 인라인 뷰 안의 ORDER BY는 일반적으로 무시 (옵티마이저 결정)\n\n위 쿼리의 의미: 부서별 평균 급여를 먼저 구하고, 그 중 평균 급여가 2000을 넘는 부서만 외부에서 필터.\n\n서브쿼리 위치별 분류:\n- SELECT — **스칼라 서브쿼리**\n- FROM — **인라인 뷰**\n- WHERE — **중첩 서브쿼리**",
-  "concepts": ["subquery"],
-  "tags": ["인라인 뷰", "FROM"],
-  "source": "self"
+  "concepts": [
+    "subquery"
+  ],
+  "tags": [
+    "인라인 뷰",
+    "FROM"
+  ],
+  "source": "self",
+  "difficulty": 4,
+  "frequency": "high",
+  "frequencyNote": "회당 4~5문제 — 스칼라·인라인뷰·EXISTS·연관 서브쿼리"
 }

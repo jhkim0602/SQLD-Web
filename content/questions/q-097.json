@@ -12,7 +12,16 @@
   ],
   "answer": 1,
   "explanation": "**데드락(Deadlock)**: 두 트랜잭션이 서로의 락을 기다려 무한 대기하는 상태.\n\n```\nT1: emp 락 → dept 락 대기\nT2: dept 락 → emp 락 대기\n→ 둘 다 영원히 대기\n```\n\n**해결**: DBMS가 감지 후 **한쪽을 강제 종료** (ROLLBACK).\n\n예방:\n- 락 획득 순서 일관성 유지\n- 트랜잭션 짧게 유지\n- 적절한 격리 수준\n- LOCK_TIMEOUT 설정",
-  "concepts": ["transaction"],
-  "tags": ["데드락", "Deadlock", "락"],
-  "source": "self"
+  "concepts": [
+    "transaction"
+  ],
+  "tags": [
+    "데드락",
+    "Deadlock",
+    "락"
+  ],
+  "source": "self",
+  "difficulty": 4,
+  "frequency": "medium",
+  "frequencyNote": "회당 1문제 — ACID·격리 수준·Lock"
 }

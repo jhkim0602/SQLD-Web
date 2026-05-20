@@ -12,7 +12,15 @@
   ],
   "answer": 3,
   "explanation": "**CROSS JOIN(카티전 곱)**: m × n\n\n3 × 4 = **12행**\n\nCROSS JOIN 특징:\n- **조인 조건 없음**\n- 모든 가능한 조합 생성\n- 의도치 않은 카티전 곱은 성능 재앙\n\n실수로 카티전 곱이 발생하는 경우:\n```sql\n-- ON 조건을 빠뜨림\nSELECT * FROM emp, dept;\n```\n\nCROSS JOIN 의도적 사용 예: 모든 날짜와 모든 부서의 조합 생성 (보고서 매트릭스).",
-  "concepts": ["join-types"],
-  "tags": ["CROSS JOIN", "카티전 곱"],
-  "source": "self"
+  "concepts": [
+    "join-types"
+  ],
+  "tags": [
+    "CROSS JOIN",
+    "카티전 곱"
+  ],
+  "source": "self",
+  "difficulty": 3,
+  "frequency": "high",
+  "frequencyNote": "회당 5~7문제 (최빈출) — INNER/OUTER/CROSS/(+)/USING"
 }

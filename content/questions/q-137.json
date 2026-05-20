@@ -12,7 +12,16 @@
   ],
   "answer": 0,
   "explanation": "**`> ANY`는 \"어느 하나라도 만족\"** = **`> MIN`**과 동일.\n\n| 연산자 | 의미 | 동치 |\n|---|---|---|\n| `> ANY (...)` | 최소값보다 큼 | `> MIN(...)` |\n| `< ANY (...)` | 최대값보다 작음 | `< MAX(...)` |\n| `> ALL (...)` | **최대값**보다 큼 | `> MAX(...)` |\n| `< ALL (...)` | **최소값**보다 작음 | `< MIN(...)` |\n| `= ANY` | IN과 동일 | `IN` |\n| `<> ALL` | NOT IN과 동일 | `NOT IN` |\n\n예시:\n```sql\nSELECT * FROM emp\nWHERE sal > ANY (SELECT sal FROM emp WHERE deptno = 10);\n-- = sal > MIN(10번 부서 급여)\n-- = 10번 부서의 최소 급여보다라도 높은 사원\n```\n\n암기법: **\">ANY = >MIN, >ALL = >MAX\"**",
-  "concepts": ["subquery"],
-  "tags": ["ANY", "ALL", "서브쿼리"],
-  "source": "self"
+  "concepts": [
+    "subquery"
+  ],
+  "tags": [
+    "ANY",
+    "ALL",
+    "서브쿼리"
+  ],
+  "source": "self",
+  "difficulty": 3,
+  "frequency": "high",
+  "frequencyNote": "회당 4~5문제 — 스칼라·인라인뷰·EXISTS·연관 서브쿼리"
 }

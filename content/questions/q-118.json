@@ -12,7 +12,17 @@
   ],
   "answer": 3,
   "explanation": "`NVL(NULL, 'A')` = **'A'** (NULL이면 'A' 반환).\n\n나머지 모두 NULL 또는 특수 케이스:\n- `NULL + 100` → **NULL** (사칙연산은 NULL 전파)\n- `NULL || 'A'` → **'A'** (Oracle에서는 NULL을 빈 문자열로 취급해 'A' 반환)\n- `CONCAT(NULL, 'A')` → 'A' (Oracle에서도 NULL을 빈 문자열로 취급)\n\n잠깐, 선택지 2와 3도 'A'가 나오는데... 정확히 검토:\n\n**Oracle 동작**:\n- `NULL || 'A'` → 'A' (Oracle 특수, 빈 문자열로 취급)\n- `CONCAT(NULL, 'A')` → 'A' (역시 빈 문자열 취급)\n- `NULL + 100` → NULL (산술은 다름)\n- `NVL(NULL, 'A')` → 'A' (명확히)\n\n표준 SQL (SQL Server, PostgreSQL 등):\n- `NULL || 'A'` → NULL\n- `CONCAT(NULL, 'A')` → 'A' (CONCAT은 표준에서 NULL을 빈 문자열로)\n\n시험에서는 **`NVL`이 가장 명확하게 NULL을 대체**합니다.",
-  "concepts": ["null-handling", "functions"],
-  "tags": ["NULL", "NVL", "사칙연산"],
-  "source": "self"
+  "concepts": [
+    "null-handling",
+    "functions"
+  ],
+  "tags": [
+    "NULL",
+    "NVL",
+    "사칙연산"
+  ],
+  "source": "self",
+  "difficulty": 3,
+  "frequency": "high",
+  "frequencyNote": "회당 3~4문제 — SUBSTR/INSTR/NVL/COALESCE/CASE/DECODE"
 }

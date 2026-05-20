@@ -20,5 +20,8 @@
     "주식별자",
     "PK"
   ],
-  "source": "self"
+  "source": "self",
+  "difficulty": 3,
+  "frequency": "high",
+  "frequencyNote": "회당 1~2문제 — PK/FK·후보키·슈퍼키 구분"
 }

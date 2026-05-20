@@ -13,7 +13,17 @@
   ],
   "answer": 0,
   "explanation": "**INNER JOIN**은 양쪽 매칭만 반환. NULL은 매칭에 사용되지 않음.\n\n매칭 확인:\n- (1, 10): dept에 10 있음 → 매칭 ✓\n- (2, 20): dept에 20 없음 → 매칭 ✗\n- (3, NULL): NULL = NULL은 UNKNOWN → 매칭 ✗\n\n결과: **(1, 10, 10, 'A')** 1건만\n\n**LEFT OUTER였다면**:\n```\n(1, 10, 10, 'A')\n(2, 20, NULL, NULL)\n(3, NULL, NULL, NULL)\n```\n\n**FULL OUTER였다면** + dept의 30 추가:\n```\n... 위 3행 + (NULL, NULL, 30, 'C')\n```",
-  "concepts": ["join-types", "null-handling"],
-  "tags": ["INNER JOIN", "NULL", "매칭"],
-  "source": "self"
+  "concepts": [
+    "join-types",
+    "null-handling"
+  ],
+  "tags": [
+    "INNER JOIN",
+    "NULL",
+    "매칭"
+  ],
+  "source": "self",
+  "difficulty": 4,
+  "frequency": "high",
+  "frequencyNote": "회당 5~7문제 (최빈출) — INNER/OUTER/CROSS/(+)/USING"
 }

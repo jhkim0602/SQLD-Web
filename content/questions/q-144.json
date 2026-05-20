@@ -13,7 +13,15 @@
   ],
   "answer": 0,
   "explanation": "**누적합 = 첫 행부터 현재 행까지 합** = `ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW`\n\n```sql\nSUM(amount) OVER (\n  ORDER BY date\n  ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW\n) AS cum_sum\n```\n\n**프레임 키워드**:\n| 키워드 | 의미 |\n|---|---|\n| `UNBOUNDED PRECEDING` | 첫 행부터 |\n| `N PRECEDING` | N행 이전부터 |\n| `CURRENT ROW` | 현재 행 |\n| `N FOLLOWING` | N행 이후까지 |\n| `UNBOUNDED FOLLOWING` | 마지막 행까지 |\n\n**활용 예**:\n- 누적합: UNBOUNDED PRECEDING → CURRENT\n- 이동평균(3): 2 PRECEDING → CURRENT\n- 전체 합: UNBOUNDED PRECEDING → UNBOUNDED FOLLOWING\n- 미래 평균: CURRENT → UNBOUNDED FOLLOWING\n\n**ROWS vs RANGE**:\n- ROWS: 행 단위\n- RANGE: 값 단위 (동순위 그룹 묶음)",
-  "concepts": ["window-functions"],
-  "tags": ["윈도우 프레임", "누적합"],
-  "source": "self"
+  "concepts": [
+    "window-functions"
+  ],
+  "tags": [
+    "윈도우 프레임",
+    "누적합"
+  ],
+  "source": "self",
+  "difficulty": 5,
+  "frequency": "high",
+  "frequencyNote": "회당 3~4문제 — RANK·LAG/LEAD·SUM OVER·ROWS/RANGE 차이"
 }

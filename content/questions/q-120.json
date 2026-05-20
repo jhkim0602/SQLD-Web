@@ -12,7 +12,16 @@
   ],
   "answer": 2,
   "explanation": "**DECODE는 NULL = NULL을 TRUE로 처리**합니다. 일반 SQL의 NULL 비교(UNKNOWN)와 다른 특수 동작.\n\n```sql\nSELECT DECODE(NULL, NULL, '같음', '다름') FROM dual;\n-- 결과: '같음'  ← NULL = NULL을 TRUE로 취급\n\n-- 동치 CASE\nSELECT CASE WHEN NULL IS NULL THEN '같음' ELSE '다름' END FROM dual;\n-- 결과: '같음'\n```\n\n**DECODE vs CASE**:\n| | DECODE | CASE |\n|---|---|---|\n| 표준 | Oracle 전용 | ANSI 표준 |\n| 비교 연산자 | **등치(=)만** | 모든 비교 |\n| NULL 비교 | **TRUE 취급** | UNKNOWN |\n| 권장 | 레거시 | **신규** |",
-  "concepts": ["case-decode"],
-  "tags": ["DECODE", "CASE", "NULL"],
-  "source": "self"
+  "concepts": [
+    "case-decode"
+  ],
+  "tags": [
+    "DECODE",
+    "CASE",
+    "NULL"
+  ],
+  "source": "self",
+  "difficulty": 3,
+  "frequency": "high",
+  "frequencyNote": "회당 3~4문제 — SUBSTR/INSTR/NVL/COALESCE/CASE/DECODE"
 }

@@ -13,7 +13,17 @@
   ],
   "answer": 1,
   "explanation": "**부서별 최대 급여**는 **상관 서브쿼리** 또는 **윈도우 함수**로 표현 가능.\n\n```sql\n-- 윈도우 함수로 동치\nSELECT * FROM (\n  SELECT e.*, RANK() OVER (PARTITION BY deptno ORDER BY sal DESC) r\n  FROM emp e\n) WHERE r = 1;\n```\n\n나머지 분석:\n- 선택지 1: 전체 최대 1명만 (Top-N), 부서별 X\n- 선택지 3: **전체 최대 급여** (모든 부서 합쳐서)\n- 선택지 4: 평균 초과 사원\n\n**상관 vs 비상관**:\n- 상관: 외부 컬럼 참조 (`e.deptno`), 메인 행마다 실행\n- 비상관: 한 번만 실행\n\n부서별 같은 그룹 내 비교는 항상 **상관 서브쿼리** 또는 **PARTITION BY**.",
-  "concepts": ["subquery", "window-functions"],
-  "tags": ["상관 서브쿼리", "그룹별 최대", "RANK"],
-  "source": "self"
+  "concepts": [
+    "subquery",
+    "window-functions"
+  ],
+  "tags": [
+    "상관 서브쿼리",
+    "그룹별 최대",
+    "RANK"
+  ],
+  "source": "self",
+  "difficulty": 4,
+  "frequency": "high",
+  "frequencyNote": "회당 4~5문제 — 스칼라·인라인뷰·EXISTS·연관 서브쿼리"
 }

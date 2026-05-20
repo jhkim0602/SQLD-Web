@@ -13,7 +13,16 @@
   ],
   "answer": 0,
   "explanation": "**SELF JOIN + LEFT OUTER**: 같은 테이블을 두 번 참조, 매니저 없는 사원도 포함.\n\n각 사원의 매니저 찾기:\n- KING(empno=1): mgr=NULL → 매칭 없음 → NULL (LEFT OUTER로 포함)\n- JONES(empno=2): mgr=1 → empno=1인 KING\n- SCOTT(empno=3): mgr=2 → empno=2인 JONES\n\n결과:\n| 사원 | 매니저 |\n|---|---|\n| KING | NULL |\n| JONES | KING |\n| SCOTT | JONES |\n\n**SELF JOIN 핵심**:\n- alias **필수** (e와 m으로 구분)\n- 같은 테이블이지만 다른 역할로 참조\n- LEFT OUTER로 매니저 없는 최상위(KING)도 포함",
-  "concepts": ["join-types"],
-  "tags": ["SELF JOIN", "LEFT OUTER", "계층"],
-  "source": "self"
+  "concepts": [
+    "join-types"
+  ],
+  "tags": [
+    "SELF JOIN",
+    "LEFT OUTER",
+    "계층"
+  ],
+  "source": "self",
+  "difficulty": 4,
+  "frequency": "high",
+  "frequencyNote": "회당 5~7문제 (최빈출) — INNER/OUTER/CROSS/(+)/USING"
 }

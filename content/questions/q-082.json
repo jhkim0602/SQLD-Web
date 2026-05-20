@@ -12,7 +12,16 @@
   ],
   "answer": 1,
   "explanation": "**제약조건 비교**:\n\n| 제약 | NULL 허용 | 중복 허용 |\n|---|---|---|\n| **PRIMARY KEY** | X | X |\n| **UNIQUE** | **O (대부분 DBMS에서 여러 NULL 허용)** | X |\n| **NOT NULL** | X | O |\n| **CHECK** | 조건 의존 | 조건 의존 |\n| **FOREIGN KEY** | O (선택 참여) | O |\n| **DEFAULT** | — | — |\n\nUNIQUE는 \"값이 있을 때 중복 불가\"를 의미하며, NULL은 \"값이 없는 상태\"이므로 여러 NULL이 공존 가능합니다(표준).",
-  "concepts": ["ddl-dml-dcl"],
-  "tags": ["제약조건", "UNIQUE", "NULL"],
-  "source": "self"
+  "concepts": [
+    "ddl-dml-dcl"
+  ],
+  "tags": [
+    "제약조건",
+    "UNIQUE",
+    "NULL"
+  ],
+  "source": "self",
+  "difficulty": 3,
+  "frequency": "high",
+  "frequencyNote": "회당 3~5문제 — CREATE/ALTER/MERGE·GRANT/REVOKE·제약조건"
 }

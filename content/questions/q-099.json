@@ -12,7 +12,15 @@
   ],
   "answer": 0,
   "explanation": "**Dirty Read**: 다른 트랜잭션이 **커밋하지 않은 데이터**를 읽는 현상.\n\n예시:\n```\nT1: UPDATE emp SET sal = 0 WHERE empno = 100;  (미커밋)\nT2: SELECT sal FROM emp WHERE empno = 100;     → 0 읽음 (Dirty)\nT1: ROLLBACK;                                  → 실제로는 0이 아님!\n```\n\n3대 동시성 현상:\n- **Dirty Read**: 미커밋 데이터 읽음 (선택지 1)\n- **Non-repeatable Read**: 같은 행 두 번 읽으니 값 다름 (선택지 2)\n- **Phantom Read**: 같은 조건 쿼리에 새 행 등장 (선택지 3)\n\nDirty Read는 **READ COMMITTED**부터 차단.",
-  "concepts": ["transaction"],
-  "tags": ["Dirty Read", "격리수준"],
-  "source": "self"
+  "concepts": [
+    "transaction"
+  ],
+  "tags": [
+    "Dirty Read",
+    "격리수준"
+  ],
+  "source": "self",
+  "difficulty": 4,
+  "frequency": "medium",
+  "frequencyNote": "회당 1문제 — ACID·격리 수준·Lock"
 }

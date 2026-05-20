@@ -202,22 +202,9 @@ SELECT * FROM emp_tree;
 ### 패턴 D: 키워드 의미
 - START WITH, CONNECT BY, PRIOR
 
-## 12. 🔑 암기법 종합
+## 12. 📌 실전 치트시트
 
-| 항목 | 암기법 |
-|---|---|
-| 키워드 4종 | **스(START) 커(CONNECT) 프(PRIOR) 레(LEVEL)** |
-| PRIOR 위치 | **\"PRIOR=부모\"** |
-| Top-Down | **PRIOR empno = mgr** (부모.empno = 자식.mgr) |
-| Bottom-Up | **empno = PRIOR mgr** (자식.empno = 부모.mgr) |
-| LEVEL | **루트=1, 자식으로 갈수록 +1** |
-| 경로 | **SYS_CONNECT_BY_PATH(col, sep)** |
-| 리프 | **CONNECT_BY_ISLEAF = 1** |
-| 순환 방지 | **NOCYCLE** |
-
-## 13. 📌 시험 합격 핵심 요약
-
-> **시험장 입실 5분 전 점검**
+> **핵심 구문 + 함정 + 빈출 패턴**
 
 ✅ **계층형 질의 4대 키워드**:
    - **START WITH**: 루트 조건
@@ -243,3 +230,16 @@ SELECT * FROM emp_tree;
 ✅ **빈출**: \"PRIOR 위치만 보면 방향 판단\"
 
 ✅ **다른 DBMS = 재귀 CTE** (WITH RECURSIVE)
+
+### 🔑 암기법 정리
+
+| 항목 | 암기법 |
+|---|---|
+| 키워드 4종 | **스(START) 커(CONNECT) 프(PRIOR) 레(LEVEL)** |
+| PRIOR 위치 | **\"PRIOR=부모\"** |
+| Top-Down | **PRIOR empno = mgr** (부모.empno = 자식.mgr) |
+| Bottom-Up | **empno = PRIOR mgr** (자식.empno = 부모.mgr) |
+| LEVEL | **루트=1, 자식으로 갈수록 +1** |
+| 경로 | **SYS_CONNECT_BY_PATH(col, sep)** |
+| 리프 | **CONNECT_BY_ISLEAF = 1** |
+| 순환 방지 | **NOCYCLE** |

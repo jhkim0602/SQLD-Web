@@ -232,19 +232,9 @@ dept.deptno: 10, 20, 30
 > \"NVL, NVL2, NULLIF의 차이는?\"
 - 인자 수와 동작
 
-## 12. 🔑 암기법 종합
+## 12. 📌 함수 매트릭스 한눈
 
-| 항목 | 암기법 |
-|---|---|
-| 비교 시 | **\"NULL은 IS NULL로\"** |
-| AVG 분모 | **\"NULL 빼고 나누기\"** |
-| NOT IN 함정 | **\"NOT IN + NULL = 항상 공집합\"** |
-| FK NULL | **\"FK는 NULL OK, PK는 NULL NO\"** |
-| 사칙연산 | **\"NULL 전파\" (1+NULL = NULL)** |
-
-## 13. 📌 시험 합격 핵심 요약
-
-> **시험장 입실 5분 전 점검**
+> **함수 비교 · 결과 차이 · NULL 함정**
 
 ✅ **NULL과의 비교는 UNKNOWN**, `IS NULL` 사용
 
@@ -265,3 +255,13 @@ dept.deptno: 10, 20, 30
 ✅ **Oracle 특수**: 빈 문자열 `''` = NULL
 
 ✅ **사칙연산**: NULL 전파 (1+NULL = NULL)
+
+### 🔑 암기법 정리
+
+| 항목 | 암기법 |
+|---|---|
+| 비교 시 | **\"NULL은 IS NULL로\"** |
+| AVG 분모 | **\"NULL 빼고 나누기\"** |
+| NOT IN 함정 | **\"NOT IN + NULL = 항상 공집합\"** |
+| FK NULL | **\"FK는 NULL OK, PK는 NULL NO\"** |
+| 사칙연산 | **\"NULL 전파\" (1+NULL = NULL)** |

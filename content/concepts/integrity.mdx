@@ -187,17 +187,9 @@ ALTER TABLE emp DROP CONSTRAINT chk_sal;
 ### 패턴 D: PK vs UNIQUE 차이
 - PK는 NULL X, UNIQUE는 NULL O
 
-## 8. 🔑 암기법 종합
+## 8. 📌 시험 직전 체크
 
-| 항목 | 암기법 |
-|---|---|
-| 5가지 무결성 | **개참도Null사** |
-| ON DELETE 옵션 | **노카셋셋** (No Action·Cascade·Set Null·Set Default) |
-| 제약조건 6종 | **PFUCND** (PK·FK·Unique·Check·Not Null·Default) |
-
-## 9. 📌 시험 합격 핵심 요약
-
-> **시험장 입실 5분 전 점검**
+> **핵심 메커니즘 + 빈출 포인트**
 
 ✅ **5가지 무결성 = 개참도Null사**
    1. 개체 → PK
@@ -223,3 +215,11 @@ ALTER TABLE emp DROP CONSTRAINT chk_sal;
 ✅ **빈출**: \"UNIQUE는 NULL 허용\" → ○
 
 ✅ **빈출**: \"PK는 자동으로 UNIQUE + NOT NULL\" → ○
+
+### 🔑 암기법 정리
+
+| 항목 | 암기법 |
+|---|---|
+| 5가지 무결성 | **개참도Null사** |
+| ON DELETE 옵션 | **노카셋셋** (No Action·Cascade·Set Null·Set Default) |
+| 제약조건 6종 | **PFUCND** (PK·FK·Unique·Check·Not Null·Default) |

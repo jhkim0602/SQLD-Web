@@ -11,9 +11,17 @@
     "4",
     "전체 부서 × 직무 + 1"
   ],
-  "answer": 2,
-  "explanation": "**ROLLUP(N)** = **N + 1개** 조합 (좌→우 계층적 + 총계)\n\n`ROLLUP(deptno, job)` 조합:\n1. `(deptno, job)` — 가장 세분\n2. `(deptno)` — 부서별 소계\n3. `()` — 전체 총계\n\n→ **3 + (각 그룹별 행)** 형태로 결과 행이 나옴. 그러나 조합 수(GROUPING SET)는 **3개** (선택지는 3이 맞음, 정답은 2번 = 3개).\n\n잠깐, 정답 인덱스 다시 확인:\n- 선택지 1: 1\n- 선택지 2: 3 ← 답 (`answer: 2`)\n- 선택지 3: 4\n- 선택지 4: 전체 × ...\n\n조합 수는 N+1 = 2+1 = **3개**.\n\n**비교**:\n- ROLLUP(A, B): 3개 조합 → (A,B), (A), ()\n- CUBE(A, B): 4개 조합 → (A,B), (A), (B), ()\n- GROUPING SETS: 명시한 만큼",
-  "concepts": ["group-by"],
-  "tags": ["ROLLUP", "그룹함수"],
-  "source": "self"
+  "answer": 1,
+  "explanation": "**ROLLUP(N개 컬럼) = N + 1개 그룹**.\n\n`ROLLUP(deptno, job)` (N=2)이 만드는 조합:\n\n| # | 그룹 | 의미 |\n|---|---|---|\n| 1 | `(deptno, job)` | 부서·직무별 — 가장 세분 |\n| 2 | `(deptno)` | 부서별 소계 (job NULL) |\n| 3 | `()` | 전체 총계 (deptno, job 모두 NULL) |\n\n→ **3개 그룹**.\n\n### 정리: ROLLUP vs CUBE vs GROUPING SETS\n\n| 구문 | 그룹 수 | 조합 |\n|---|---|---|\n| `ROLLUP(A, B)` | **3** | (A,B), (A), () |\n| `ROLLUP(A, B, C)` | **4** | (A,B,C), (A,B), (A), () |\n| `CUBE(A, B)` | **4** | (A,B), (A), (B), () |\n| `CUBE(A, B, C)` | **8** | 2³ 모든 부분집합 |\n| `GROUPING SETS((A,B),(A),())` | **3** | 명시한 만큼 |\n\n> 🔑 **공식**: ROLLUP(N) = **N+1**개, CUBE(N) = **2^N**개\n\n> 📝 **주의**: \"그룹 수\"는 GROUPING SET 개수이며, **결과 행 수**(각 그룹별 행 합산)와 다름. 회당 자주 출제되는 함정.",
+  "concepts": [
+    "group-by"
+  ],
+  "tags": [
+    "ROLLUP",
+    "그룹함수"
+  ],
+  "source": "self",
+  "difficulty": 5,
+  "frequency": "high",
+  "frequencyNote": "회당 3~4문제 — GROUP BY·HAVING·ROLLUP·CUBE·GROUPING SETS"
 }

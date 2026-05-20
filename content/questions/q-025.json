@@ -12,7 +12,17 @@
   ],
   "answer": 1,
   "explanation": "**다중값 속성**(한 인스턴스가 여러 값을 가지는 속성, 예: 취미)은 **1NF 위반**을 피하기 위해 별도 엔터티로 분리해야 합니다.\n\n```\n사원(사번, 이름)\n사원_취미(사번 FK, 취미)   ← 별도 엔터티\n```\n\n잘못된 처리:\n- 콤마 저장 (1NF 위반)\n- 컬럼 반복 (확장성·검색성 떨어짐)\n- JSON 배열 (RDBMS 정규화 원칙 위반)",
-  "concepts": ["attribute", "normalization"],
-  "tags": ["속성", "다중값", "1NF"],
-  "source": "self"
+  "concepts": [
+    "attribute",
+    "normalization"
+  ],
+  "tags": [
+    "속성",
+    "다중값",
+    "1NF"
+  ],
+  "source": "self",
+  "difficulty": 1,
+  "frequency": "medium",
+  "frequencyNote": "회당 1문제 — 분류·도메인·기본/설계/파생 속성"
 }

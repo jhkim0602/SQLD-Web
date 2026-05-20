@@ -47,6 +47,14 @@ export function QuestionCard({
           <span>{question.category}</span>
           <span>·</span>
           <span>{typeLabel}</span>
+          {question.frequency === "high" && (
+            <span
+              className="rounded border border-rose-200 bg-rose-50 px-1.5 py-0.5 text-[10px] font-semibold text-rose-600"
+              title={question.frequencyNote ?? "출제 빈도 높음"}
+            >
+              🔥 빈출
+            </span>
+          )}
         </div>
         <p className="mt-1 line-clamp-2 text-[15px] text-zinc-900 group-hover:text-zinc-800">
           {question.question}

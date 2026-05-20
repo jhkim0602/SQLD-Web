@@ -13,7 +13,16 @@
   ],
   "answer": 1,
   "explanation": "**COUNT 함수의 NULL 처리** ⭐ 빈출\n\n| 함수 | 결과 | 설명 |\n|---|---|---|\n| `COUNT(*)` | **5** | 전체 행 (NULL 포함) |\n| `COUNT(deptno)` | **4** | NULL 제외 |\n| `COUNT(DISTINCT deptno)` | **3** | NULL 제외 + 중복 제거 (10, 20, 30) |\n\n핵심 규칙:\n- `COUNT(*)`만 NULL 포함\n- 컬럼명 사용 시 NULL 제외\n- DISTINCT는 NULL을 하나로 묶지만, COUNT(DISTINCT)는 NULL을 카운트하지 않음",
-  "concepts": ["null-handling"],
-  "tags": ["COUNT", "NULL", "DISTINCT"],
-  "source": "self"
+  "concepts": [
+    "null-handling"
+  ],
+  "tags": [
+    "COUNT",
+    "NULL",
+    "DISTINCT"
+  ],
+  "source": "self",
+  "difficulty": 3,
+  "frequency": "high",
+  "frequencyNote": "회당 3~4문제 — 연산자·NULL·LIKE·BETWEEN·IN"
 }

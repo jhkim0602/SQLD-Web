@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import type { Question } from "@/lib/types";
-import { SUBJECT_LABELS, TYPE_LABELS } from "@/lib/types";
+import { SUBJECT_LABELS, TYPE_LABELS, FREQUENCY_LABELS } from "@/lib/types";
 import { useProgress } from "@/lib/store";
 import { useHydrated } from "./StoreHydration";
 import { MarkdownView } from "./MarkdownView";
@@ -153,6 +153,12 @@ export function QuestionView({
         <Tag>{SUBJECT_LABELS[question.subject]}</Tag>
         <Tag>{question.category}</Tag>
         <Tag>{TYPE_LABELS[question.type]}</Tag>
+        {question.frequency && (
+          <FrequencyTag
+            frequency={question.frequency}
+            note={question.frequencyNote}
+          />
+        )}
 
         {hydrated && (
           <button
@@ -408,6 +414,30 @@ function Tag({ children }: { children: React.ReactNode }) {
   return (
     <span className="rounded border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 text-zinc-600">
       {children}
+    </span>
+  );
+}
+
+function FrequencyTag({
+  frequency,
+  note,
+}: {
+  frequency: "high" | "medium" | "low";
+  note?: string;
+}) {
+  const cls =
+    frequency === "high"
+      ? "border-rose-200 bg-rose-50 text-rose-700"
+      : frequency === "medium"
+        ? "border-amber-200 bg-amber-50 text-amber-700"
+        : "border-zinc-200 bg-zinc-50 text-zinc-500";
+  const icon = frequency === "high" ? "🔥" : frequency === "medium" ? "📌" : "·";
+  return (
+    <span
+      className={cn("rounded border px-1.5 py-0.5", cls)}
+      title={note ?? ""}
+    >
+      {icon} {FREQUENCY_LABELS[frequency]}
     </span>
   );
 }

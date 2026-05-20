@@ -12,7 +12,16 @@
   ],
   "answer": 2,
   "explanation": "**M:N 관계는 그대로 RDBMS에 구현할 수 없으므로** 별도의 **교차 엔터티(Associative Entity)**를 만들어 1:M과 M:1로 분해합니다.\n\n```\n학생 ──M:N── 과목\n         ↓ 분해\n학생 ──1:M── 수강 ──M:1── 과목\n              ↑\n          교차 엔터티 (학생ID, 과목ID, 학기, 성적...)\n```\n\n교차 엔터티는 보통 추가 속성(학기, 성적 등)도 가질 수 있어 **행위 엔터티**가 되기도 합니다.",
-  "concepts": ["relationship"],
-  "tags": ["M:N", "관계 해소", "교차 엔터티"],
-  "source": "self"
+  "concepts": [
+    "relationship"
+  ],
+  "tags": [
+    "M:N",
+    "관계 해소",
+    "교차 엔터티"
+  ],
+  "source": "self",
+  "difficulty": 3,
+  "frequency": "high",
+  "frequencyNote": "회당 1~2문제 — 카디널리티·식별/비식별·관계차수"
 }

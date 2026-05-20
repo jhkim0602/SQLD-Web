@@ -13,7 +13,18 @@
   ],
   "answer": 1,
   "explanation": "**NOT IN + NULL = 항상 빈 결과** (가장 유명한 SQL 함정)\n\n`NOT IN (10, 20, NULL)`은 다음과 동치:\n```\ndeptno <> 10 AND deptno <> 20 AND deptno <> NULL\n```\n- `deptno <> NULL` → 항상 **UNKNOWN**\n- AND 결합 → 전체 결과 UNKNOWN\n- → 어떤 행도 통과하지 못함\n\n**해결**: **NOT EXISTS** 사용 (NULL 안전)\n```sql\nWHERE NOT EXISTS (\n  SELECT 1 FROM dept d WHERE d.deptno = e.deptno\n)\n```\n\n또는 서브쿼리에서 `WHERE deptno IS NOT NULL` 추가.",
-  "concepts": ["subquery", "null-handling"],
-  "tags": ["NOT IN", "NULL", "NOT EXISTS", "함정"],
-  "source": "self"
+  "concepts": [
+    "subquery",
+    "null-handling"
+  ],
+  "tags": [
+    "NOT IN",
+    "NULL",
+    "NOT EXISTS",
+    "함정"
+  ],
+  "source": "self",
+  "difficulty": 3,
+  "frequency": "high",
+  "frequencyNote": "회당 4~5문제 — 스칼라·인라인뷰·EXISTS·연관 서브쿼리"
 }

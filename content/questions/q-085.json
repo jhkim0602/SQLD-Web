@@ -12,7 +12,16 @@
   ],
   "answer": 0,
   "explanation": "**WITH GRANT OPTION**: 권한을 받은 사용자가 그 권한을 **다른 사용자에게 재부여**할 수 있게 합니다.\n\n```sql\n-- A에게 SELECT 권한 부여 + 재부여 가능\nGRANT SELECT ON emp TO A WITH GRANT OPTION;\n\n-- A는 이제 B에게 SELECT 부여 가능\nGRANT SELECT ON emp TO B;\n```\n\nREVOKE 시 **연쇄 회수**가 발생할 수 있습니다 (A의 권한 회수 → B의 권한도 자동 회수).\n\nDCL 명령어:\n- `GRANT 권한 ON 객체 TO 사용자 [WITH GRANT OPTION]`\n- `REVOKE 권한 ON 객체 FROM 사용자 [CASCADE CONSTRAINTS]`\n\n역할(ROLE)로 권한 묶음을 관리하는 것도 일반적입니다.",
-  "concepts": ["ddl-dml-dcl"],
-  "tags": ["DCL", "GRANT", "WITH GRANT OPTION"],
-  "source": "self"
+  "concepts": [
+    "ddl-dml-dcl"
+  ],
+  "tags": [
+    "DCL",
+    "GRANT",
+    "WITH GRANT OPTION"
+  ],
+  "source": "self",
+  "difficulty": 3,
+  "frequency": "high",
+  "frequencyNote": "회당 3~5문제 — CREATE/ALTER/MERGE·GRANT/REVOKE·제약조건"
 }

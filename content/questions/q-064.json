@@ -12,7 +12,16 @@
   ],
   "answer": 2,
   "explanation": "**서브쿼리 결과 행 수에 따른 연산자**:\n\n| 단일 행 (1행) | 다중 행 (여러 행) |\n|---|---|\n| `=`, `<>`, `<`, `>`, `<=`, `>=` | **IN**, NOT IN, ANY, ALL, EXISTS |\n\n선택지 3번 `IN`은 다중 행 서브쿼리용입니다.\n\n단일 행 서브쿼리에서 2건 이상 반환되면 \"single-row subquery returns more than one row\" 에러.\n\n다중 행 연산자 의미:\n- `> ANY`: 어느 하나보다 크면 TRUE\n- `> ALL`: 모두보다 커야 TRUE\n- `IN`: 결과 집합 중 어느 하나와 일치하면 TRUE",
-  "concepts": ["subquery"],
-  "tags": ["서브쿼리", "단일 행", "IN"],
-  "source": "self"
+  "concepts": [
+    "subquery"
+  ],
+  "tags": [
+    "서브쿼리",
+    "단일 행",
+    "IN"
+  ],
+  "source": "self",
+  "difficulty": 3,
+  "frequency": "high",
+  "frequencyNote": "회당 4~5문제 — 스칼라·인라인뷰·EXISTS·연관 서브쿼리"
 }

@@ -19,5 +19,8 @@
     "모델링",
     "단계"
   ],
-  "source": "self"
+  "source": "self",
+  "difficulty": 3,
+  "frequency": "medium",
+  "frequencyNote": "회당 1문제 — 3층 스키마·ERD 표기·모델링 절차"
 }

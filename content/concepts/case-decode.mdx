@@ -168,20 +168,9 @@ SELECT amount / NULLIF(quantity, 0) FROM sales;
 ### 패턴 D: COALESCE
 - 첫 non-NULL 반환
 
-## 7. 🔑 암기법 종합
+## 7. 📌 함수 매트릭스 한눈
 
-| 항목 | 암기법 |
-|---|---|
-| CASE 2종 | **Simple(등치)** vs **Searched(모두)** |
-| DECODE | **\"등치만 + NULL=NULL은 TRUE\"** |
-| NVL | **\"Null이면 Value\"** (2개) |
-| NVL2 | **\"NOT NULL이면 b, NULL이면 c\"** (3개) |
-| COALESCE | **\"합쳐 처음 의미 있는 것\"** (다중) |
-| NULLIF | **\"같으면 NULL로\"** (2개) |
-
-## 8. 📌 시험 합격 핵심 요약
-
-> **시험장 입실 5분 전 점검**
+> **함수 비교 · 결과 차이 · NULL 함정**
 
 ✅ **CASE**: 표준, 모든 비교 가능
 
@@ -202,3 +191,14 @@ SELECT amount / NULLIF(quantity, 0) FROM sales;
 ✅ **CASE에서 ELSE 생략 시 → NULL 반환**
 
 ✅ **Simple CASE는 IS NULL 불가** → Searched CASE 사용
+
+### 🔑 암기법 정리
+
+| 항목 | 암기법 |
+|---|---|
+| CASE 2종 | **Simple(등치)** vs **Searched(모두)** |
+| DECODE | **\"등치만 + NULL=NULL은 TRUE\"** |
+| NVL | **\"Null이면 Value\"** (2개) |
+| NVL2 | **\"NOT NULL이면 b, NULL이면 c\"** (3개) |
+| COALESCE | **\"합쳐 처음 의미 있는 것\"** (다중) |
+| NULLIF | **\"같으면 NULL로\"** (2개) |

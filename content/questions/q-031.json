@@ -12,7 +12,16 @@
   ],
   "answer": 1,
   "explanation": "**식별자 분류** (자생 여부 기준):\n\n| 분류 | 설명 |\n|---|---|\n| **내부식별자** | 엔터티 내에서 자생적으로 발생 |\n| **외부식별자** | **다른 엔터티와의 관계로 발생 (FK가 식별자에 포함)** |\n\n다른 분류 기준:\n- **대표성**: 주식별자 vs 보조식별자\n- **속성 수**: 단일 vs 복합\n- **대체 여부**: 본질 vs 인조",
-  "concepts": ["identifier"],
-  "tags": ["식별자", "외부식별자", "FK"],
-  "source": "self"
+  "concepts": [
+    "identifier"
+  ],
+  "tags": [
+    "식별자",
+    "외부식별자",
+    "FK"
+  ],
+  "source": "self",
+  "difficulty": 3,
+  "frequency": "high",
+  "frequencyNote": "회당 1~2문제 — PK/FK·후보키·슈퍼키 구분"
 }

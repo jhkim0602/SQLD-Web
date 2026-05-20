@@ -275,19 +275,9 @@ COMMIT;       -- 확정
 ### 패턴 D: 서브쿼리 UPDATE
 > \"UPDATE에 서브쿼리를 활용한 올바른 구문은?\"
 
-## 9. 🔑 암기법 종합
+## 9. 📌 실전 치트시트
 
-| 항목 | 암기법 |
-|---|---|
-| DML 5종 | **SIUDM** (Select·Insert·Update·Delete·Merge) |
-| INSERT 종류 | **단·다·복·시** (단일·다중·복사·시퀀스) |
-| MERGE | \"UPSERT = UPdate + inSERT\" |
-| DELETE vs TRUNCATE | \"DELETE=DML로그·ROLLBACK / TRUNCATE=DDL자동커밋\" |
-| WHERE 함정 | \"WHERE 없으면 전체!\" |
-
-## 10. 📌 시험 합격 핵심 요약
-
-> **시험장 입실 5분 전 점검**
+> **핵심 구문 + 함정 + 빈출 패턴**
 
 ✅ **DML 5종 = SIUDM**:
    - Select (조회)
@@ -323,3 +313,13 @@ COMMIT;       -- 확정
 ✅ **빈출 함정**: \"TRUNCATE는 DML\" → 거짓 (DDL)
 
 ✅ **빈출**: \"MERGE는 INSERT와 UPDATE를 한 번에\"
+
+### 🔑 암기법 정리
+
+| 항목 | 암기법 |
+|---|---|
+| DML 5종 | **SIUDM** (Select·Insert·Update·Delete·Merge) |
+| INSERT 종류 | **단·다·복·시** (단일·다중·복사·시퀀스) |
+| MERGE | \"UPSERT = UPdate + inSERT\" |
+| DELETE vs TRUNCATE | \"DELETE=DML로그·ROLLBACK / TRUNCATE=DDL자동커밋\" |
+| WHERE 함정 | \"WHERE 없으면 전체!\" |

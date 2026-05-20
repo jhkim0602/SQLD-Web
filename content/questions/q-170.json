@@ -12,7 +12,16 @@
   ],
   "answer": 3,
   "explanation": "**공유락(S)끼리는 호환**됩니다. 여러 트랜잭션이 동시에 같은 자원을 읽을 수 있음.\n\n**락 호환성 표**:\n\n| | S (공유) | X (배타) |\n|---|---|---|\n| **S** | **○** | ✗ |\n| **X** | ✗ | ✗ |\n\n**락 종류**:\n| 종류 | 동작 | 약자 |\n|---|---|---|\n| 공유락 (Shared) | 읽기 허용, 쓰기 차단 | S |\n| 배타락 (Exclusive) | 읽기·쓰기 모두 차단 | X |\n| 의도 락 (Intent) | 계층 락 표시 | IS, IX |\n\n**락 범위**:\n- 행 락 (Row Lock)\n- 페이지 락 (Page Lock)\n- 테이블 락 (Table Lock)\n\n**데드락**: 두 트랜잭션이 서로의 락을 기다리는 교착 상태. DBMS가 감지 후 한쪽 강제 종료.\n\n**대안 — MVCC**: 락 없이 버전 관리로 동시성 처리 (Oracle, PostgreSQL).",
-  "concepts": ["transaction"],
-  "tags": ["Lock", "공유락", "배타락"],
-  "source": "self"
+  "concepts": [
+    "transaction"
+  ],
+  "tags": [
+    "Lock",
+    "공유락",
+    "배타락"
+  ],
+  "source": "self",
+  "difficulty": 5,
+  "frequency": "medium",
+  "frequencyNote": "회당 2~3문제 — COMMIT/ROLLBACK/SAVEPOINT·트리거·프로시저"
 }

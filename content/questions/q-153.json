@@ -12,7 +12,15 @@
   ],
   "answer": 0,
   "explanation": "**SQL 4대 분류**:\n\n| 분류 | 명령어 |\n|---|---|\n| **DDL** (Data Definition) | CREATE, ALTER, DROP, **TRUNCATE**, RENAME |\n| **DML** (Data Manipulation) | SELECT, INSERT, UPDATE, **DELETE**, MERGE |\n| **DCL** (Data Control) | GRANT, REVOKE |\n| **TCL** (Transaction Control) | COMMIT, ROLLBACK, SAVEPOINT |\n\n암기: **DDL=CADRT-R, DML=SIUDM, DCL=GR, TCL=CRS**\n\n**시험 빈출 함정**:\n- **TRUNCATE는 DDL** (DML 아님!)\n- **DELETE는 DML**\n- **COMMIT은 TCL** (DCL 아님)\n- **GRANT는 DCL**\n\n각 분류 특징:\n- DDL: **자동 COMMIT**, 객체 정의\n- DML: ROLLBACK 가능, 데이터 조작\n- DCL: 권한 관리\n- TCL: 트랜잭션 제어",
-  "concepts": ["ddl-dml-dcl"],
-  "tags": ["DDL", "분류"],
-  "source": "self"
+  "concepts": [
+    "ddl-dml-dcl"
+  ],
+  "tags": [
+    "DDL",
+    "분류"
+  ],
+  "source": "self",
+  "difficulty": 3,
+  "frequency": "high",
+  "frequencyNote": "회당 3~5문제 — CREATE/ALTER/MERGE·GRANT/REVOKE·제약조건"
 }

@@ -1,6 +1,7 @@
 export type Subject = 1 | 2;
 export type QuestionType = "mc" | "ox";
 export type QuestionSource = "self" | "mit-ref";
+export type Frequency = "high" | "medium" | "low";
 
 export type Question = {
   id: string;
@@ -18,13 +19,22 @@ export type Question = {
   concepts: string[];
   tags: string[];
   source: QuestionSource;
+  difficulty?: 1 | 2 | 3 | 4 | 5;
+  frequency?: Frequency;
+  frequencyNote?: string;
 };
 
 export type QuestionMeta = Pick<
   Question,
-  "id" | "subject" | "category" | "type" | "tags"
+  "id" | "subject" | "category" | "type" | "tags" | "difficulty" | "frequency"
 > & {
   preview: string;
+};
+
+export const FREQUENCY_LABELS: Record<Frequency, string> = {
+  high: "빈출",
+  medium: "보통",
+  low: "드묾",
 };
 
 export type Concept = {

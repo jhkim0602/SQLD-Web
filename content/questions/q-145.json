@@ -13,7 +13,16 @@
   ],
   "answer": 1,
   "explanation": "**LAG/LEAD 형식**: `LAG(col, n, default)`, `LEAD(col, n, default)`\n\n- **LAG**: n행 **이전** 값 (없으면 default)\n- **LEAD**: n행 **다음** 값 (없으면 default)\n\n| sal | LAG(sal,1,0) | LEAD(sal,1,0) |\n|---|---|---|\n| 100 | 0 (없음) | 200 |\n| 200 | 100 | 300 |\n| 300 | 200 | 400 |\n| 400 | 300 | 0 (없음) |\n\n3번째 인자가 없으면 NULL 반환:\n```sql\nLAG(sal, 1) OVER (ORDER BY sal)\n-- 첫 행 결과: NULL\n```\n\n**활용**: 시계열 분석 (전일 대비 증감, 직전·다음 값 비교).",
-  "concepts": ["window-functions"],
-  "tags": ["LAG", "LEAD", "윈도우 함수"],
-  "source": "self"
+  "concepts": [
+    "window-functions"
+  ],
+  "tags": [
+    "LAG",
+    "LEAD",
+    "윈도우 함수"
+  ],
+  "source": "self",
+  "difficulty": 5,
+  "frequency": "high",
+  "frequencyNote": "회당 3~4문제 — RANK·LAG/LEAD·SUM OVER·ROWS/RANGE 차이"
 }

@@ -13,7 +13,15 @@
   ],
   "answer": 1,
   "explanation": "**NTILE(n)**: 결과를 **n개의 균등 그룹**으로 나누어 1~n의 그룹 번호 부여.\n\n예: 8개 행을 NTILE(4)로 → 2행씩 4그룹\n```\nsal: 100, 200, 300, 400, 500, 600, 700, 800\n     1    1    2    2    3    3    4    4   ← NTILE(4)\n```\n\n행 수가 n으로 나누어 떨어지지 않으면 **앞쪽 그룹부터 1행씩 더** 배정.\n\n예: 10개 행을 NTILE(4)로:\n```\n3, 3, 2, 2 (앞 2그룹에 1행씩 더)\n```\n\n**활용**: 분위수(quartile, decile, percentile) 계산\n```sql\nSELECT sal,\n  NTILE(4) OVER (ORDER BY sal) AS quartile,\n  NTILE(10) OVER (ORDER BY sal) AS decile,\n  NTILE(100) OVER (ORDER BY sal) AS percentile\nFROM emp;\n```",
-  "concepts": ["window-functions"],
-  "tags": ["NTILE", "분위수"],
-  "source": "self"
+  "concepts": [
+    "window-functions"
+  ],
+  "tags": [
+    "NTILE",
+    "분위수"
+  ],
+  "source": "self",
+  "difficulty": 3,
+  "frequency": "high",
+  "frequencyNote": "회당 3~4문제 — RANK·LAG/LEAD·SUM OVER·ROWS/RANGE 차이"
 }

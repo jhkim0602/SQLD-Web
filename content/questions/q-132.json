@@ -12,7 +12,16 @@
   ],
   "answer": 1,
   "explanation": "**CUBE(N)** = **2^N개** 조합 (모든 가능한 부분집합).\n\n`CUBE(A, B)` 조합:\n1. `(A, B)` — 최세분\n2. `(A)` — A별 소계\n3. `(B)` — B별 소계\n4. `()` — 총계\n\n→ **2^2 = 4개**\n\n비교:\n- ROLLUP(N): N+1개 (계층적)\n- CUBE(N): 2^N개 (모든 조합)\n- GROUPING SETS: 명시한 조합만\n\n```sql\nGROUP BY CUBE(deptno, job)\n-- = GROUPING SETS((deptno,job), (deptno), (job), ())\n```\n\nROLLUP/CUBE 모두 **표준 SQL**(ISO/ANSI)에 포함됩니다.",
-  "concepts": ["group-by"],
-  "tags": ["CUBE", "ROLLUP", "그룹함수"],
-  "source": "self"
+  "concepts": [
+    "group-by"
+  ],
+  "tags": [
+    "CUBE",
+    "ROLLUP",
+    "그룹함수"
+  ],
+  "source": "self",
+  "difficulty": 5,
+  "frequency": "high",
+  "frequencyNote": "회당 3~4문제 — GROUP BY·HAVING·ROLLUP·CUBE·GROUPING SETS"
 }

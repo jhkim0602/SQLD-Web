@@ -13,7 +13,17 @@
   ],
   "answer": 0,
   "explanation": "**Searched CASE는 위에서 아래로 평가**, 첫 매칭에서 결과 반환.\n\n`sal = NULL`이므로:\n1. `sal IS NULL` → **TRUE** → '없음' 반환 (종료)\n\n핵심 함정 1: **CASE는 위에서 아래로 차례로 평가** (첫 매칭에서 결과 결정)\n\n핵심 함정 2: **NULL 비교는 IS NULL** (아래 비교들 `sal < 1000`은 UNKNOWN이라 매치 안 됨)\n\n```sql\n-- 만약 IS NULL 체크가 없다면:\n-- sal < 1000 → NULL < 1000 → UNKNOWN → 다음\n-- sal < 2000 → UNKNOWN → 다음\n-- ELSE → '높음' (잘못!)\n```\n\n→ NULL 처리는 **CASE 맨 위**에 두는 것이 안전.",
-  "concepts": ["case-decode", "null-handling"],
-  "tags": ["CASE", "NULL", "Searched CASE"],
-  "source": "self"
+  "concepts": [
+    "case-decode",
+    "null-handling"
+  ],
+  "tags": [
+    "CASE",
+    "NULL",
+    "Searched CASE"
+  ],
+  "source": "self",
+  "difficulty": 4,
+  "frequency": "high",
+  "frequencyNote": "회당 3~4문제 — SUBSTR/INSTR/NVL/COALESCE/CASE/DECODE"
 }

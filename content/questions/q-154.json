@@ -12,7 +12,16 @@
   ],
   "answer": 3,
   "explanation": "**TRUNCATE는 트리거가 실행되지 않습니다.**\n\n**DELETE vs TRUNCATE vs DROP** ⭐ 시험 1순위:\n\n| 구분 | DELETE | TRUNCATE | DROP |\n|---|---|---|---|\n| 분류 | **DML** | **DDL** | DDL |\n| 대상 | 행 (조건 가능) | 행 (전체) | 객체 자체 |\n| WHERE | ○ | ✗ | ✗ |\n| ROLLBACK | ○ | **✗** (자동 커밋) | ✗ |\n| 속도 | 느림 (로그) | **빠름** | 빠름 |\n| 저장공간 | 유지 | **해제** (HWM 리셋) | 해제 |\n| **트리거** | **발동** | **미발동** | — |\n| 인덱스/제약 | 유지 | 유지 | 삭제 |\n\n암기:\n- DELETE = DML, 조건, 로그, ROLLBACK OK, 트리거 OK\n- TRUNCATE = DDL, 전체, 빠름, ROLLBACK NO, 트리거 NO\n- DROP = DDL, 객체 자체, 모든 것 삭제",
-  "concepts": ["ddl-dml-dcl"],
-  "tags": ["DELETE", "TRUNCATE", "DROP"],
-  "source": "self"
+  "concepts": [
+    "ddl-dml-dcl"
+  ],
+  "tags": [
+    "DELETE",
+    "TRUNCATE",
+    "DROP"
+  ],
+  "source": "self",
+  "difficulty": 3,
+  "frequency": "high",
+  "frequencyNote": "회당 3~5문제 — CREATE/ALTER/MERGE·GRANT/REVOKE·제약조건"
 }

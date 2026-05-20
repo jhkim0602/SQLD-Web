@@ -12,7 +12,15 @@
   ],
   "answer": 3,
   "explanation": "관계의 3가지 표기 요소는 **관계명**, **관계차수**, **관계선택성**입니다.\n\n| 요소 | 설명 |\n|---|---|\n| **관계명** | 관계의 이름 (예: 주문하다, 소속되다) |\n| **관계차수** | 인스턴스 참여 수 (1:1, 1:M, M:N) |\n| **관계선택성** | 필수/선택 참여 |\n\n\"관계가중치\"는 표준 ERD 표기 요소가 아닙니다.",
-  "concepts": ["relationship"],
-  "tags": ["관계", "표기"],
-  "source": "self"
+  "concepts": [
+    "relationship"
+  ],
+  "tags": [
+    "관계",
+    "표기"
+  ],
+  "source": "self",
+  "difficulty": 3,
+  "frequency": "high",
+  "frequencyNote": "회당 1~2문제 — 카디널리티·식별/비식별·관계차수"
 }

@@ -12,7 +12,16 @@
   ],
   "answer": 3,
   "explanation": "슈퍼타입/서브타입의 **3가지 물리 변환 방법**:\n\n| 방법 | 설명 | 적합 상황 |\n|---|---|---|\n| **OneToOne (개별)** | 슈퍼/서브 각각 테이블 | 서브타입이 매우 다르고 자주 분리 조회 |\n| **Plus (Sub Type)** | 슈퍼는 하나, 서브는 별도 | 서브타입 처리량이 많고 슈퍼 공통 처리 필요 |\n| **Single (One Table)** | 하나의 통합 테이블 + 구분 컬럼 | 서브타입 데이터량이 적고 자주 통합 조회 |\n\n\"Multi Type\"은 존재하지 않는 분류입니다.",
-  "concepts": ["modeling-basics"],
-  "tags": ["슈퍼타입", "서브타입", "물리 모델링"],
-  "source": "self"
+  "concepts": [
+    "modeling-basics"
+  ],
+  "tags": [
+    "슈퍼타입",
+    "서브타입",
+    "물리 모델링"
+  ],
+  "source": "self",
+  "difficulty": 3,
+  "frequency": "medium",
+  "frequencyNote": "회당 1문제 — 3층 스키마·ERD 표기·모델링 절차"
 }

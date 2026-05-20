@@ -13,7 +13,16 @@
   ],
   "answer": 1,
   "explanation": "**PRIOR 위치 = 탐색 방향**\n\n규칙: **PRIOR가 붙은 쪽이 \"부모\"**, 안 붙은 쪽이 \"자식\".\n\n쿼리 분석:\n- `empno = PRIOR mgr`\n- `empno`(자식) = `PRIOR mgr`(부모의 mgr)\n- 즉 \"현재 행의 empno가 부모의 mgr와 같다\" = **자식 → 부모** = **Bottom-Up**\n\n시작점: SCOTT부터 자신의 매니저를 거슬러 올라감.\n\n**방향별 표현**:\n| 방향 | CONNECT BY |\n|---|---|\n| **Top-Down** (부모 → 자식) | `PRIOR empno = mgr` |\n| **Bottom-Up** (자식 → 부모) | `empno = PRIOR mgr` |\n\n암기법: **\"PRIOR가 부모\"**. PRIOR empno면 \"부모의 empno = 자식의 mgr\" → 부모에서 자식으로 (Top-Down).",
-  "concepts": ["hierarchical"],
-  "tags": ["계층형", "Bottom-Up", "CONNECT BY"],
-  "source": "self"
+  "concepts": [
+    "hierarchical"
+  ],
+  "tags": [
+    "계층형",
+    "Bottom-Up",
+    "CONNECT BY"
+  ],
+  "source": "self",
+  "difficulty": 5,
+  "frequency": "medium",
+  "frequencyNote": "회당 1~2문제 — CONNECT BY·PRIOR 방향·LEVEL·CYCLE"
 }

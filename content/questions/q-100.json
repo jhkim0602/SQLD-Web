@@ -12,7 +12,16 @@
   ],
   "answer": 1,
   "explanation": "**슈퍼키 = 유일성만 만족**.\n\n키 분류:\n\n| 키 | 유일성 | 최소성 |\n|---|---|---|\n| **슈퍼키 (Super Key)** | ✓ | — |\n| **후보키 (Candidate Key)** | ✓ | ✓ |\n| **주키 (Primary Key)** | ✓ | ✓ |\n| **대체키 (Alternate Key)** | ✓ | ✓ |\n\n예시 (학생 테이블):\n- {학번} → 후보키 (유일+최소)\n- {학번, 이름} → 슈퍼키 (유일하지만 이름이 없어도 유일 → 최소성 X)\n- {주민번호} → 후보키\n\n**관계**: 슈퍼키 ⊇ 후보키 ⊇ {주키, 대체키}",
-  "concepts": ["identifier"],
-  "tags": ["슈퍼키", "후보키", "키 분류"],
-  "source": "self"
+  "concepts": [
+    "identifier"
+  ],
+  "tags": [
+    "슈퍼키",
+    "후보키",
+    "키 분류"
+  ],
+  "source": "self",
+  "difficulty": 3,
+  "frequency": "high",
+  "frequencyNote": "회당 1~2문제 — PK/FK·후보키·슈퍼키 구분"
 }

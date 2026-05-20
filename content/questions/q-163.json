@@ -12,7 +12,16 @@
   ],
   "answer": 3,
   "explanation": "**Durability(지속성)는 REDO 로그·백업으로 구현**합니다. Hash Join은 옵티마이저의 조인 방식이지 트랜잭션과 무관.\n\n**ACID 구현 방법**:\n\n| 특성 | 구현 |\n|---|---|\n| **Atomicity** (원자성) | 트랜잭션 로그 (REDO/UNDO) |\n| **Consistency** (일관성) | 제약조건, 트리거 |\n| **Isolation** (고립성) | Lock (공유락/배타락), **MVCC** |\n| **Durability** (지속성) | **REDO 로그, 백업** |\n\n**ACID 의미** (암기: **원일고지**):\n- A: All or Nothing\n- C: 무결성 유지\n- I: 동시 차단\n- D: 커밋 후 영구\n\n**MVCC** (Multi-Version Concurrency Control): 동시 트랜잭션이 서로 다른 버전을 읽도록 해 락 없이 격리. Oracle, PostgreSQL이 사용.",
-  "concepts": ["transaction"],
-  "tags": ["ACID", "구현", "MVCC"],
-  "source": "self"
+  "concepts": [
+    "transaction"
+  ],
+  "tags": [
+    "ACID",
+    "구현",
+    "MVCC"
+  ],
+  "source": "self",
+  "difficulty": 5,
+  "frequency": "medium",
+  "frequencyNote": "회당 2~3문제 — COMMIT/ROLLBACK/SAVEPOINT·트리거·프로시저"
 }

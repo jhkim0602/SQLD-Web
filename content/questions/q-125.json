@@ -12,7 +12,15 @@
   ],
   "answer": 1,
   "explanation": "**n개 테이블 조인 = n-1개의 조인 조건 필요**\n\n3개 테이블 → **2개 조인 조건**\n\n조건이 부족하면 **카티전 곱(Cartesian Product)** 발생:\n```sql\n-- ✗ 조건 1개만 → 부분 카티전 곱\nFROM emp e, dept d, salgrade s\nWHERE e.deptno = d.deptno  -- salgrade와 조건 없음\n\n-- ✓ 조건 2개 (n-1)\nWHERE e.deptno = d.deptno\n  AND e.sal BETWEEN s.losal AND s.hisal\n```\n\n예시 행 수: emp 14건, dept 4건, salgrade 5건\n- 조건 없으면: 14 × 4 × 5 = 280\n- 조건 1개: 14 × 5 = 70 (부서 매칭만 적용)\n- 조건 2개: 14 (모두 매칭)",
-  "concepts": ["join-types"],
-  "tags": ["다중 테이블 조인", "n-1 규칙"],
-  "source": "self"
+  "concepts": [
+    "join-types"
+  ],
+  "tags": [
+    "다중 테이블 조인",
+    "n-1 규칙"
+  ],
+  "source": "self",
+  "difficulty": 3,
+  "frequency": "high",
+  "frequencyNote": "회당 5~7문제 (최빈출) — INNER/OUTER/CROSS/(+)/USING"
 }

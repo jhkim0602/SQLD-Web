@@ -12,7 +12,16 @@
   ],
   "answer": 1,
   "explanation": "**WHERE 절에서 윈도우 함수 사용 불가** ⭐\n\nSQL 실행 순서: FROM → WHERE → GROUP BY → HAVING → **윈도우 함수** → SELECT → ORDER BY\n\n윈도우 함수는 SELECT 단계에서 평가되므로 WHERE/HAVING에서 참조 불가.\n\n**해결: 인라인 뷰 또는 CTE**\n```sql\n-- ✓ 인라인 뷰\nSELECT * FROM (\n  SELECT e.*, RANK() OVER (ORDER BY sal) AS r\n  FROM emp e\n) WHERE r <= 3;\n\n-- ✓ CTE\nWITH ranked AS (\n  SELECT e.*, RANK() OVER (ORDER BY sal) AS r FROM emp e\n)\nSELECT * FROM ranked WHERE r <= 3;\n```\n\n위치별 사용 가능:\n| 절 | 윈도우 함수 |\n|---|---|\n| SELECT | ✓ |\n| WHERE | ✗ |\n| GROUP BY | ✗ |\n| HAVING | ✗ |\n| ORDER BY | ✓ |",
-  "concepts": ["window-functions"],
-  "tags": ["윈도우 함수", "WHERE", "실행 순서"],
-  "source": "self"
+  "concepts": [
+    "window-functions"
+  ],
+  "tags": [
+    "윈도우 함수",
+    "WHERE",
+    "실행 순서"
+  ],
+  "source": "self",
+  "difficulty": 4,
+  "frequency": "high",
+  "frequencyNote": "회당 3~4문제 — RANK·LAG/LEAD·SUM OVER·ROWS/RANGE 차이"
 }

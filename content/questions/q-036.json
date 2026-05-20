@@ -12,7 +12,15 @@
   ],
   "answer": 1,
   "explanation": "**반정규화**는 성능 향상을 위해 의도적으로 중복을 허용하는 기법입니다.\n\n적용 시점:\n- **빈번한 조인 회피**가 필요한 조회 패턴\n- **집계 결과(파생속성)를 미리 저장**해 조회 성능 향상\n- 통계 테이블, 요약 테이블 도입\n- **수직/수평 분할** (테이블 쪼개기)\n\n주의:\n- 데이터 중복 → **정합성 관리 부담** 증가\n- 갱신이 빈번하면 오히려 성능 ↓\n- 정규화 후 측정한 뒤 필요한 곳에만 적용",
-  "concepts": ["normalization"],
-  "tags": ["반정규화", "성능"],
-  "source": "self"
+  "concepts": [
+    "normalization"
+  ],
+  "tags": [
+    "반정규화",
+    "성능"
+  ],
+  "source": "self",
+  "difficulty": 3,
+  "frequency": "high",
+  "frequencyNote": "회당 1~2문제 — 1~3NF·BCNF·반정규화 사유"
 }

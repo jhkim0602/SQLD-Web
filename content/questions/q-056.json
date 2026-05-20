@@ -13,7 +13,15 @@
   ],
   "answer": 2,
   "explanation": "**DECODE는 \"=\" 비교만 가능**합니다. 부등호(`>=`, `<`)나 BETWEEN 같은 조건은 표현할 수 없습니다.\n\n```sql\n-- DECODE: 등치만\nDECODE(deptno, 10, 'A', 20, 'B', 'C')\n-- 즉: CASE WHEN deptno=10 THEN 'A' WHEN deptno=20 THEN 'B' ELSE 'C' END\n```\n\nCASE 표현식의 두 형태:\n- **Simple CASE**: `CASE col WHEN val1 THEN ... WHEN val2 THEN ... END` (등치만)\n- **Searched CASE**: `CASE WHEN cond1 THEN ... WHEN cond2 THEN ... END` (모든 조건 가능)\n\n범위 비교는 항상 **Searched CASE**로.\n\n`IF/ELSIF` 구문은 PL/SQL이지 SQL이 아닙니다.",
-  "concepts": ["select-order"],
-  "tags": ["CASE", "DECODE"],
-  "source": "self"
+  "concepts": [
+    "select-order"
+  ],
+  "tags": [
+    "CASE",
+    "DECODE"
+  ],
+  "source": "self",
+  "difficulty": 4,
+  "frequency": "high",
+  "frequencyNote": "회당 3~4문제 — SUBSTR/INSTR/NVL/COALESCE/CASE/DECODE"
 }

@@ -12,7 +12,16 @@
   ],
   "answer": 1,
   "explanation": "**GROUPING(컬럼)** 함수는 ROLLUP/CUBE/GROUPING SETS 결과에서 **해당 컬럼이 소계/총계에 참여했는지** 식별합니다.\n\n반환값:\n- `0`: 일반 그룹 (해당 컬럼이 그룹핑에 사용됨)\n- `1`: 소계/총계 행 (해당 컬럼이 그룹핑에 미사용 → NULL)\n\n사용 예:\n```sql\nSELECT deptno, job, SUM(sal),\n       CASE WHEN GROUPING(deptno) = 1 THEN '총계'\n            WHEN GROUPING(job) = 1 THEN '부서소계'\n            ELSE '상세' END AS 구분\nFROM emp\nGROUP BY ROLLUP(deptno, job);\n```",
-  "concepts": ["group-by"],
-  "tags": ["GROUPING", "ROLLUP", "소계"],
-  "source": "self"
+  "concepts": [
+    "group-by"
+  ],
+  "tags": [
+    "GROUPING",
+    "ROLLUP",
+    "소계"
+  ],
+  "source": "self",
+  "difficulty": 5,
+  "frequency": "high",
+  "frequencyNote": "회당 3~4문제 — GROUP BY·HAVING·ROLLUP·CUBE·GROUPING SETS"
 }

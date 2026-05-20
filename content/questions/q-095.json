@@ -12,7 +12,16 @@
   ],
   "answer": 2,
   "explanation": "**자기 참조 관계**는 한 엔터티가 자기 자신과 관계를 맺는 경우입니다.\n\n**사원과 사원의 매니저** = 사원 엔터티 안에 `mgr` 컬럼이 있어 자신의 다른 사원(매니저)을 참조.\n\n```sql\nCREATE TABLE emp (\n  empno NUMBER PRIMARY KEY,\n  ename VARCHAR2(50),\n  mgr NUMBER,                              -- 자기 참조 FK\n  FOREIGN KEY (mgr) REFERENCES emp(empno)\n);\n```\n\n계층 구조(조직도, 카테고리, 답글) 표현에 활용. SELF JOIN 또는 CONNECT BY로 조회.",
-  "concepts": ["relationship"],
-  "tags": ["자기참조", "재귀", "계층"],
-  "source": "self"
+  "concepts": [
+    "relationship"
+  ],
+  "tags": [
+    "자기참조",
+    "재귀",
+    "계층"
+  ],
+  "source": "self",
+  "difficulty": 4,
+  "frequency": "high",
+  "frequencyNote": "회당 1~2문제 — 카디널리티·식별/비식별·관계차수"
 }

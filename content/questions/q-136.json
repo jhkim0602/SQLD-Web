@@ -12,7 +12,15 @@
   ],
   "answer": 2,
   "explanation": "**서브쿼리의 위치별 분류 = \"스인중\"**:\n\n| 위치 | 이름 | 제약 |\n|---|---|---|\n| SELECT | **스칼라** | 단일 행, 단일 컬럼 |\n| FROM | **인라인 뷰** | 임시 테이블처럼 |\n| WHERE | **중첩** | 연산자에 따라 |\n\n```sql\n-- 인라인 뷰 예\nSELECT * FROM (\n  SELECT deptno, AVG(sal) AS avg_sal\n  FROM emp\n  GROUP BY deptno\n) d\nWHERE d.avg_sal > 2000;\n```\n\n**인라인 뷰 특징**:\n- alias 필수\n- 임시 결과 집합\n- ORDER BY는 보통 무시\n- Top-N, 페이지네이션, 사전 집계에 활용\n\n**CTE (WITH 절)**은 표준화된 인라인 뷰의 대안.",
-  "concepts": ["subquery"],
-  "tags": ["인라인 뷰", "서브쿼리"],
-  "source": "self"
+  "concepts": [
+    "subquery"
+  ],
+  "tags": [
+    "인라인 뷰",
+    "서브쿼리"
+  ],
+  "source": "self",
+  "difficulty": 3,
+  "frequency": "high",
+  "frequencyNote": "회당 4~5문제 — 스칼라·인라인뷰·EXISTS·연관 서브쿼리"
 }

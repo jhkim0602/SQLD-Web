@@ -13,7 +13,15 @@
   ],
   "answer": 1,
   "explanation": "**NTILE(n)**: 결과를 n개의 거의 같은 크기 그룹으로 나누어 1~n을 부여.\n\n8행을 NTILE(4)로 나누면 2행씩 4그룹:\n| sal | quartile |\n|---|---|\n| 100 | 1 |\n| 200 | 1 |\n| 300 | 2 |\n| 400 | 2 |\n| 500 | 3 |\n| 600 | 3 |\n| 700 | 4 |\n| 800 | 4 |\n\n행 수가 n으로 나누어 떨어지지 않으면 앞쪽 그룹부터 1행 더 배정. 분위수(quartile, decile, percentile) 계산에 활용.",
-  "concepts": ["window-functions"],
-  "tags": ["NTILE", "분위수"],
-  "source": "self"
+  "concepts": [
+    "window-functions"
+  ],
+  "tags": [
+    "NTILE",
+    "분위수"
+  ],
+  "source": "self",
+  "difficulty": 5,
+  "frequency": "high",
+  "frequencyNote": "회당 3~4문제 — RANK·LAG/LEAD·SUM OVER·ROWS/RANGE 차이"
 }

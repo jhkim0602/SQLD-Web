@@ -12,7 +12,15 @@
   ],
   "answer": 2,
   "explanation": "**LIKE 와일드카드**:\n- `%`: 0개 이상의 임의 문자\n- `_`: 정확히 1개의 임의 문자\n\n| 패턴 | 매치 |\n|---|---|\n| `'SMITH'` | 정확히 SMITH만 |\n| `'SMITH_'` | SMITH + 1글자 (SMITHE 매치) |\n| `'SMITH%'` | **SMITH로 시작 (SMITH, SMITHE)** |\n| `'%SMITH%'` | SMITH 포함 (ASMITH, SMITH, SMITHE) |\n\n**ESCAPE**: `%`, `_` 자체를 검색하려면 `LIKE '50\\%' ESCAPE '\\\\'`",
-  "concepts": ["select-order"],
-  "tags": ["LIKE", "와일드카드"],
-  "source": "self"
+  "concepts": [
+    "select-order"
+  ],
+  "tags": [
+    "LIKE",
+    "와일드카드"
+  ],
+  "source": "self",
+  "difficulty": 2,
+  "frequency": "high",
+  "frequencyNote": "회당 3~4문제 — 연산자·NULL·LIKE·BETWEEN·IN"
 }

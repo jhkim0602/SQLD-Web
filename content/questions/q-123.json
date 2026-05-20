@@ -13,7 +13,17 @@
   ],
   "answer": 1,
   "explanation": "**Oracle `(+)` 위치 규칙**: NULL을 채울 **반대편**에 붙임.\n\n`e.deptno(+) = d.deptno` → e 쪽이 NULL 가능 → **d가 기준** → **emp RIGHT OUTER JOIN dept**\n\n```sql\n-- ANSI 동치\nSELECT *\nFROM emp e RIGHT OUTER JOIN dept d\n  ON e.deptno = d.deptno;\n```\n\n**Oracle (+) → ANSI 변환 규칙**:\n| Oracle | ANSI |\n|---|---|\n| `A.x = B.y(+)` | `A LEFT OUTER JOIN B ON A.x = B.y` |\n| `A.x(+) = B.y` | `A RIGHT OUTER JOIN B ON A.x = B.y` |\n| 양쪽 (+) ✗ | `A FULL OUTER JOIN B` (ANSI만) |",
-  "concepts": ["join-types"],
-  "tags": ["Oracle", "(+)", "OUTER JOIN", "ANSI"],
-  "source": "self"
+  "concepts": [
+    "join-types"
+  ],
+  "tags": [
+    "Oracle",
+    "(+)",
+    "OUTER JOIN",
+    "ANSI"
+  ],
+  "source": "self",
+  "difficulty": 3,
+  "frequency": "high",
+  "frequencyNote": "회당 5~7문제 (최빈출) — INNER/OUTER/CROSS/(+)/USING"
 }

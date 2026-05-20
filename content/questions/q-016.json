@@ -19,5 +19,8 @@
     "서브쿼리",
     "스칼라"
   ],
-  "source": "self"
+  "source": "self",
+  "difficulty": 3,
+  "frequency": "high",
+  "frequencyNote": "회당 4~5문제 — 스칼라·인라인뷰·EXISTS·연관 서브쿼리"
 }

@@ -13,7 +13,16 @@
   ],
   "answer": 2,
   "explanation": "단계별 추적:\n\n1. `INSERT (1, 'A')` → 임시: [A]\n2. `SAVEPOINT s1` → 체크포인트 저장 (현재 [A])\n3. `INSERT (2, 'B')` → 임시: [A, B]\n4. `ROLLBACK TO s1` → s1 시점으로 복귀: [A]\n5. `INSERT (3, 'C')` → 임시: [A, C]\n6. `COMMIT` → 영구 저장: **[(1, 'A'), (3, 'C')]**\n\nTCL 명령:\n- `COMMIT`: 변경 확정\n- `ROLLBACK`: 전체 트랜잭션 취소\n- `ROLLBACK TO savepoint`: 해당 저장점까지만 되돌리기\n- `SAVEPOINT name`: 저장점 표시\n\n주의: SAVEPOINT 이후의 변경만 취소되며, 그 이전 변경(A)은 유지됩니다.",
-  "concepts": ["transaction"],
-  "tags": ["TCL", "SAVEPOINT", "ROLLBACK"],
-  "source": "self"
+  "concepts": [
+    "transaction"
+  ],
+  "tags": [
+    "TCL",
+    "SAVEPOINT",
+    "ROLLBACK"
+  ],
+  "source": "self",
+  "difficulty": 3,
+  "frequency": "medium",
+  "frequencyNote": "회당 2~3문제 — COMMIT/ROLLBACK/SAVEPOINT·트리거·프로시저"
 }

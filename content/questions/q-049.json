@@ -13,7 +13,17 @@
   ],
   "answer": 0,
   "explanation": "Oracle의 `(+)` 표기는 **NULL을 채울 반대편**에 붙입니다. 따라서 `d.deptno(+)`는 `d` 쪽이 NULL이 될 수 있다는 의미 → **emp가 기준(왼쪽)**.\n\n```\nemp + dept(NULL 가능) → emp LEFT OUTER JOIN dept\n```\n\n변환 규칙:\n- `WHERE A.x = B.y(+)` ⇒ `A LEFT OUTER JOIN B ON A.x = B.y`\n- `WHERE A.x(+) = B.y` ⇒ `A RIGHT OUTER JOIN B ON A.x = B.y`\n- 양쪽에 `(+)`는 불가 (FULL OUTER 안 됨, ANSI만 가능)",
-  "concepts": ["join-types"],
-  "tags": ["Oracle", "(+)", "LEFT OUTER", "ANSI"],
-  "source": "self"
+  "concepts": [
+    "join-types"
+  ],
+  "tags": [
+    "Oracle",
+    "(+)",
+    "LEFT OUTER",
+    "ANSI"
+  ],
+  "source": "self",
+  "difficulty": 3,
+  "frequency": "high",
+  "frequencyNote": "회당 5~7문제 (최빈출) — INNER/OUTER/CROSS/(+)/USING"
 }

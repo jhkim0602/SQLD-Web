@@ -13,7 +13,15 @@
   ],
   "answer": 3,
   "explanation": "**UNION ALL**은 중복 제거 없이 모두 합칩니다.\n\n결과: `{1, 1, 2, 3, 2, 3, 3, 4}` → **8행**\n\n비교:\n- `UNION` (중복 제거): `{1, 2, 3, 4}` → 4행\n- `UNION ALL` (중복 유지): **8행**\n- `INTERSECT`: `{2, 3}` → 2행\n- `MINUS` (A - B): `{1}` → 1행\n\n**성능 팁**: 중복이 없거나 중복을 유지해도 되면 **UNION ALL**이 정렬 부하가 없어 더 빠릅니다.",
-  "concepts": ["set-operators"],
-  "tags": ["UNION ALL", "집합 연산"],
-  "source": "self"
+  "concepts": [
+    "set-operators"
+  ],
+  "tags": [
+    "UNION ALL",
+    "집합 연산"
+  ],
+  "source": "self",
+  "difficulty": 4,
+  "frequency": "medium",
+  "frequencyNote": "회당 1~2문제 — UNION/UNION ALL/INTERSECT/MINUS"
 }

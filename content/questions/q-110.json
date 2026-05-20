@@ -12,7 +12,16 @@
   ],
   "answer": 1,
   "explanation": "**참조 무결성(Referential Integrity)**: FK 값은 참조하는 PK에 존재하는 값이거나 NULL이어야 함.\n\n5가지 무결성 (암기: **개참도Null사**):\n\n| # | 무결성 | 핵심 | 구현 |\n|---|---|---|---|\n| 1 | **개**체 | PK 유일+NULL불가 | PRIMARY KEY |\n| 2 | **참**조 | FK 정합성 | **FOREIGN KEY** |\n| 3 | **도**메인 | 값 범위 | CHECK, DATA TYPE |\n| 4 | **Null** | NULL 불허 | NOT NULL |\n| 5 | **사**용자 정의 | 비즈니스 규칙 | TRIGGER |\n\nON DELETE 옵션 (**노카셋셋**):\n- NO ACTION (기본)\n- CASCADE\n- SET NULL\n- SET DEFAULT",
-  "concepts": ["integrity"],
-  "tags": ["참조 무결성", "FK", "5가지 무결성"],
-  "source": "self"
+  "concepts": [
+    "integrity"
+  ],
+  "tags": [
+    "참조 무결성",
+    "FK",
+    "5가지 무결성"
+  ],
+  "source": "self",
+  "difficulty": 2,
+  "frequency": "medium",
+  "frequencyNote": "회당 1문제 — 3층 스키마·ERD 표기·모델링 절차"
 }

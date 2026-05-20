@@ -12,7 +12,16 @@
   ],
   "answer": 0,
   "explanation": "**트리거의 `:NEW`와 `:OLD`** (FOR EACH ROW 트리거):\n\n| 의사 레코드 | 의미 | INSERT | UPDATE | DELETE |\n|---|---|---|---|---|\n| `:NEW` | 변경 후 값 | 새 행 | 새 값 | (없음) |\n| `:OLD` | 변경 전 값 | (없음) | 기존 값 | 삭제될 행 |\n\n```sql\nCREATE OR REPLACE TRIGGER trg_emp_log\nAFTER INSERT OR UPDATE OR DELETE ON emp\nFOR EACH ROW\nBEGIN\n   IF INSERTING THEN\n      INSERT INTO emp_log VALUES (:NEW.empno, 'INSERT', SYSDATE);\n   ELSIF UPDATING THEN\n      INSERT INTO emp_log VALUES (:NEW.empno, 'UPDATE', SYSDATE);\n      -- 변경 전 :OLD.sal, 변경 후 :NEW.sal\n   ELSIF DELETING THEN\n      INSERT INTO emp_log VALUES (:OLD.empno, 'DELETE', SYSDATE);\n   END IF;\nEND;\n```\n\n**INSERTING / UPDATING / DELETING**: 어떤 DML인지 판단하는 조건자.\n\n**트리거 종류 (BAI × SR)**:\n- BEFORE/AFTER/INSTEAD OF\n- STATEMENT/FOR EACH ROW",
-  "concepts": ["plsql"],
-  "tags": ["트리거", ":NEW", ":OLD"],
-  "source": "self"
+  "concepts": [
+    "plsql"
+  ],
+  "tags": [
+    "트리거",
+    ":NEW",
+    ":OLD"
+  ],
+  "source": "self",
+  "difficulty": 2,
+  "frequency": "medium",
+  "frequencyNote": "회당 2~3문제 — COMMIT/ROLLBACK/SAVEPOINT·트리거·프로시저"
 }

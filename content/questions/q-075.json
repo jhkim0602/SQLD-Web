@@ -13,7 +13,15 @@
   ],
   "answer": 1,
   "explanation": "**ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW**: 첫 행부터 현재 행까지 → **누적합**\n\n결과 예:\n| ename | hiredate | sal | cum_sal |\n|---|---|---|---|\n| A | 2024-01 | 1000 | 1000 |\n| B | 2024-03 | 2000 | 3000 |\n| C | 2024-05 | 1500 | 4500 |\n\n윈도우 프레임 키워드:\n- `UNBOUNDED PRECEDING`: 첫 행\n- `UNBOUNDED FOLLOWING`: 마지막 행\n- `CURRENT ROW`: 현재 행\n- `N PRECEDING/FOLLOWING`: 앞/뒤 N개\n\nROWS vs RANGE:\n- **ROWS**: 행 단위\n- **RANGE**: 값(논리적) 단위",
-  "concepts": ["window-functions"],
-  "tags": ["누적합", "윈도우 프레임"],
-  "source": "self"
+  "concepts": [
+    "window-functions"
+  ],
+  "tags": [
+    "누적합",
+    "윈도우 프레임"
+  ],
+  "source": "self",
+  "difficulty": 4,
+  "frequency": "high",
+  "frequencyNote": "회당 3~4문제 — RANK·LAG/LEAD·SUM OVER·ROWS/RANGE 차이"
 }

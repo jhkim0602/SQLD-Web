@@ -20,5 +20,8 @@
     "UNION",
     "UNION ALL"
   ],
-  "source": "self"
+  "source": "self",
+  "difficulty": 3,
+  "frequency": "medium",
+  "frequencyNote": "회당 1~2문제 — UNION/UNION ALL/INTERSECT/MINUS"
 }

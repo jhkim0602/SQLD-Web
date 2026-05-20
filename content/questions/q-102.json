@@ -6,7 +6,17 @@
   "question": "외래키(FK)에 NULL 값이 들어갈 수 있다.",
   "answer": true,
   "explanation": "참(O). **외래키는 NULL을 허용할 수 있습니다.** 이는 관계의 선택성이 \"선택(Optional)\"인 경우입니다.\n\n예: 사원(empno, ename, deptno)\n- 부서 미배정 사원이 가능하면 → deptno (FK) NULL 허용\n- 모든 사원이 반드시 부서에 속하면 → deptno NOT NULL\n\n**NULL 허용 정리**:\n| 키 | NULL |\n|---|---|\n| PRIMARY KEY | ✗ |\n| UNIQUE | ○ (여러 NULL 공존 가능) |\n| FOREIGN KEY | **○** (선택 관계) |\n| NOT NULL | ✗ |\n\n시험 빈출 함정: \"FK는 NULL 불가\" → 거짓.",
-  "concepts": ["identifier", "relationship"],
-  "tags": ["FK", "NULL", "외래키"],
-  "source": "self"
+  "concepts": [
+    "identifier",
+    "relationship"
+  ],
+  "tags": [
+    "FK",
+    "NULL",
+    "외래키"
+  ],
+  "source": "self",
+  "difficulty": 2,
+  "frequency": "high",
+  "frequencyNote": "회당 1~2문제 — PK/FK·후보키·슈퍼키 구분"
 }

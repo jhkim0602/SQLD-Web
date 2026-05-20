@@ -240,19 +240,9 @@ SET TRANSACTION READ WRITE;
 ### 패턴 D: 격리 수준
 > \"각 격리 수준에서 차단되는 현상은?\"
 
-## 11. 🔑 암기법 종합
+## 11. 📌 명령어 한눈
 
-| 항목 | 암기법 |
-|---|---|
-| TCL 3종 | **CRS** (Commit·Rollback·Savepoint) |
-| SAVEPOINT 동작 | \"sp 이후만 취소, 이전은 유지\" |
-| 자동 COMMIT 케이스 | \"DDL·DCL·정상종료\" |
-| ACID | **원일고지** (원자·일관·고립·지속) |
-| 격리 4수준 | \"언리·커밋·반복·직렬\" |
-
-## 12. 📌 시험 합격 핵심 요약
-
-> **시험장 입실 5분 전 점검**
+> **명령어 · 흐름 · 권한 위임**
 
 ✅ **TCL 3종 = CRS**: COMMIT · ROLLBACK · SAVEPOINT
 
@@ -283,3 +273,13 @@ SET TRANSACTION READ WRITE;
 ✅ **빈출**: \"ROLLBACK TO sp1\" → sp1 이후 변경만 취소
 
 ✅ **빈출**: \"DDL은 ROLLBACK 가능?\" → 거짓 (자동 COMMIT)
+
+### 🔑 암기법 정리
+
+| 항목 | 암기법 |
+|---|---|
+| TCL 3종 | **CRS** (Commit·Rollback·Savepoint) |
+| SAVEPOINT 동작 | \"sp 이후만 취소, 이전은 유지\" |
+| 자동 COMMIT 케이스 | \"DDL·DCL·정상종료\" |
+| ACID | **원일고지** (원자·일관·고립·지속) |
+| 격리 4수준 | \"언리·커밋·반복·직렬\" |

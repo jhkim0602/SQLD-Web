@@ -13,7 +13,15 @@
   ],
   "answer": 2,
   "explanation": "Oracle에서 **DATE - DATE = 숫자(일 단위)**입니다.\n\n결과: `5` (숫자형)\n\nDate 연산 규칙:\n- `DATE + 숫자` → DATE (N일 후)\n- `DATE - 숫자` → DATE (N일 전)\n- `DATE - DATE` → **숫자 (일 차이)**\n- `DATE + DATE` → **불가 (에러)**\n\n날짜 관련 함수:\n- `SYSDATE`: 현재 일시\n- `MONTHS_BETWEEN(d1, d2)`: 월 차이\n- `ADD_MONTHS(d, n)`: n개월 후\n- `NEXT_DAY(d, '월요일')`: 다음 특정 요일\n- `LAST_DAY(d)`: 해당 월 마지막 날\n- `TRUNC(d, 'MM')`: 월 첫날로 절사",
-  "concepts": ["select-order"],
-  "tags": ["날짜 함수", "DATE"],
-  "source": "self"
+  "concepts": [
+    "select-order"
+  ],
+  "tags": [
+    "날짜 함수",
+    "DATE"
+  ],
+  "source": "self",
+  "difficulty": 4,
+  "frequency": "high",
+  "frequencyNote": "회당 3~4문제 — SUBSTR/INSTR/NVL/COALESCE/CASE/DECODE"
 }

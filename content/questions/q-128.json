@@ -12,7 +12,16 @@
   ],
   "answer": 1,
   "explanation": "**Hash Join은 등치(=) 조인 전용**입니다. 비등치 조인은 NL Join이나 Sort Merge로 처리.\n\n**JOIN 처리 방식 3종**:\n\n| 방식 | 동작 | 등치 | 비등치 | 적합 |\n|---|---|---|---|---|\n| **Nested Loop** | 외부 행 × 내부 행 | ✓ | ✓ | 소량 + 후행 인덱스 |\n| **Hash Join** | hash 빌드 + probe | ✓ | **✗** | 대량 + 등치 |\n| **Sort Merge** | 양쪽 정렬 후 병합 | ✓ | ✓ | 정렬된 대량, 범위 |\n\n암기:\n- NL: \"둘러쌈, 소량+인덱스\"\n- Hash: \"=계열, 대량\"\n- Sort Merge: \"정렬+범위\"",
-  "concepts": ["optimizer"],
-  "tags": ["JOIN 처리", "Hash Join", "옵티마이저"],
-  "source": "self"
+  "concepts": [
+    "optimizer"
+  ],
+  "tags": [
+    "JOIN 처리",
+    "Hash Join",
+    "옵티마이저"
+  ],
+  "source": "self",
+  "difficulty": 5,
+  "frequency": "high",
+  "frequencyNote": "회당 5~7문제 (최빈출) — INNER/OUTER/CROSS/(+)/USING"
 }

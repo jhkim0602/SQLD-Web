@@ -6,7 +6,16 @@
   "question": "DDL 명령어는 실행 후 자동으로 COMMIT된다.",
   "answer": true,
   "explanation": "참(O). **DDL은 실행과 동시에 자동 COMMIT**됩니다 (Oracle 기본).\n\n주의: 직전 DML 변경사항도 함께 커밋됩니다!\n\n```sql\nUPDATE emp SET sal = 0;        -- 미커밋 DML\nCREATE TABLE backup AS SELECT * FROM emp;  -- DDL → 자동 COMMIT\nROLLBACK;                       -- 효과 없음 (UPDATE 이미 커밋)\n```\n\n**자동 커밋 시점**:\n- DDL 실행 (Oracle)\n- 정상 세션 종료 (SQL*Plus 설정 의존)\n- DCL 실행\n\n**ROLLBACK으로 되돌릴 수 없는 명령**:\n- DDL (CREATE, ALTER, DROP, TRUNCATE)\n- DCL (GRANT, REVOKE)\n- COMMIT\n\n**참고**: PostgreSQL은 DDL도 트랜잭션 안에서 ROLLBACK 가능. Oracle/MySQL은 자동 커밋.\n\n시험 빈출 함정: \"DDL은 ROLLBACK 가능\" → 거짓.",
-  "concepts": ["ddl-dml-dcl", "transaction"],
-  "tags": ["DDL", "자동 커밋"],
-  "source": "self"
+  "concepts": [
+    "ddl-dml-dcl",
+    "transaction"
+  ],
+  "tags": [
+    "DDL",
+    "자동 커밋"
+  ],
+  "source": "self",
+  "difficulty": 2,
+  "frequency": "high",
+  "frequencyNote": "회당 3~5문제 — CREATE/ALTER/MERGE·GRANT/REVOKE·제약조건"
 }

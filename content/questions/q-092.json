@@ -12,7 +12,15 @@
   ],
   "answer": 1,
   "explanation": "**관계 선택성(Optionality)**은 관계 참여가 **필수(Mandatory)**인지 **선택(Optional)**인지를 나타냅니다.\n\n- **필수 참여**: 반드시 관계 → FK NOT NULL\n- **선택 참여**: 참여 안 할 수 있음 → FK NULL 허용\n\n예: 사원이 부서에 \"필수\" 소속이면 deptno NOT NULL, \"선택\" 소속이면 NULL 허용.\n\n선택지 1번은 **차수(Cardinality)**의 정의입니다.",
-  "concepts": ["relationship"],
-  "tags": ["선택성", "Optionality"],
-  "source": "self"
+  "concepts": [
+    "relationship"
+  ],
+  "tags": [
+    "선택성",
+    "Optionality"
+  ],
+  "source": "self",
+  "difficulty": 3,
+  "frequency": "high",
+  "frequencyNote": "회당 1~2문제 — 카디널리티·식별/비식별·관계차수"
 }

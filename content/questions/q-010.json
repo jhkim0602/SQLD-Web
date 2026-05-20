@@ -14,5 +14,8 @@
     "FK",
     "NULL"
   ],
-  "source": "self"
+  "source": "self",
+  "difficulty": 2,
+  "frequency": "high",
+  "frequencyNote": "회당 1~2문제 — 카디널리티·식별/비식별·관계차수"
 }

@@ -19,5 +19,8 @@
     "속성",
     "속성 분류"
   ],
-  "source": "self"
+  "source": "self",
+  "difficulty": 1,
+  "frequency": "medium",
+  "frequencyNote": "회당 1문제 — 분류·도메인·기본/설계/파생 속성"
 }

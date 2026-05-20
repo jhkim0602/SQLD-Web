@@ -12,7 +12,15 @@
   ],
   "answer": 3,
   "explanation": "**MERGE** 문은 두 절 중 **하나만 작성해도 됩니다** (Oracle 10g 이상).\n\n```sql\nMERGE INTO target t\nUSING source s ON (t.id = s.id)\nWHEN MATCHED THEN\n  UPDATE SET t.name = s.name\n  DELETE WHERE t.flag = 'X'  -- 선택적\nWHEN NOT MATCHED THEN\n  INSERT (id, name) VALUES (s.id, s.name);\n```\n\n특징:\n- 한 번의 스캔으로 UPSERT(Update + Insert)\n- WHEN MATCHED 안에 DELETE 가능\n- 대용량 ETL/배치에서 자주 사용",
-  "concepts": ["ddl-dml-dcl"],
-  "tags": ["MERGE", "UPSERT"],
-  "source": "self"
+  "concepts": [
+    "ddl-dml-dcl"
+  ],
+  "tags": [
+    "MERGE",
+    "UPSERT"
+  ],
+  "source": "self",
+  "difficulty": 4,
+  "frequency": "high",
+  "frequencyNote": "회당 3~5문제 — CREATE/ALTER/MERGE·GRANT/REVOKE·제약조건"
 }

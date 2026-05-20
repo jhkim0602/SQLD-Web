@@ -22,5 +22,8 @@
     "집계함수",
     "AVG"
   ],
-  "source": "self"
+  "source": "self",
+  "difficulty": 3,
+  "frequency": "high",
+  "frequencyNote": "회당 3~4문제 — 연산자·NULL·LIKE·BETWEEN·IN"
 }

@@ -13,7 +13,15 @@
   ],
   "answer": 2,
   "explanation": "**INTERSECT**: 교집합. 양쪽에 **모두 존재**하는 값. **중복 제거**.\n\nA = {1, 1, 2, 3}, B = {2, 3, 3, 4}\n→ INTERSECT = **{2, 3}**\n\n다른 연산자 결과:\n| 연산 | 결과 |\n|---|---|\n| UNION (중복 제거) | {1, 2, 3, 4} |\n| UNION ALL (중복 유지) | {1, 1, 2, 3, 2, 3, 3, 4} |\n| **INTERSECT** | **{2, 3}** |\n| MINUS (A - B) | {1} |\n| EXCEPT (= MINUS) | {1} |\n\n암기법: **\"유유인마이\"** (UNION·UNION ALL·INTERSECT·MINUS/EXCEPT)\n\n공통 규칙:\n- 컬럼 수 일치\n- 데이터 타입 호환\n- 결과 컬럼명은 **첫 SELECT** 기준\n- ORDER BY는 **마지막 SELECT 뒤**에 한 번만",
-  "concepts": ["set-operators"],
-  "tags": ["INTERSECT", "집합연산"],
-  "source": "self"
+  "concepts": [
+    "set-operators"
+  ],
+  "tags": [
+    "INTERSECT",
+    "집합연산"
+  ],
+  "source": "self",
+  "difficulty": 4,
+  "frequency": "medium",
+  "frequencyNote": "회당 1~2문제 — UNION/UNION ALL/INTERSECT/MINUS"
 }

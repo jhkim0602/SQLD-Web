@@ -6,7 +6,16 @@
   "question": "주식별자는 NULL 값을 가질 수 있다.",
   "answer": false,
   "explanation": "거짓(X). **주식별자는 NULL을 가질 수 없습니다.** 이는 주식별자의 **존재성** 원칙에 위배됩니다.\n\n주식별자 4대 특성:\n1. **유일성** — 인스턴스 식별\n2. **최소성** — 최소 속성 수\n3. **불변성** — 변하지 않음\n4. **존재성** — **NULL 불허용**\n\n반면 **외래키(FK)는 NULL 허용 가능**합니다 (선택 참여인 경우).",
-  "concepts": ["identifier"],
-  "tags": ["주식별자", "NULL", "존재성"],
-  "source": "self"
+  "concepts": [
+    "identifier"
+  ],
+  "tags": [
+    "주식별자",
+    "NULL",
+    "존재성"
+  ],
+  "source": "self",
+  "difficulty": 2,
+  "frequency": "high",
+  "frequencyNote": "회당 1~2문제 — PK/FK·후보키·슈퍼키 구분"
 }

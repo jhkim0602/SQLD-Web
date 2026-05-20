@@ -12,7 +12,16 @@
   ],
   "answer": 3,
   "explanation": "**FUNCTION도 OUT 파라미터 사용 가능**합니다 (단 권장하지 않음).\n\n**PROCEDURE vs FUNCTION**:\n\n| | PROCEDURE | FUNCTION |\n|---|---|---|\n| **RETURN** | ✗ | **○ (필수)** |\n| **SQL에서 호출** | ✗ | **○** (SELECT, WHERE 등) |\n| **호출 방법** | EXEC, CALL | 표현식 안에서 |\n| **OUT 파라미터** | ○ (자주 사용) | △ (가능하지만 지양) |\n\n```sql\n-- PROCEDURE\nCREATE OR REPLACE PROCEDURE raise_sal(\n   p_empno IN NUMBER,\n   p_amount IN NUMBER\n) IS BEGIN\n   UPDATE emp SET sal = sal + p_amount WHERE empno = p_empno;\nEND;\n\nEXEC raise_sal(7369, 100);\n\n-- FUNCTION\nCREATE OR REPLACE FUNCTION annual_sal(p_empno NUMBER)\nRETURN NUMBER IS\n   v_sal NUMBER;\nBEGIN\n   SELECT sal * 12 INTO v_sal FROM emp WHERE empno = p_empno;\n   RETURN v_sal;\nEND;\n\n-- SQL에서 호출\nSELECT annual_sal(7369) FROM dual;\n```\n\n**파라미터 모드**: IN(기본), OUT, IN OUT",
-  "concepts": ["plsql"],
-  "tags": ["PROCEDURE", "FUNCTION", "PL/SQL"],
-  "source": "self"
+  "concepts": [
+    "plsql"
+  ],
+  "tags": [
+    "PROCEDURE",
+    "FUNCTION",
+    "PL/SQL"
+  ],
+  "source": "self",
+  "difficulty": 3,
+  "frequency": "medium",
+  "frequencyNote": "회당 2~3문제 — COMMIT/ROLLBACK/SAVEPOINT·트리거·프로시저"
 }

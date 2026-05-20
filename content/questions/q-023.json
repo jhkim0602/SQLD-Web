@@ -12,7 +12,16 @@
   ],
   "answer": 3,
   "explanation": "비식별관계의 FK는 **NULL을 허용할 수 있습니다**. 선택성에 따라 NULL 허용 여부가 달라집니다.\n\n| | 식별관계 | 비식별관계 |\n|---|---|---|\n| 부모 PK 처리 | 자식의 PK + FK | 자식의 일반 속성(FK) |\n| 자식 종속성 | 강한 종속 | 약한 종속 |\n| ERD 표기 | 실선 | 점선 |\n| FK NULL | 불가 (PK이므로) | 허용 가능 |\n\n**선택 기준**: 자식이 부모 없이 존재할 수 없으면 식별관계, 가능하면 비식별관계.",
-  "concepts": ["relationship"],
-  "tags": ["관계", "식별관계", "비식별관계"],
-  "source": "self"
+  "concepts": [
+    "relationship"
+  ],
+  "tags": [
+    "관계",
+    "식별관계",
+    "비식별관계"
+  ],
+  "source": "self",
+  "difficulty": 3,
+  "frequency": "high",
+  "frequencyNote": "회당 1~2문제 — 카디널리티·식별/비식별·관계차수"
 }

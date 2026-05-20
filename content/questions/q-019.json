@@ -21,5 +21,8 @@
     "DELETE",
     "TRUNCATE"
   ],
-  "source": "self"
+  "source": "self",
+  "difficulty": 3,
+  "frequency": "high",
+  "frequencyNote": "회당 3~5문제 — CREATE/ALTER/MERGE·GRANT/REVOKE·제약조건"
 }

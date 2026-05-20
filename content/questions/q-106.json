@@ -12,7 +12,15 @@
   ],
   "answer": 0,
   "explanation": "**정규형 순서**: 1NF → 2NF → 3NF → BCNF → 4NF → 5NF\n\n암기법: **\"도부이결다조\"**\n- **도**메인 (1NF: 원자값)\n- **부**분 종속 (2NF)\n- **이**행 종속 (3NF)\n- **결**정자 후보키 (BCNF)\n- **다**치 종속 (4NF)\n- **조**인 종속 (5NF)\n\n누적성: BCNF면 1~3NF 자동 만족.\n\n각 정규형의 핵심:\n- 1NF: 원자값\n- 2NF: 1NF + 부분 종속 제거\n- 3NF: 2NF + 이행 종속 제거\n- BCNF: 3NF + 결정자 = 후보키",
-  "concepts": ["normalization"],
-  "tags": ["정규형", "도부이결다조"],
-  "source": "self"
+  "concepts": [
+    "normalization"
+  ],
+  "tags": [
+    "정규형",
+    "도부이결다조"
+  ],
+  "source": "self",
+  "difficulty": 3,
+  "frequency": "high",
+  "frequencyNote": "회당 1~2문제 — 1~3NF·BCNF·반정규화 사유"
 }

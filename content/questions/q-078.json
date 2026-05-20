@@ -12,7 +12,15 @@
   ],
   "answer": 0,
   "explanation": "**RATIO_TO_REPORT(컬럼) OVER (...)**: 윈도우 내 합계 대비 현재 행 값의 비율.\n\n```sql\nSELECT ename, sal,\n  RATIO_TO_REPORT(sal) OVER (PARTITION BY deptno) AS sal_ratio\nFROM emp;\n```\n결과: 부서 내 본인 급여가 부서 총 급여의 몇 %인지 (0~1).\n\n비율/분포 함수:\n| 함수 | 의미 |\n|---|---|\n| `RATIO_TO_REPORT(col)` | 합계 대비 비율 |\n| `PERCENT_RANK()` | 순위 백분율 (0~1) |\n| `CUME_DIST()` | 누적 분포 (0~1) |\n| `NTILE(n)` | 분위수 그룹 번호 |",
-  "concepts": ["window-functions"],
-  "tags": ["RATIO_TO_REPORT", "비율"],
-  "source": "self"
+  "concepts": [
+    "window-functions"
+  ],
+  "tags": [
+    "RATIO_TO_REPORT",
+    "비율"
+  ],
+  "source": "self",
+  "difficulty": 4,
+  "frequency": "high",
+  "frequencyNote": "회당 3~4문제 — RANK·LAG/LEAD·SUM OVER·ROWS/RANGE 차이"
 }

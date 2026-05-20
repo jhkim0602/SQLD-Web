@@ -13,7 +13,14 @@
   ],
   "answer": 2,
   "explanation": "**FULL OUTER JOIN**: 양쪽 모든 행 + 매칭, 없는 쪽은 NULL\n\n| A.x | B.x |\n|---|---|\n| 1 | NULL |  ← A에만 있음\n| 2 | 2 |     ← 양쪽 매치\n| 3 | 3 |     ← 양쪽 매치\n| NULL | 4 |  ← B에만 있음\n\n결과: **4행**\n\nFULL OUTER 공식: `len(A) + len(B) - 매칭` = 3 + 3 - 2 = 4",
-  "concepts": ["join-types"],
-  "tags": ["FULL OUTER JOIN"],
-  "source": "self"
+  "concepts": [
+    "join-types"
+  ],
+  "tags": [
+    "FULL OUTER JOIN"
+  ],
+  "source": "self",
+  "difficulty": 4,
+  "frequency": "high",
+  "frequencyNote": "회당 5~7문제 (최빈출) — INNER/OUTER/CROSS/(+)/USING"
 }

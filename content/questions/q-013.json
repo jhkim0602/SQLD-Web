@@ -20,5 +20,8 @@
     "OUTER JOIN",
     "FULL OUTER"
   ],
-  "source": "self"
+  "source": "self",
+  "difficulty": 3,
+  "frequency": "high",
+  "frequencyNote": "회당 5~7문제 (최빈출) — INNER/OUTER/CROSS/(+)/USING"
 }

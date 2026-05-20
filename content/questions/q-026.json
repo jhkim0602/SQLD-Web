@@ -12,7 +12,15 @@
   ],
   "answer": 1,
   "explanation": "**도메인(Domain)**은 속성이 가질 수 있는 값의 범위입니다. 도메인은 다음을 포함합니다.\n\n- **데이터 타입** (CHAR, NUMBER, DATE 등)\n- **길이** (VARCHAR2(50))\n- **허용 값 범위** (CHECK 제약, 예: 1~100)\n- **기본값** (DEFAULT 0)\n- **NULL 허용 여부**\n\n예: 성별 도메인 = `CHAR(1)`, `IN ('M', 'F')`",
-  "concepts": ["attribute"],
-  "tags": ["속성", "도메인"],
-  "source": "self"
+  "concepts": [
+    "attribute"
+  ],
+  "tags": [
+    "속성",
+    "도메인"
+  ],
+  "source": "self",
+  "difficulty": 2,
+  "frequency": "medium",
+  "frequencyNote": "회당 1문제 — 분류·도메인·기본/설계/파생 속성"
 }

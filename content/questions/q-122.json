@@ -13,7 +13,18 @@
   ],
   "answer": 0,
   "explanation": "**LEFT OUTER JOIN + WHERE 조건 함정** ⭐ 시험 빈출\n\nLEFT OUTER JOIN으로 매칭 없는 행은 d.loc이 NULL이 됨. 그런데 WHERE `d.loc = 'SEOUL'`은 NULL을 거르므로 → **INNER JOIN과 동일**.\n\n**해결**: 조건을 **ON 절에 추가**\n\n```sql\n-- ✓ 의도대로 작동\nSELECT e.ename, d.loc\nFROM emp e LEFT OUTER JOIN dept d\n  ON e.deptno = d.deptno AND d.loc = 'SEOUL';\n```\n\n또는 WHERE에 NULL 포함:\n```sql\nWHERE d.loc = 'SEOUL' OR d.loc IS NULL\n```\n\n**규칙**: OUTER JOIN의 NULL을 살리려면 조건을 **ON에** 두기.",
-  "concepts": ["join-types", "null-handling"],
-  "tags": ["LEFT OUTER", "WHERE", "ON", "함정"],
-  "source": "self"
+  "concepts": [
+    "join-types",
+    "null-handling"
+  ],
+  "tags": [
+    "LEFT OUTER",
+    "WHERE",
+    "ON",
+    "함정"
+  ],
+  "source": "self",
+  "difficulty": 4,
+  "frequency": "high",
+  "frequencyNote": "회당 5~7문제 (최빈출) — INNER/OUTER/CROSS/(+)/USING"
 }

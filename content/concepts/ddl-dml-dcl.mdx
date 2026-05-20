@@ -216,22 +216,9 @@ COMMIT;                             -- 확정
 ### 패턴 E: WITH GRANT OPTION
 > \"권한을 받은 자가 재부여할 수 있게 하는 옵션은?\"
 
-## 10. 🔑 암기법 종합
+## 10. 📌 실전 치트시트
 
-| 항목 | 암기법 |
-|---|---|
-| 4대 분류 | **DDL·DML·DCL·TCL** |
-| 풀네임 | **정의·조작·제어·트랜잭션** |
-| DDL 명령 | **CADRT-R** (Create·Alter·Drop·Rename·Truncate) |
-| DML 명령 | **SIUDM** (Select·Insert·Update·Delete·Merge) |
-| DCL 명령 | **GR** (Grant·Revoke) |
-| TCL 명령 | **CRS** (Commit·Rollback·Savepoint) |
-| 제약조건 | **PFUNCD** |
-| DELETE vs TRUNCATE | "DELETE=DML·조건·ROLL OK / TRUNCATE=DDL·전체·ROLL ✗" |
-
-## 11. 📌 시험 합격 핵심 요약
-
-> **시험장 입실 5분 전 점검**
+> **핵심 구문 + 함정 + 빈출 패턴**
 
 ✅ **4대 분류**:
    - **DDL** (정의): CREATE, ALTER, DROP, **TRUNCATE**, RENAME
@@ -259,3 +246,16 @@ COMMIT;                             -- 확정
    - DELETE → **DML**
    - COMMIT → **TCL**
    - GRANT → **DCL**
+
+### 🔑 암기법 정리
+
+| 항목 | 암기법 |
+|---|---|
+| 4대 분류 | **DDL·DML·DCL·TCL** |
+| 풀네임 | **정의·조작·제어·트랜잭션** |
+| DDL 명령 | **CADRT-R** (Create·Alter·Drop·Rename·Truncate) |
+| DML 명령 | **SIUDM** (Select·Insert·Update·Delete·Merge) |
+| DCL 명령 | **GR** (Grant·Revoke) |
+| TCL 명령 | **CRS** (Commit·Rollback·Savepoint) |
+| 제약조건 | **PFUNCD** |
+| DELETE vs TRUNCATE | "DELETE=DML·조건·ROLL OK / TRUNCATE=DDL·전체·ROLL ✗" |

@@ -20,5 +20,8 @@
     "3NF",
     "이행종속"
   ],
-  "source": "self"
+  "source": "self",
+  "difficulty": 3,
+  "frequency": "high",
+  "frequencyNote": "회당 1~2문제 — 1~3NF·BCNF·반정규화 사유"
 }

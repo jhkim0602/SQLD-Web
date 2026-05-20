@@ -13,5 +13,8 @@
     "엔터티",
     "인스턴스"
   ],
-  "source": "self"
+  "source": "self",
+  "difficulty": 1,
+  "frequency": "high",
+  "frequencyNote": "회당 1~2문제 — 6대 특징·발생 분류·인스턴스 구분"
 }

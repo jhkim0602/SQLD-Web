@@ -12,7 +12,15 @@
   ],
   "answer": 2,
   "explanation": "NULL과의 비교는 **반드시 `IS NULL` 또는 `IS NOT NULL`**을 사용해야 합니다. `= NULL` 또는 `<> NULL`은 항상 UNKNOWN을 반환해 의도와 다르게 동작합니다.\n\n```sql\n-- ✗ 항상 거짓\nWHERE comm = NULL\n\n-- ✓ 정상 동작\nWHERE comm IS NULL\n```\n\n3치 논리:\n- `NULL = NULL` → UNKNOWN (TRUE 아님)\n- `NULL <> 1` → UNKNOWN\n- `NULL IS NULL` → **TRUE** ✓\n- `1 + NULL` → NULL (사칙 전파)",
-  "concepts": ["null-handling"],
-  "tags": ["NULL", "IS NULL"],
-  "source": "self"
+  "concepts": [
+    "null-handling"
+  ],
+  "tags": [
+    "NULL",
+    "IS NULL"
+  ],
+  "source": "self",
+  "difficulty": 2,
+  "frequency": "medium",
+  "frequencyNote": "회당 1문제 — 분류·도메인·기본/설계/파생 속성"
 }

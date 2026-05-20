@@ -6,7 +6,15 @@
   "question": "UNION ALL이 UNION보다 성능이 좋다.",
   "answer": true,
   "explanation": "참(O). **UNION ALL이 UNION보다 빠릅니다**.\n\n이유:\n- **UNION**: 중복 제거를 위해 **정렬 + 비교** 필요 → 부하 ↑\n- **UNION ALL**: 단순히 두 결과를 이어붙임 → 부하 ↓\n\n```\nUNION:\n  SELECT 1 → 정렬 → 중복 제거\n  SELECT 2 → 정렬 → 중복 제거\n  ↓ 병합 → 다시 정렬·중복 제거\n  결과\n\nUNION ALL:\n  SELECT 1 → 결과\n  SELECT 2 → 결과에 추가\n  → 즉시 반환\n```\n\n**실무 팁**: 중복이 없거나 중복을 유지해도 무방하면 **UNION ALL 사용** → 성능 ↑\n\n시험 빈출: \"중복을 제거하지 않는 집합 연산자는?\" → **UNION ALL**",
-  "concepts": ["set-operators"],
-  "tags": ["UNION ALL", "성능"],
-  "source": "self"
+  "concepts": [
+    "set-operators"
+  ],
+  "tags": [
+    "UNION ALL",
+    "성능"
+  ],
+  "source": "self",
+  "difficulty": 2,
+  "frequency": "medium",
+  "frequencyNote": "회당 1~2문제 — UNION/UNION ALL/INTERSECT/MINUS"
 }

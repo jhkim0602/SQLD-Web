@@ -12,7 +12,14 @@
   ],
   "answer": 1,
   "explanation": "**SQL 연산자 우선순위** (높음 → 낮음):\n\n1. **산술 연산자** (`*`, `/`, `+`, `-`)\n2. 연결 연산자 (`||`)\n3. 비교 연산자 (`=`, `<>`, `<`, `>`)\n4. IS NULL, LIKE, IN, BETWEEN\n5. NOT\n6. AND\n7. OR (가장 낮음)\n\n암기법: **\"산연비IS Not And Or\"**\n\n실수 예:\n```sql\nWHERE a = 1 OR a = 2 AND b = 3\n-- = WHERE a = 1 OR (a = 2 AND b = 3)   (AND 우선)\n```\n\n실무에서는 **괄호로 명시**하는 것이 안전합니다.",
-  "concepts": ["select-order"],
-  "tags": ["연산자 우선순위"],
-  "source": "self"
+  "concepts": [
+    "select-order"
+  ],
+  "tags": [
+    "연산자 우선순위"
+  ],
+  "source": "self",
+  "difficulty": 2,
+  "frequency": "high",
+  "frequencyNote": "회당 3~4문제 — 연산자·NULL·LIKE·BETWEEN·IN"
 }

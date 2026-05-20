@@ -12,7 +12,15 @@
   ],
   "answer": 2,
   "explanation": "**VIEW 갱신 가능 조건**: 단순한 컬럼만 사용해야 함. 다음 중 하나라도 포함되면 **갱신 불가**.\n\n**갱신 불가 조건** (암기: **집그디 해윈 표집ROW**):\n- **집**계 함수 (SUM, COUNT, AVG)\n- **G**ROUP BY\n- **D**ISTINCT\n- **H**AVING\n- **윈**도우 함수\n- **표**현식·함수 컬럼 (sal * 12)\n- **집**합 연산 (UNION 등)\n- **ROW**NUM\n\n```sql\n-- ✗ 갱신 불가\nCREATE VIEW v1 AS\nSELECT deptno, AVG(sal) FROM emp GROUP BY deptno;\n\n-- ✓ 갱신 가능\nCREATE VIEW v2 AS\nSELECT empno, ename, sal FROM emp WHERE deptno = 10;\n```\n\n**WITH CHECK OPTION**: INSERT/UPDATE가 뷰의 WHERE 조건을 만족해야 함.\n**WITH READ ONLY**: 모든 DML 차단.",
-  "concepts": ["view"],
-  "tags": ["VIEW", "갱신 가능"],
-  "source": "self"
+  "concepts": [
+    "view"
+  ],
+  "tags": [
+    "VIEW",
+    "갱신 가능"
+  ],
+  "source": "self",
+  "difficulty": 3,
+  "frequency": "high",
+  "frequencyNote": "회당 3~5문제 — CREATE/ALTER/MERGE·GRANT/REVOKE·제약조건"
 }

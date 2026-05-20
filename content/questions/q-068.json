@@ -12,7 +12,15 @@
   ],
   "answer": 2,
   "explanation": "**부서별 최대 급여**는 \"각 부서의 행마다 다른 기준 값\"이 필요하므로 **상관 서브쿼리(Correlated Subquery)** 또는 윈도우 함수가 적합합니다.\n\n```sql\n-- 상관 서브쿼리\nSELECT * FROM emp e\nWHERE sal = (\n  SELECT MAX(sal) FROM emp\n  WHERE deptno = e.deptno  -- ← 외부 컬럼 참조\n);\n\n-- 또는 윈도우 함수\nSELECT * FROM (\n  SELECT e.*, RANK() OVER (PARTITION BY deptno ORDER BY sal DESC) rn\n  FROM emp e\n) WHERE rn = 1;\n```\n\n상관 vs 비상관:\n- **상관**: 외부 행마다 서브쿼리 재실행, 외부 컬럼 참조\n- **비상관**: 한 번 실행 후 결과 재사용",
-  "concepts": ["subquery"],
-  "tags": ["상관 서브쿼리", "그룹별 최대"],
-  "source": "self"
+  "concepts": [
+    "subquery"
+  ],
+  "tags": [
+    "상관 서브쿼리",
+    "그룹별 최대"
+  ],
+  "source": "self",
+  "difficulty": 3,
+  "frequency": "high",
+  "frequencyNote": "회당 4~5문제 — 스칼라·인라인뷰·EXISTS·연관 서브쿼리"
 }

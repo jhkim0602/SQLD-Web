@@ -13,7 +13,15 @@
   ],
   "answer": 0,
   "explanation": "**\"동률 포함\" 그룹별 Top-N**: **RANK()** 사용\n\n각 순위 함수의 그룹별 Top-N 동작:\n\n| 함수 | 결과 |\n|---|---|\n| **RANK** | 동률 모두 포함, N명 이상 가능 |\n| **DENSE_RANK** | 동률 모두 포함, 연속 순위 |\n| **ROW_NUMBER** | 정확히 N명, 동률은 임의 선택 |\n| **NTILE(N)** | N개 그룹으로 균등 분할 (Top-N 아님) |\n\n예: 부서 내 sal 동률 데이터\n```\nsal: 1000, 1000, 800, 700, 600\nRANK: 1, 1, 3, 4, 5\nROW_NUMBER: 1, 2, 3, 4, 5\nDENSE_RANK: 1, 1, 2, 3, 4\n```\n\n`WHERE r <= 3` 결과:\n- RANK: 동률 1위 2명 + 800 = **3명** (또는 더)\n- ROW_NUMBER: 정확히 3명\n- DENSE_RANK: 1,1,2,3 → 4명\n\n시험에서 \"동률 모두 포함\" → **RANK**.",
-  "concepts": ["window-functions"],
-  "tags": ["RANK", "그룹별 Top-N"],
-  "source": "self"
+  "concepts": [
+    "window-functions"
+  ],
+  "tags": [
+    "RANK",
+    "그룹별 Top-N"
+  ],
+  "source": "self",
+  "difficulty": 4,
+  "frequency": "high",
+  "frequencyNote": "회당 3~4문제 — RANK·LAG/LEAD·SUM OVER·ROWS/RANGE 차이"
 }

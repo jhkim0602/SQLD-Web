@@ -248,19 +248,9 @@ SELECT * FROM ROLE_TAB_PRIVS WHERE ROLE = 'APP_USER';
 > \"DCL 명령어로만 묶인 것은?\"
 - GRANT, REVOKE
 
-## 10. 🔑 암기법 종합
+## 10. 📌 명령어 한눈
 
-| 항목 | 암기법 |
-|---|---|
-| DCL 2종 | **GR** (Grant·Revoke) |
-| 권한 종류 | **시스템 vs 객체** |
-| 재부여 옵션 | **객체=GRANT OPT, 시스템=ADMIN OPT** |
-| 사전 ROLE | **컨리디** (CONNECT·RESOURCE·DBA) |
-| 연쇄 회수 | **WITH GRANT OPT → CASCADE** |
-
-## 11. 📌 시험 합격 핵심 요약
-
-> **시험장 입실 5분 전 점검**
+> **명령어 · 흐름 · 권한 위임**
 
 ✅ **DCL 2종 = GR**: GRANT, REVOKE
 
@@ -286,3 +276,13 @@ SELECT * FROM ROLE_TAB_PRIVS WHERE ROLE = 'APP_USER';
    - \"GRANT는 DCL\"
    - \"WITH GRANT OPTION = 객체 권한 재부여\"
    - \"WITH ADMIN OPTION = 시스템 권한 재부여\"
+
+### 🔑 암기법 정리
+
+| 항목 | 암기법 |
+|---|---|
+| DCL 2종 | **GR** (Grant·Revoke) |
+| 권한 종류 | **시스템 vs 객체** |
+| 재부여 옵션 | **객체=GRANT OPT, 시스템=ADMIN OPT** |
+| 사전 ROLE | **컨리디** (CONNECT·RESOURCE·DBA) |
+| 연쇄 회수 | **WITH GRANT OPT → CASCADE** |

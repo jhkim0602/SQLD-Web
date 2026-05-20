@@ -12,7 +12,17 @@
   ],
   "answer": 2,
   "explanation": "**ON DELETE 옵션 4가지** ⭐ 빈출\n\n| 옵션 | 동작 |\n|---|---|\n| **NO ACTION** (기본) | 자식 있으면 부모 삭제 차단 |\n| **CASCADE** | 자식도 함께 삭제 |\n| **SET NULL** | **자식의 FK를 NULL로** |\n| **SET DEFAULT** | 자식의 FK를 기본값으로 |\n\n암기법: **\"노카셋셋\"** (No Action·Cascade·Set Null·Set Default)\n\n```sql\nCREATE TABLE emp (\n  empno NUMBER PRIMARY KEY,\n  deptno NUMBER,\n  CONSTRAINT fk_dept FOREIGN KEY (deptno)\n    REFERENCES dept (deptno)\n    ON DELETE SET NULL    -- 부서 삭제 시 사원의 deptno = NULL\n);\n```\n\n**기본값 = NO ACTION/RESTRICT**: 자식이 있으면 부모 삭제 불가 (참조 무결성).",
-  "concepts": ["ddl-dml-dcl", "integrity"],
-  "tags": ["ON DELETE", "SET NULL", "노카셋셋"],
-  "source": "self"
+  "concepts": [
+    "ddl-dml-dcl",
+    "integrity"
+  ],
+  "tags": [
+    "ON DELETE",
+    "SET NULL",
+    "노카셋셋"
+  ],
+  "source": "self",
+  "difficulty": 3,
+  "frequency": "high",
+  "frequencyNote": "회당 3~5문제 — CREATE/ALTER/MERGE·GRANT/REVOKE·제약조건"
 }

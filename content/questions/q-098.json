@@ -12,7 +12,16 @@
   ],
   "answer": 3,
   "explanation": "**격리 수준 4단계** (낮음 → 높음):\n\n| 수준 | Dirty Read | Non-repeatable | Phantom |\n|---|---|---|---|\n| READ UNCOMMITTED | 발생 | 발생 | 발생 |\n| READ COMMITTED | 차단 | 발생 | 발생 |\n| REPEATABLE READ | 차단 | 차단 | 발생 |\n| **SERIALIZABLE** | 차단 | 차단 | **차단** |\n\n**SERIALIZABLE**이 가장 엄격해 모든 동시성 현상을 차단합니다. 다만 성능은 가장 낮습니다.\n\nDBMS 기본값:\n- Oracle: READ COMMITTED\n- MySQL InnoDB: **REPEATABLE READ**",
-  "concepts": ["transaction"],
-  "tags": ["격리수준", "Isolation Level", "SERIALIZABLE"],
-  "source": "self"
+  "concepts": [
+    "transaction"
+  ],
+  "tags": [
+    "격리수준",
+    "Isolation Level",
+    "SERIALIZABLE"
+  ],
+  "source": "self",
+  "difficulty": 4,
+  "frequency": "medium",
+  "frequencyNote": "회당 1문제 — ACID·격리 수준·Lock"
 }

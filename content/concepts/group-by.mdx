@@ -235,20 +235,9 @@ GROUP BY deptno;
 > \"AVG의 결과는?\"
 - 분모는 NULL 아닌 행 수
 
-## 9. 🔑 암기법 종합
+## 9. 📌 실전 치트시트
 
-| 항목 | 암기법 |
-|---|---|
-| WHERE/HAVING | \"WHERE는 행, HAVING은 그룹\" |
-| ROLLUP | \"굴러내리며 소계\" — N+1개 |
-| CUBE | \"입체 = 모든 면\" — 2^N개 |
-| GROUPING SETS | \"내가 원하는 것만\" |
-| GROUPING | \"소계 표시 (1) vs 일반 (0)\" |
-| NULL | \"비교는 UNKNOWN, 묶기는 한 그룹\" |
-
-## 10. 📌 시험 합격 핵심 요약
-
-> **시험장 입실 5분 전 점검**
+> **핵심 구문 + 함정 + 빈출 패턴**
 
 ✅ **GROUP BY 3대 규칙**:
    1. 비집계 SELECT 컬럼은 GROUP BY 포함
@@ -271,3 +260,14 @@ GROUP BY deptno;
 ✅ **COUNT(*) vs COUNT(컬럼)**: *는 NULL 포함, 컬럼은 NULL 제외
 
 ✅ **빈출**: \"`ROLLUP(A, B, C)`의 조합 수\" → **4개**
+
+### 🔑 암기법 정리
+
+| 항목 | 암기법 |
+|---|---|
+| WHERE/HAVING | \"WHERE는 행, HAVING은 그룹\" |
+| ROLLUP | \"굴러내리며 소계\" — N+1개 |
+| CUBE | \"입체 = 모든 면\" — 2^N개 |
+| GROUPING SETS | \"내가 원하는 것만\" |
+| GROUPING | \"소계 표시 (1) vs 일반 (0)\" |
+| NULL | \"비교는 UNKNOWN, 묶기는 한 그룹\" |

@@ -12,7 +12,16 @@
   ],
   "answer": 2,
   "explanation": "**INSTEAD OF 트리거**: 뷰에 대한 DML을 가로채 **대신 실행**할 코드를 정의. 갱신 불가 뷰에 갱신 가능성 부여.\n\n```sql\n-- 갱신 불가능한 뷰 (조인 포함)\nCREATE VIEW emp_dept_view AS\nSELECT e.empno, e.ename, d.dname\nFROM emp e JOIN dept d ON e.deptno = d.deptno;\n\n-- INSTEAD OF 트리거로 갱신 가능하게\nCREATE OR REPLACE TRIGGER trg_emp_dept_update\nINSTEAD OF UPDATE ON emp_dept_view\nFOR EACH ROW\nBEGIN\n   UPDATE emp SET ename = :NEW.ename WHERE empno = :NEW.empno;\n   UPDATE dept SET dname = :NEW.dname \n   WHERE deptno = (SELECT deptno FROM emp WHERE empno = :NEW.empno);\nEND;\n```\n\n**트리거 종류** (BAI × SR):\n| 시점 | 단위 | 설명 |\n|---|---|---|\n| **BEFORE** | STATEMENT | 문장 실행 전 |\n| **AFTER** | STATEMENT | 문장 실행 후 |\n| **INSTEAD OF** | (뷰) | DML **대신 실행** |\n| FOR EACH ROW | 각 행 처리 |",
-  "concepts": ["plsql"],
-  "tags": ["INSTEAD OF", "트리거", "뷰 갱신"],
-  "source": "self"
+  "concepts": [
+    "plsql"
+  ],
+  "tags": [
+    "INSTEAD OF",
+    "트리거",
+    "뷰 갱신"
+  ],
+  "source": "self",
+  "difficulty": 2,
+  "frequency": "medium",
+  "frequencyNote": "회당 2~3문제 — COMMIT/ROLLBACK/SAVEPOINT·트리거·프로시저"
 }

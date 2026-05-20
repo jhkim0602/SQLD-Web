@@ -12,7 +12,17 @@
   ],
   "answer": 3,
   "explanation": "각 함수의 동작:\n\n| 함수 | 결과 |\n|---|---|\n| `NVL(NULL, 'A')` | 'A' (NULL이면 'A') |\n| `COALESCE(NULL, NULL, 'A')` | 'A' (첫 non-NULL) |\n| `NVL2(NULL, 'B', 'A')` | 'A' (NULL일 때 3번째 값) |\n| `NULLIF('A', 'A')` | **NULL** (같으면 NULL) |\n\n선택지 4번만 결과가 NULL입니다.\n\nNULL 관련 함수:\n- `NVL(a, b)`: a NULL이면 b\n- `NVL2(a, b, c)`: a NULL 아니면 b, NULL이면 c\n- `COALESCE(a, b, c, ...)`: 처음 non-NULL 반환 (표준)\n- `NULLIF(a, b)`: a == b면 NULL, 아니면 a",
-  "concepts": ["null-handling"],
-  "tags": ["NVL", "COALESCE", "NULLIF", "NVL2"],
-  "source": "self"
+  "concepts": [
+    "null-handling"
+  ],
+  "tags": [
+    "NVL",
+    "COALESCE",
+    "NULLIF",
+    "NVL2"
+  ],
+  "source": "self",
+  "difficulty": 3,
+  "frequency": "high",
+  "frequencyNote": "회당 3~4문제 — SUBSTR/INSTR/NVL/COALESCE/CASE/DECODE"
 }

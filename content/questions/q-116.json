@@ -12,7 +12,16 @@
   ],
   "answer": 3,
   "explanation": "`REPLACE('AAA', 'A', 'BB')` = **'BBBBBB'** (각 A를 BB로 치환).\n\n선택지 4번의 'BB'는 잘못된 결과입니다.\n\n주요 문자 함수:\n- `SUBSTR(s, start, len)`: 1-based, `SUBSTR('SQLD', 2, 2)` → 'QL'\n- `INSTR(s, sub)`: 위치, 없으면 0\n- `LENGTH(s)`: 문자 수 (한글도 1자)\n- `LENGTHB(s)`: 바이트 수 (한글 UTF-8 3바이트)\n- `REPLACE(s, old, new)`: 모든 발생을 치환\n- `LPAD(s, n, c)`: 좌측 패딩 (**결과 전체 길이 n**)\n- `RPAD(s, n, c)`: 우측 패딩",
-  "concepts": ["functions"],
-  "tags": ["문자 함수", "REPLACE", "SUBSTR"],
-  "source": "self"
+  "concepts": [
+    "functions"
+  ],
+  "tags": [
+    "문자 함수",
+    "REPLACE",
+    "SUBSTR"
+  ],
+  "source": "self",
+  "difficulty": 3,
+  "frequency": "high",
+  "frequencyNote": "회당 3~4문제 — SUBSTR/INSTR/NVL/COALESCE/CASE/DECODE"
 }

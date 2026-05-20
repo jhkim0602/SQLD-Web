@@ -12,7 +12,16 @@
   ],
   "answer": 0,
   "explanation": "**`%ROWTYPE`**: 테이블의 **모든 컬럼과 동일한 구조**를 가진 변수 선언.\n\n```sql\nDECLARE\n   v_emp emp%ROWTYPE;   -- emp의 모든 컬럼을 가진 레코드\nBEGIN\n   SELECT * INTO v_emp FROM emp WHERE empno = 7369;\n   DBMS_OUTPUT.PUT_LINE(v_emp.ename || ': ' || v_emp.sal);\nEND;\n```\n\n**`%TYPE` vs `%ROWTYPE`**:\n\n| | `%TYPE` | `%ROWTYPE` |\n|---|---|---|\n| 의미 | 특정 컬럼 타입 | 행 전체 구조 |\n| 사용 | `v_sal emp.sal%TYPE;` | `v_emp emp%ROWTYPE;` |\n| 활용 | 단일 값 변수 | 다중 컬럼 레코드 |\n\n**장점**:\n- 컬럼 타입 변경 시 **자동 반영** → 유지보수 ↑\n- 명시적 타입 정의 불필요\n- 테이블 구조와 동기화\n\n**커서 FOR LOOP**에서도 자주 사용:\n```sql\nFOR rec IN (SELECT * FROM emp) LOOP\n   ...\nEND LOOP;\n-- rec는 자동으로 emp%ROWTYPE\n```",
-  "concepts": ["plsql"],
-  "tags": ["%ROWTYPE", "%TYPE", "PL/SQL"],
-  "source": "self"
+  "concepts": [
+    "plsql"
+  ],
+  "tags": [
+    "%ROWTYPE",
+    "%TYPE",
+    "PL/SQL"
+  ],
+  "source": "self",
+  "difficulty": 3,
+  "frequency": "medium",
+  "frequencyNote": "회당 2~3문제 — COMMIT/ROLLBACK/SAVEPOINT·트리거·프로시저"
 }

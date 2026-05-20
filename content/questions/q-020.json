@@ -20,5 +20,8 @@
     "트랜잭션",
     "지속성"
   ],
-  "source": "self"
+  "source": "self",
+  "difficulty": 4,
+  "frequency": "medium",
+  "frequencyNote": "회당 2~3문제 — COMMIT/ROLLBACK/SAVEPOINT·트리거·프로시저"
 }

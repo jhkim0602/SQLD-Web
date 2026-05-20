@@ -12,7 +12,15 @@
   ],
   "answer": 2,
   "explanation": "**반정규화**는 의도적으로 중복을 허용해 성능을 높이는 기법입니다. **조회 성능 부족 + 빈번한 조인**일 때 적용합니다.\n\n반정규화 기법:\n- 테이블 병합 (자주 조인 → 결합)\n- 테이블 분할 (수직/수평)\n- 중복 컬럼 추가\n- 파생 컬럼 저장\n- 요약 테이블\n\n주의사항:\n- 데이터 정합성 관리 부담 ↑\n- 갱신 빈도가 높으면 오히려 성능 ↓ (선택지 2가 함정)\n- **정규화 → 측정 → 필요 시 반정규화** 순서",
-  "concepts": ["normalization"],
-  "tags": ["반정규화", "성능"],
-  "source": "self"
+  "concepts": [
+    "normalization"
+  ],
+  "tags": [
+    "반정규화",
+    "성능"
+  ],
+  "source": "self",
+  "difficulty": 3,
+  "frequency": "high",
+  "frequencyNote": "회당 1~2문제 — 1~3NF·BCNF·반정규화 사유"
 }

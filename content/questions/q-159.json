@@ -13,7 +13,16 @@
   ],
   "answer": 1,
   "explanation": "**WITH GRANT OPTION**: 권한을 받은 사용자가 **다른 사용자에게 권한을 재부여**할 수 있게 함.\n\n```sql\n-- A에게 SELECT + 재부여 가능\nGRANT SELECT ON emp TO A WITH GRANT OPTION;\n\n-- A는 이제 B에게 부여 가능\n-- (A 로그인 후)\nGRANT SELECT ON emp TO B;\n```\n\n**REVOKE 시 연쇄 회수**:\n- A에서 권한 회수 → B의 권한도 **자동 회수**\n```sql\nREVOKE SELECT ON emp FROM A;\n-- B의 권한도 사라짐\n```\n\n**유사 옵션**:\n- **WITH ADMIN OPTION**: 시스템 권한 재부여\n- **WITH GRANT OPTION**: 객체 권한 재부여\n\n**DCL 명령**:\n- GRANT: 권한 부여\n- REVOKE: 권한 회수",
-  "concepts": ["ddl-dml-dcl"],
-  "tags": ["GRANT", "WITH GRANT OPTION", "DCL"],
-  "source": "self"
+  "concepts": [
+    "ddl-dml-dcl"
+  ],
+  "tags": [
+    "GRANT",
+    "WITH GRANT OPTION",
+    "DCL"
+  ],
+  "source": "self",
+  "difficulty": 3,
+  "frequency": "high",
+  "frequencyNote": "회당 3~5문제 — CREATE/ALTER/MERGE·GRANT/REVOKE·제약조건"
 }

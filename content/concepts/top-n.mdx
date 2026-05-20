@@ -127,19 +127,9 @@ SELECT * FROM emp ORDER BY sal DESC LIMIT 5 OFFSET 5;
 ### 패턴 D: 페이지네이션
 > \"6~10위만?\"
 
-## 9. 🔑 암기법 종합
+## 9. 📌 실전 치트시트
 
-| 항목 | 암기법 |
-|---|---|
-| ROWNUM 함정 | \"정렬 전 부여\" |
-| 페이지네이션 | \"두 번 감싸기\" |
-| FETCH FIRST | \"12c+, ANSI\" |
-| WITH TIES | \"동률 모두\" |
-| 그룹별 | \"PARTITION + RANK + 인라인 뷰\" |
-
-## 10. 📌 시험 합격 핵심 요약
-
-> **시험장 입실 5분 전 점검**
+> **핵심 구문 + 함정 + 빈출 패턴**
 
 ✅ **4가지 방법**: ROWNUM · FETCH FIRST · 윈도우 · LIMIT
 
@@ -161,3 +151,13 @@ SELECT * FROM emp ORDER BY sal DESC LIMIT 5 OFFSET 5;
    ```
 
 ✅ **빈출**: \"ROWNUM은 정렬 전 부여\"
+
+### 🔑 암기법 정리
+
+| 항목 | 암기법 |
+|---|---|
+| ROWNUM 함정 | \"정렬 전 부여\" |
+| 페이지네이션 | \"두 번 감싸기\" |
+| FETCH FIRST | \"12c+, ANSI\" |
+| WITH TIES | \"동률 모두\" |
+| 그룹별 | \"PARTITION + RANK + 인라인 뷰\" |

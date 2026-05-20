@@ -250,21 +250,9 @@ FROM → WHERE → GROUP BY → HAVING → 윈도우 함수 → SELECT → ORDER
 > \"WHERE RANK() OVER (...) <= 3 가능?\"
 - ✗ (인라인 뷰 필요)
 
-## 12. 🔑 암기법 종합
+## 12. 📌 실전 치트시트
 
-| 항목 | 암기법 |
-|---|---|
-| 순위 4종 | **랭덴로엔** (RANK·DENSE·ROW·NTILE) |
-| RANK | "건너뜀 (1,1,3,4)" |
-| DENSE_RANK | "빽빽 = 연속 (1,1,2,3)" |
-| ROW_NUMBER | "무조건 +1 (1,2,3,4)" |
-| LAG/LEAD | "lag=뒤처짐=이전, lead=앞장=다음" |
-| ROWS/RANGE | "ROWS=행 단위, RANGE=값 단위" |
-| 누적합 | "UNBOUNDED PRECEDING → CURRENT" |
-
-## 13. 📌 시험 합격 핵심 요약
-
-> **시험장 입실 5분 전 점검**
+> **핵심 구문 + 함정 + 빈출 패턴**
 
 ✅ **순위 함수 = 랭덴로엔**:
    - RANK: 동순위 후 **건너뜀** (1,1,**3**,4)
@@ -286,3 +274,15 @@ FROM → WHERE → GROUP BY → HAVING → 윈도우 함수 → SELECT → ORDER
 ✅ **PARTITION BY 생략 = 전체 1개 윈도우**
 
 ✅ **빈출**: \"RANK 결과 1,1,?,4에서 ?\" → **3** (건너뜀)
+
+### 🔑 암기법 정리
+
+| 항목 | 암기법 |
+|---|---|
+| 순위 4종 | **랭덴로엔** (RANK·DENSE·ROW·NTILE) |
+| RANK | "건너뜀 (1,1,3,4)" |
+| DENSE_RANK | "빽빽 = 연속 (1,1,2,3)" |
+| ROW_NUMBER | "무조건 +1 (1,2,3,4)" |
+| LAG/LEAD | "lag=뒤처짐=이전, lead=앞장=다음" |
+| ROWS/RANGE | "ROWS=행 단위, RANGE=값 단위" |
+| 누적합 | "UNBOUNDED PRECEDING → CURRENT" |

@@ -12,7 +12,15 @@
   ],
   "answer": 1,
   "explanation": "**ROLLUP(A, B, C)**는 **좌→우 계층적 소계 + 총계**를 생성합니다.\n\n조합 (4개):\n1. `(A, B, C)` — 최세분\n2. `(A, B)` — C 제거\n3. `(A)` — B, C 제거\n4. `()` — 총계\n\n비교:\n- **ROLLUP(N)**: N+1개 조합\n- **CUBE(N)**: 2^N개 조합 (모든 조합)\n- **GROUPING SETS**: 명시한 조합만\n\nROLLUP은 **계층 구조**(예: 부서 > 팀 > 사원)의 소계 보고서에 적합.",
-  "concepts": ["group-by"],
-  "tags": ["ROLLUP", "소계"],
-  "source": "self"
+  "concepts": [
+    "group-by"
+  ],
+  "tags": [
+    "ROLLUP",
+    "소계"
+  ],
+  "source": "self",
+  "difficulty": 5,
+  "frequency": "high",
+  "frequencyNote": "회당 3~4문제 — GROUP BY·HAVING·ROLLUP·CUBE·GROUPING SETS"
 }

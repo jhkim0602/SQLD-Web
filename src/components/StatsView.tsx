@@ -31,11 +31,25 @@ export function StatsView({ allQuestions }: Props) {
 
   const byCategory: Record<
     string,
-    { subject: 1 | 2; total: number; solved: number; correct: number }
+    {
+      subject: 1 | 2;
+      total: number;
+      solved: number;
+      correct: number;
+      frequency: "high" | "medium" | "low";
+      frequencyNote: string;
+    }
   > = {};
   for (const q of allQuestions) {
     const key = `${q.subject}-${q.category}`;
-    byCategory[key] ??= { subject: q.subject, total: 0, solved: 0, correct: 0 };
+    byCategory[key] ??= {
+      subject: q.subject,
+      total: 0,
+      solved: 0,
+      correct: 0,
+      frequency: q.frequency ?? "medium",
+      frequencyNote: q.frequencyNote ?? "",
+    };
     byCategory[key].total++;
     const a = attempts[q.id];
     if (a) {
@@ -52,9 +66,26 @@ export function StatsView({ allQuestions }: Props) {
       total: v.total,
       solved: v.solved,
       correct: v.correct,
+      frequency: v.frequency,
+      frequencyNote: v.frequencyNote,
       accuracy: pct(v.correct, v.solved),
     }))
     .sort((a, b) => a.accuracy - b.accuracy);
+
+  const allCategories = Object.entries(byCategory)
+    .map(([key, v]) => ({
+      key,
+      category: key.split("-").slice(1).join("-"),
+      subject: v.subject,
+      total: v.total,
+      frequency: v.frequency,
+      frequencyNote: v.frequencyNote,
+    }))
+    .sort((a, b) => {
+      if (a.subject !== b.subject) return a.subject - b.subject;
+      const order = { high: 0, medium: 1, low: 2 };
+      return order[a.frequency] - order[b.frequency];
+    });
 
   return (
     <div className="prose-ko">
@@ -92,6 +123,14 @@ export function StatsView({ allQuestions }: Props) {
                         {c.subject}과목
                       </span>{" "}
                       · {c.category}
+                      {c.frequency === "high" && (
+                        <span
+                          className="ml-2 rounded border border-rose-200 bg-rose-50 px-1.5 py-0.5 text-[10px] font-semibold text-rose-600"
+                          title={c.frequencyNote}
+                        >
+                          🔥 빈출
+                        </span>
+                      )}
                     </span>
                     <span className="font-mono text-sm">
                       <span
@@ -116,6 +155,43 @@ export function StatsView({ allQuestions }: Props) {
           )}
         </>
       )}
+
+      <section className="mt-10 border-t border-zinc-200 pt-8">
+        <h2 className="mb-2 text-sm font-semibold uppercase tracking-wider text-zinc-500">
+          출제 빈도 가이드
+        </h2>
+        <p className="mb-4 text-xs text-zinc-500">
+          최근 5년 SQLD 출제 패턴 기준. 빈출 카테고리부터 학습하세요.
+        </p>
+        {[1, 2].map((subj) => (
+          <div key={subj} className="mb-5">
+            <h3 className="mb-2 text-xs font-semibold text-zinc-700">
+              {SUBJECT_LABELS[subj as 1 | 2]}
+            </h3>
+            <ul className="space-y-1">
+              {allCategories
+                .filter((c) => c.subject === subj)
+                .map((c) => (
+                  <li
+                    key={c.key}
+                    className="flex items-center justify-between gap-3 rounded-md border border-zinc-100 px-3 py-1.5 text-sm"
+                  >
+                    <span className="flex items-center gap-2">
+                      <FreqBadge frequency={c.frequency} />
+                      <span className="text-zinc-700">{c.category}</span>
+                      <span className="text-xs text-zinc-400">
+                        총 {c.total}문제
+                      </span>
+                    </span>
+                    <span className="hidden text-xs text-zinc-500 sm:inline">
+                      {c.frequencyNote}
+                    </span>
+                  </li>
+                ))}
+            </ul>
+          </div>
+        ))}
+      </section>
 
       {examHistory.length > 0 && (
         <section className="mt-8">
@@ -186,6 +262,27 @@ function Stat({
       {hint && (
         <span className="ml-1 text-xs text-zinc-400">({hint})</span>
       )}
+    </span>
+  );
+}
+
+function FreqBadge({
+  frequency,
+}: {
+  frequency: "high" | "medium" | "low";
+}) {
+  const map = {
+    high: { cls: "bg-rose-50 text-rose-700 border-rose-200", icon: "🔥", label: "빈출" },
+    medium: { cls: "bg-amber-50 text-amber-700 border-amber-200", icon: "📌", label: "보통" },
+    low: { cls: "bg-zinc-50 text-zinc-500 border-zinc-200", icon: "·", label: "드묾" },
+  } as const;
+  const { cls, icon, label } = map[frequency];
+  return (
+    <span
+      className={`inline-flex shrink-0 items-center gap-0.5 rounded border px-1.5 py-0.5 text-[10px] font-semibold ${cls}`}
+    >
+      <span>{icon}</span>
+      <span>{label}</span>
     </span>
   );
 }

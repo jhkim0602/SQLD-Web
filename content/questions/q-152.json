@@ -13,7 +13,16 @@
   ],
   "answer": 1,
   "explanation": "**SYS_CONNECT_BY_PATH(컬럼, 구분자)**: 루트부터 현재 노드까지 컬럼 값을 구분자로 연결.\n\n특징: **구분자가 맨 앞**에도 들어감.\n\n| ename | path |\n|---|---|\n| KING | **/KING** |\n| JONES | /KING/JONES |\n| SCOTT | /KING/JONES/SCOTT |\n\n맨 앞 구분자가 항상 포함되므로 `KING`이 아닌 `/KING`.\n\n**활용**:\n- 계층 경로 표시 (게시판 답글 구조)\n- 자식 검색 (`WHERE path LIKE '/KING/%'`)\n- 카테고리 분류 표시\n\n**관련 함수**:\n- `CONNECT_BY_ROOT col`: 루트 행의 컬럼 값\n- `CONNECT_BY_ISLEAF`: 리프 노드 여부 (1/0)\n- `CONNECT_BY_ISCYCLE`: 순환 발생 여부",
-  "concepts": ["hierarchical"],
-  "tags": ["SYS_CONNECT_BY_PATH", "계층형", "경로"],
-  "source": "self"
+  "concepts": [
+    "hierarchical"
+  ],
+  "tags": [
+    "SYS_CONNECT_BY_PATH",
+    "계층형",
+    "경로"
+  ],
+  "source": "self",
+  "difficulty": 5,
+  "frequency": "medium",
+  "frequencyNote": "회당 1~2문제 — CONNECT BY·PRIOR 방향·LEVEL·CYCLE"
 }

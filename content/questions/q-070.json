@@ -12,7 +12,15 @@
   ],
   "answer": 2,
   "explanation": "**집합 연산자 사용 규칙**:\n\n- 각 SELECT의 **컬럼 수 일치**\n- 각 컬럼의 **데이터 타입 호환**\n- 결과 컬럼명은 **첫 번째 SELECT** 의 컬럼명 사용 (선택지 3 틀림)\n- `ORDER BY`는 **마지막 SELECT 뒤**에 한 번만\n\n예:\n```sql\nSELECT empno AS no, ename AS name FROM emp WHERE deptno = 10\nUNION\nSELECT id, name FROM contractor\nORDER BY no;  -- 첫 SELECT의 alias 사용\n```",
-  "concepts": ["set-operators"],
-  "tags": ["집합 연산", "UNION"],
-  "source": "self"
+  "concepts": [
+    "set-operators"
+  ],
+  "tags": [
+    "집합 연산",
+    "UNION"
+  ],
+  "source": "self",
+  "difficulty": 3,
+  "frequency": "medium",
+  "frequencyNote": "회당 1~2문제 — UNION/UNION ALL/INTERSECT/MINUS"
 }

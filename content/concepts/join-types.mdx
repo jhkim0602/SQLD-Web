@@ -232,19 +232,9 @@ SELECT * FROM emp NATURAL JOIN dept;
 > \"선행 테이블의 각 행마다 후행을 조회하는 방식은?\"
 - Nested Loop
 
-## 12. 🔑 암기법 종합
+## 12. 📌 실전 치트시트
 
-| 항목 | 암기법 |
-|---|---|
-| JOIN 종류 | **내외크자유** (Inner·Outer·Cross·Self·Using/Natural) |
-| OUTER 방향 | LEFT는 왼쪽 살림, RIGHT는 오른쪽 살림 |
-| (+) 위치 | **NULL이 들어갈 반대편에** |
-| n개 테이블 조인 | **n-1개 조건** |
-| 조인 방식 | NL(소량+인덱스), Hash(대량+등치), Sort Merge(정렬+범위) |
-
-## 13. 📌 시험 합격 핵심 요약
-
-> **시험장 입실 5분 전 점검**
+> **핵심 구문 + 함정 + 빈출 패턴**
 
 ✅ **8가지 JOIN = 내외크자유 USING/NATURAL**
 
@@ -267,3 +257,13 @@ SELECT * FROM emp NATURAL JOIN dept;
 ✅ **JOIN 방식 3가지**: NL · Hash · Sort Merge
 
 ✅ **빈출 함정**: \"LEFT JOIN + WHERE d.X\" → ON에 넣어야 OUTER 의미 유지
+
+### 🔑 암기법 정리
+
+| 항목 | 암기법 |
+|---|---|
+| JOIN 종류 | **내외크자유** (Inner·Outer·Cross·Self·Using/Natural) |
+| OUTER 방향 | LEFT는 왼쪽 살림, RIGHT는 오른쪽 살림 |
+| (+) 위치 | **NULL이 들어갈 반대편에** |
+| n개 테이블 조인 | **n-1개 조건** |
+| 조인 방식 | NL(소량+인덱스), Hash(대량+등치), Sort Merge(정렬+범위) |

@@ -19,5 +19,8 @@
     "SELECT",
     "실행 순서"
   ],
-  "source": "self"
+  "source": "self",
+  "difficulty": 2,
+  "frequency": "high",
+  "frequencyNote": "회당 3~4문제 — 연산자·NULL·LIKE·BETWEEN·IN"
 }

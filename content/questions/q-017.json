@@ -21,5 +21,8 @@
     "ROW_NUMBER",
     "윈도우 함수"
   ],
-  "source": "self"
+  "source": "self",
+  "difficulty": 4,
+  "frequency": "high",
+  "frequencyNote": "회당 3~4문제 — RANK·LAG/LEAD·SUM OVER·ROWS/RANGE 차이"
 }
